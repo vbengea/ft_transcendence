@@ -1,4 +1,4 @@
-# ft_transcendence
+# Frontier
 7 major modules mandatory (2x Minor = 1 major)
 
 
