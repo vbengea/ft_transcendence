@@ -30,3 +30,11 @@ fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, err => {
   }
   console.log(`Ready to receive websocket connections on port ${PORT}`)
 })
+
+const listeners = ['SIGINT', 'SIGTERM']
+listeners.forEach((signal) => {
+  process.on(signal, async () => {
+    await app.close()
+    process.exit(0)
+  })
+})
