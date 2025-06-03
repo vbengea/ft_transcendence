@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Testing Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .response {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: black;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+        }
+        .warning {
+            background-color: #fffacd;
+            border: 1px solid #ffd700;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Testing Suite</h1>
+    
+    <div class="warning" id="cert-warning">
+        <h3>⚠️ Self-Signed Certificate Warning</h3>
+        <p>This app is using a self-signed certificate. To use it properly:</p>
+        <ol>
+            <li>Visit <a href="https://localhost:3000" target="_blank">https://localhost:3000</a> first</li>
+            <li>When you see the certificate warning, click "Advanced" and then "Proceed to localhost (unsafe)"</li>
+            <li>Return to this page and try your request again</li>
+        </ol>
+        <button onclick="checkCertAcceptance()">I've accepted the certificate</button>
+    </div>
+    
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Register')" id="defaultOpen">Register</button>
+        <button class="tablinks" onclick="openTab(event, 'Login')">Login</button>
+        <button class="tablinks" onclick="openTab(event, 'TwoFA')">2FA</button>
+        <button class="tablinks" onclick="openTab(event, 'Profile')">Profile</button>
+    </div>
+    
+    <div id="Register" class="tabcontent">
+        <h2>User Registration</h2>
+        <div class="section">
+            <input type="email" id="reg-email" placeholder="Email" />
+            <input type="text" id="reg-username" placeholder="Username" />
+            <input type="password" id="reg-password" placeholder="Password" />
+            <button onclick="register()">Register</button>
+            <div id="register-response" class="response"></div>
+        </div>
+    </div>
+    
+    <div id="Login" class="tabcontent">
+        <h2>User Login</h2>
+        <div class="section">
+            <input type="email" id="login-email" placeholder="Email" />
+            <input type="password" id="login-password" placeholder="Password" />
+            <button onclick="login()">Login</button>
+            <div id="login-response" class="response"></div>
+        </div>
+        
+        <div id="two-fa-login-section" class="section hidden">
+            <h3>2FA Verification Required</h3>
+            <input type="text" id="two-fa-code" placeholder="Enter 2FA code" />
+            <button onclick="verifyLoginTwoFA()">Verify</button>
+            <div id="two-fa-login-response" class="response"></div>
+        </div>
+    </div>
+    
+    <div id="TwoFA" class="tabcontent">
+        <h2>Two-Factor Authentication</h2>
+        <div class="section">
+            <button onclick="setupTwoFA()">Setup 2FA</button>
+            <div id="qrcode-container" class="hidden">
+                <h3>Scan this QR code with your authenticator app</h3>
+                <img id="qrcode-image" src="" alt="QR Code" />
+                <p>Or enter this code manually: <strong id="manual-code"></strong></p>
+            </div>
+            <div id="setup-response" class="response"></div>
+        </div>
+        
+        <div class="section">
+            <h3>Verify & Enable 2FA</h3>
+            <input type="text" id="verify-code" placeholder="Enter code from authenticator app" />
+            <button onclick="verifyTwoFA()">Verify and Enable</button>
+            <div id="verify-response" class="response"></div>
+        </div>
+    </div>
+    
+    <div id="Profile" class="tabcontent">
+        <h2>User Profile</h2>
+        <div class="section">
+            <button onclick="getProfile()">Get My Profile</button>
+            <div id="profile-response" class="response"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Store auth token
+        let authToken = localStorage.getItem('authToken') || null;
+        let tempTwoFAToken = null;
+        let certAccepted = localStorage.getItem('certAccepted') === 'true';
+        
+        // Check if certificate has been accepted
+        function checkCertAcceptance() {
+            fetch('https://localhost:3000/test-auth')
+                .then(() => {
+                    // If we reach here, the certificate was accepted
+                    certAccepted = true;
+                    localStorage.setItem('certAccepted', 'true');
+                    document.getElementById('cert-warning').style.display = 'none';
+                })
+                .catch(error => {
+                    if (error.message.includes('Failed to fetch')) {
+                        alert('Please visit https://localhost:3000 first and accept the certificate warning');
+                    } else {
+                        // The server responded, but with an error (like 401 Unauthorized)
+                        // which means the certificate is accepted
+                        certAccepted = true;
+                        localStorage.setItem('certAccepted', 'true');
+                        document.getElementById('cert-warning').style.display = 'none';
+                    }
+                });
+        }
+        
+        // Hide warning if cert was previously accepted
+        if (certAccepted) {
+            document.getElementById('cert-warning').style.display = 'none';
+        }
+        
+        // Default tab
+        document.getElementById("defaultOpen").click();
+        
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Helper function to handle API requests with better error handling
+        async function apiRequest(url, options) {
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { response, data };
+            } catch (error) {
+                if (error.message.includes('Failed to fetch')) {
+                    // This is likely a certificate issue
+                    document.getElementById('cert-warning').style.display = 'block';
+                    return { 
+                        error: true, 
+                        message: 'Certificate error: Please accept the self-signed certificate first' 
+                    };
+                }
+                return { error: true, message: error.message };
+            }
+        }
+        
+        async function register() {
+            const email = document.getElementById('reg-email').value;
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const responseDiv = document.getElementById('register-response');
+            
+            const result = await apiRequest('https://localhost:3000/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, username, password })
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+            
+            if (result.response.ok) {
+                alert('Registration successful! You can now log in.');
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const responseDiv = document.getElementById('login-response');
+            const twoFASection = document.getElementById('two-fa-login-section');
+            
+            const result = await apiRequest('https://localhost:3000/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+            
+            if (result.response.ok) {
+                if (result.data.message === '2FA required') {
+                    // Show 2FA verification section
+                    tempTwoFAToken = result.data.tempToken;
+                    twoFASection.classList.remove('hidden');
+                } else {
+                    // Regular login successful
+                    authToken = result.data.token;
+                    localStorage.setItem('authToken', authToken);
+                    alert('Login successful!');
+                    twoFASection.classList.add('hidden');
+                }
+            }
+        }
+        
+        async function verifyLoginTwoFA() {
+            const code = document.getElementById('two-fa-code').value;
+            const responseDiv = document.getElementById('two-fa-login-response');
+            
+            const result = await apiRequest('https://localhost:3000/auth/login/2fa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: tempTwoFAToken, code })
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+            
+            if (result.response.ok) {
+                authToken = result.data.token;
+                localStorage.setItem('authToken', authToken);
+                alert('2FA verification successful!');
+            }
+        }
+        
+        async function setupTwoFA() {
+            if (!authToken) {
+                alert('You must be logged in to set up 2FA');
+                return;
+            }
+            
+            const responseDiv = document.getElementById('setup-response');
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            
+            const result = await apiRequest('https://localhost:3000/auth/2fa/setup', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+            
+            if (result.response.ok) {
+                // Display QR code
+                document.getElementById('qrcode-image').src = result.data.qrcode;
+                document.getElementById('manual-code').textContent = result.data.manualCode;
+                qrcodeContainer.classList.remove('hidden');
+            }
+        }
+        
+        async function verifyTwoFA() {
+            if (!authToken) {
+                alert('You must be logged in to verify 2FA');
+                return;
+            }
+            
+            const code = document.getElementById('verify-code').value;
+            const responseDiv = document.getElementById('verify-response');
+            
+            const result = await apiRequest('https://localhost:3000/auth/2fa/verify', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: code })
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+            
+            if (result.response.ok) {
+                alert('2FA has been enabled for your account!');
+            }
+        }
+        
+        async function getProfile() {
+            if (!authToken) {
+                alert('You must be logged in to view your profile');
+                return;
+            }
+            
+            const responseDiv = document.getElementById('profile-response');
+            
+            const result = await apiRequest('https://localhost:3000/auth/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            
+            if (result.error) {
+                responseDiv.innerHTML = `<span class="error">${result.message}</span>`;
+                return;
+            }
+            
+            responseDiv.textContent = JSON.stringify(result.data, null, 2);
+        }
+    </script>
+</body>
+</html>
