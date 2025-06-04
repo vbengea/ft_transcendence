@@ -2,7 +2,7 @@ FROM node:22.12.0
 
 RUN apt-get update && \
 	apt install -y iputils-ping && \
-    apt-get install -y nginx openssl
+    apt-get install -y nginx openssl sqlite3
 
 WORKDIR /app
 
@@ -17,6 +17,7 @@ RUN cp ./src/ui/index.html public/
 RUN cp ./src/ui/pong.png public/
 RUN node --run css
 RUN node --run js
+RUN node --run migrate
 
 COPY --chmod=0777 ./tools/ssl.sh /
 

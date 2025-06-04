@@ -1,15 +1,39 @@
 'use strict'
 
-const { ADDRESS, PORT, TKEY, TCRT } = process.env;
+const { ADDRESS, PORT, TKEY, TCRT, JWT_SECRET, COOKIE_SECRET_KEY } = process.env;
 
 const fs = require('fs')
 const path = require('path')
+
 const fastify = require('fastify')({
     https: {
       key: fs.readFileSync(TKEY),
       cert: fs.readFileSync(TCRT)
     }
 })
+
+// AUTH VERIFICATION ................................................................................
+const fjwt = require('@fastify/jwt')
+const fCookie = require('@fastify/cookie')
+
+fastify.register(fjwt, { secret: JWT_SECRET })
+
+fastify.decorate('authenticate', async (req, reply) => {
+	const token = req.cookies.access_token
+	if (!token)
+		return reply.status(401).send({ message: 'Authentication required' })
+	const decoded = req.jwt.verify(token)
+	req.user = decoded
+})
+
+fastify.addHook('preHandler', (req, res, next) => {
+  req.jwt = fastify.jwt
+  return next()
+})
+
+fastify.register(fCookie, { secret: COOKIE_SECRET_KEY, hook: 'preHandler' })
+fastify.register(require('./auth/routes.cjs'), { prefix: 'auth' })
+// ....................................................................................
 
 fastify.register(require('@fastify/static'), {
   root: path.join(__dirname, '../../public'),
@@ -34,7 +58,7 @@ fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, err => {
 const listeners = ['SIGINT', 'SIGTERM']
 listeners.forEach((signal) => {
   process.on(signal, async () => {
-    await app.close()
+    await fastify.close()
     process.exit(0)
   })
 })

@@ -16,7 +16,7 @@ function gameCur(type) {
 }
 
 module.exports = async function (fastify) {
-  fastify.get('/ws', { websocket: true }, (socket, req) => {
+  fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, req) => {
 
 	socket.on('message', (message) => {
 		const raw = JSON.parse(message.toString())
