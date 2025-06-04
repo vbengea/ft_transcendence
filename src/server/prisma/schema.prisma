@@ -18,7 +18,13 @@ model User {
   id String @id @default(cuid())
   email String @unique
   name String?
-  password String
+  passwordHash String?
+  googleId String? @unique
+  avatar String?
+  two_fa_secret String?
+  two_fa_enabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Game {

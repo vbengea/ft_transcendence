@@ -203,7 +203,7 @@ template('template-view3', async () => {
 		else
 		{
 			const err = document.querySelector("#error");
-			err.innerHTML = json.message;
+			err.innerHTML = json.message || json.error;
 		}
 	});
     return myDiv.appendChild(link3);
@@ -231,7 +231,7 @@ template('template-view4', async () => {
 		else
 		{
 			const err = document.querySelector("#error");
-			err.innerHTML = json.message;
+			err.innerHTML = json.message || json.error;
 		}
 	});
     return myDiv.appendChild(link4);
@@ -271,7 +271,7 @@ async function resolveRoute(route) {
 		return routes[route];
 	}
 	else {
-		const response = await fetch(BASE);
+		const response = await fetch(`${BASE}/status`);
 		if(response.status == 401){
 			location.hash = '#/login';
 			return () => {};

@@ -15,15 +15,21 @@ const fastify = require('fastify')({
 // AUTH VERIFICATION ................................................................................
 const fjwt = require('@fastify/jwt')
 const fCookie = require('@fastify/cookie')
+const createAuthUtils = require('./user-auth/utils/auth')
 
 fastify.register(fjwt, { secret: JWT_SECRET })
+fastify.register(fCookie, { secret: COOKIE_SECRET_KEY, hook: 'preHandler' })
 
 fastify.decorate('authenticate', async (req, reply) => {
-	const token = req.cookies.access_token
-	if (!token)
-		return reply.status(401).send({ message: 'Authentication required' })
-	const decoded = req.jwt.verify(token)
-	req.user = decoded
+  const token = req.cookies.access_token
+  if (!token)
+    return reply.status(401).send({ message: 'Authentication required' })
+  try {
+    const decoded = req.jwt.verify(token)
+    req.user = decoded
+  } catch (err) {
+    return reply.status(401).send({ message: 'Invalid or expired token' })
+  }
 })
 
 fastify.addHook('preHandler', (req, res, next) => {
@@ -31,8 +37,9 @@ fastify.addHook('preHandler', (req, res, next) => {
   return next()
 })
 
-fastify.register(fCookie, { secret: COOKIE_SECRET_KEY, hook: 'preHandler' })
-fastify.register(require('./auth/routes.cjs'), { prefix: 'auth' })
+fastify.register(require('./user-auth/app.js'), { 
+  authUtils: createAuthUtils()
+})
 // ....................................................................................
 
 fastify.register(require('@fastify/static'), {
