@@ -33,6 +33,9 @@ module.exports = async function (fastify) {
 			} else if (raw.subtype === 'play') {
 				const game = socketGame.get(socket);
 				game.play(socket, raw.isDown); 
+			} else if (raw.subtype === 'play_ai') {
+				const game = socketGame.get(socket);
+				game.play_ai(socket); 
 			} else if (raw.subtype === 'layout') {
 				const game = socketGame.get(socket);
 				game.setLayout(socket, raw); 

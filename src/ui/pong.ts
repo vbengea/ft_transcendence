@@ -1,3 +1,4 @@
+
 type Player = {
 	"wins": boolean,
 	"score": number,
@@ -65,7 +66,9 @@ function getLayoutPayloadPong(subtype : string) {
 		h: get(BALL, "height"),
 	};
 
-	return { type: "pong", subtype, paddle, screen: sc, ball };
+	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER'));
+
+	return { type: "pong", subtype, paddle, screen: sc, ball, ai: !profile.human };
 }
 
 function displayPong(raw: string) {

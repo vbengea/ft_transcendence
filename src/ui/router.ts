@@ -541,6 +541,8 @@ async function resolveRoute(route) {
 			location.hash = '#/login';
 			return () => {};
 		} else {
+			const json = await response.json();
+			localStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
 			return routes[route];
 		}
 	}

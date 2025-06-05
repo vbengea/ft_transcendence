@@ -165,6 +165,7 @@ class Player {
 		this.socket = socket;
 		this.screen = new Screen(raw);
 		this.score = 0;
+		this.ai = raw.ai;
 	}
 
 	getSocket() {
@@ -189,6 +190,10 @@ class Player {
 
 	setScore(score) {
 		this.score = score;
+	}
+
+	isAi() {
+		return this.ai;
 	}
 
 	toJSON() {
@@ -283,7 +288,7 @@ class Pong {
 		const s = p.getScreen();
 		const paddle = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
 		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
-		const top = s.getLineHeight();																		// Cap paddle vertical position .................
+		const top = s.getLineHeight();																		// Cap paddle vertical position ...................
 		const bot = s.getHeight() - paddle.getHeight() - s.getLineHeight() * 4;
 		if (y < top)
 			paddle.setY(top);
@@ -291,6 +296,58 @@ class Pong {
 			paddle.setY(bot);
 		else
 			paddle.setY(y);
+	}
+
+	play_ai(socket) {
+		const i = this.players[0].getSocket() == socket ? 0 : 1;
+		const p = this.players[i];
+		const s = p.getScreen();
+		const b = s.getBall();
+		const d = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
+
+		const half = d.getHeight() / 2.0;
+		const center = d.getY() + half;
+		const screen_center = s.getHeight() / 2.0 - half;
+		
+		let ball_speed = b.getDy();
+		if (ball_speed < 0) {
+			ball_speed = -ball_speed;
+		}
+
+		if (b.getDx() > 0) {																				// ball moving right...............................
+
+			if (center < screen_center) {																	// return to center position.......................
+				d.setY(d.getY() + ball_speed);
+			} else {
+				d.setY(d.getY() - ball_speed);	
+			}
+			
+		} else {																							// ball moving left................................
+		
+			if (b.getDy() > 0) {																			// ball moving down................................
+				if (b.getY() > center) { 
+					d.setY(d.getY() + ball_speed);
+				} else {
+					d.setY(d.getY() - ball_speed);	
+				}
+			}
+			
+			if (b.getDy() < 0) {																			// ball moving up..................................
+				if (b.getY() < center) {
+					d.setY(d.getY() - ball_speed);
+				} else {
+					d.setY(d.getY() + ball_speed)
+				}
+			}
+
+			if (b.getDy() == 0) {																			// ball moving stright across......................
+				if (b.getY() < center) {
+					d.setY(d.getY() - 5);
+				} else {
+					d.setY(d.getY() + 5);
+				}
+			}	 		
+		}
 	}
 
 	setLayout(socket, raw) {
@@ -306,28 +363,28 @@ class Pong {
 		const s = p1.getScreen();
 		const b = s.getBall();
 
-		b.setX(b.getX() + b.getDx());																		// Moving the ball ..............................
+		b.setX(b.getX() + b.getDx());																		// Moving the ball ................................
 		b.setY(b.getY() + b.getDy());
 		
-		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen .........
+		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen ...........
 			p1.setScore(p1.getScore() + 1);
 			this.reset();
-		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ........
+		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ..........
 			p2.setScore(p2.getScore() + 1);
 			this.reset();
-		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ........
+		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ..........
 			b.setDy(-b.getDy());
 		} else {
-			const paddle = this.checkPaddleCollisions(s);													// Check paddle collisions ......................
+			const paddle = this.checkPaddleCollisions(s);													// Check paddle collisions ........................
 			if (paddle != null) {
 				this.changeBallDirection(b);
-				this.changeBallAngle(paddle, b);															// Ball bounces in angle and direction ..........
+				this.changeBallAngle(paddle, b);															// Ball bounces in angle and direction ............
 			}
 		}
 
-		this.send();																						// Refresh UI ...................................
+		this.send();																						// Refresh UI .....................................
 
-		if (p1.getScore() == MAX_SCORE) {																	// Check scores .................................
+		if (p1.getScore() == MAX_SCORE) {																	// Check scores ...................................
 			p1.wins = true;
 			p1.getSocket(JSON.stringify({ message: TXT.win }));
 			return;
@@ -337,7 +394,11 @@ class Pong {
 			return;
 		}
 
-		setTimeout(this.moveBall.bind(this), 1);															// Move ball again ..............................
+		if (p1.isAi())
+			this.play_ai(p1.getSocket());
+		if (p2.isAi())
+			this.play_ai(p2.getSocket());
+		setTimeout(this.moveBall.bind(this), 1);															// Move ball again ................................
 	}
 
 	checkPaddleCollisions(screen) {
