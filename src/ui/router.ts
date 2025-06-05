@@ -195,10 +195,9 @@ template('template-view3', async () => {
 			}
 		});
 		const json = await response.json();
-		console.log(response)
 		if(response.ok)
 		{
-			sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
+			localStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
 			const routeResolved = await resolveRoute('/');
 			routeResolved();
 		}
@@ -278,6 +277,8 @@ async function resolveRoute(route) {
 			location.hash = '#/login';
 			return () => {};
 		} else {
+			const json = await response.json();
+			localStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
 			return routes[route];
 		}
 	}

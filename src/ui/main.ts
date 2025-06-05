@@ -39,7 +39,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	if (WS != null)
 		WS.close();
 
-	const profile = JSON.parse(sessionStorage.getItem('TRANSCENDER_USER'));
+	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER'));
 	
 	WS = new WebSocket(`wss://§{HOST}:§{PORT}/ws`);
 
