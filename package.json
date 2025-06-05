@@ -4,9 +4,8 @@
   "main": "./src/server/index.cjs",
   "types": "./src/ui/main.d.ts",
   "scripts": {
-    "js": "npx webpack",
+    "js": "npx tsc",
     "css": "npx @tailwindcss/cli -o ./public/main.css",
-    "ui": "npx webpack && npx @tailwindcss/cli -o ./public/main.css && cp src/ui/index.html public/",
     "migrate": "npx prisma migrate dev --name init --schema=./src/server/prisma/schema.prisma && npx prisma generate --schema=./src/server/prisma/schema.prisma",
     "start": "node ./src/server/index.cjs"
   },
@@ -31,13 +30,9 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.7",
-    "pino-pretty": "^13.0.0",
     "prisma": "^6.8.2",
 	"@prisma/client": "6.8.2",
     "tailwindcss": "^4.1.7",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1"
+    "typescript": "^5.8.3"
   }
 }

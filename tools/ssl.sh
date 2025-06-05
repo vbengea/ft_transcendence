@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat /app/public/main.js | sed "s|§{HOST}|$HOST|g" | sed "s|§{PORT}|$PORT|g" > /app/public/main.js
+cat /app/public/main.js | sed "s|{HOST}|$HOST|g" | sed "s|{PORT}|$PORT|g" > /app/public/main.js
 
 openssl \
 	req -x509 \
