@@ -19,6 +19,7 @@ model User {
   email String @unique
   name String?
   password String
+  human Boolean @default(true)
 }
 
 model Game {

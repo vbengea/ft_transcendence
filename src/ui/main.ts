@@ -35,9 +35,15 @@ type Payload = {
 };
 
 let WS = null;
+let intervalID;
 function play(payload : (a : string) => Payload, display : (a : string) => void, game : string) {
 	if (WS != null)
+	{
+		window.clearInterval(intervalID);
 		WS.close();
+	}
+
+	const profile = JSON.parse(sessionStorage.getItem('TRANSCENDER_USER'));
 	
 	WS = new WebSocket(`wss://§{HOST}:§{PORT}/ws`);
 
@@ -67,25 +73,36 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
 	});
 
-	addEventListener("keydown", (e) => {
-		const code = e.code;
-		if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
-			WS.send(JSON.stringify({ 
-				type: "pong", 
-				subtype: "play", 
-				isDown: DOWN_KEYS.includes(code) 
-			}));
-		}
-	});
+	if (profile.human)
+	{
+		addEventListener("keydown", (e) => {
+			const code = e.code;
+			if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
+				WS.send(JSON.stringify({ 
+					type: "pong", 
+					subtype: "play", 
+					isDown: DOWN_KEYS.includes(code) 
+				}));
+			}
+		});
 
-	addEventListener("mouseup", (e) => {
-		const target = e.target as HTMLTextAreaElement;
-		if(target.tagName == 'TD') {
-			WS.send(JSON.stringify({ 
-				type: "tictactoe", 
-				subtype: "play", 
-				isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
-			}));
-		}
-	});
+		addEventListener("mouseup", (e) => {
+			const target = e.target as HTMLTextAreaElement;
+			if(target.tagName == 'TD') {
+				WS.send(JSON.stringify({ 
+					type: "tictactoe", 
+					subtype: "play", 
+					isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
+				}));
+			}
+		});
+	}
+	else if (game === 'pong')
+	{
+		// intervalID = window.setInterval(myCallback, 10);
+		// function myCallback() {
+		// 	WS.send(JSON.stringify({ type: "pong", subtype: "play_ai" }));
+		// }
+	}
+
 }

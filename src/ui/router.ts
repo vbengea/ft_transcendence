@@ -195,8 +195,10 @@ template('template-view3', async () => {
 			}
 		});
 		const json = await response.json();
+		console.log(response)
 		if(response.ok)
 		{
+			sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
 			const routeResolved = await resolveRoute('/');
 			routeResolved();
 		}

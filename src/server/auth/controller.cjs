@@ -42,6 +42,7 @@ async function login(req, reply) {
     id: user.id,
     email: user.email,
     name: user.name,
+	human: user.human
   }
   const token = req.jwt.sign(payload)
   reply.setCookie('access_token', token, {
@@ -49,7 +50,7 @@ async function login(req, reply) {
     httpOnly: true,
     secure: true,
   })
-  return { accessToken: token }
+  return { accessToken: token, ...payload }
 }
 
 async function logout(req, reply) {
