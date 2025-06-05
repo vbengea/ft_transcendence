@@ -35,13 +35,9 @@ type Payload = {
 };
 
 let WS = null;
-let intervalID;
 function play(payload : (a : string) => Payload, display : (a : string) => void, game : string) {
 	if (WS != null)
-	{
-		window.clearInterval(intervalID);
 		WS.close();
-	}
 
 	const profile = JSON.parse(sessionStorage.getItem('TRANSCENDER_USER'));
 	
@@ -96,13 +92,6 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 				}));
 			}
 		});
-	}
-	else if (game === 'pong')
-	{
-		// intervalID = window.setInterval(myCallback, 10);
-		// function myCallback() {
-		// 	WS.send(JSON.stringify({ type: "pong", subtype: "play_ai" }));
-		// }
 	}
 
 }
