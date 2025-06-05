@@ -4,11 +4,14 @@
     "target": "es5",
     "sourceMap": true,
     "outFile": "public/main.js",
+	"moduleResolution": "node",
     "lib": [
       "dom",
       "es2015",
+	  "es2016",
       "es5",
       "es6"
     ]
-  }
+  },
+  "include": ["./src/ui/*.ts"],
 }

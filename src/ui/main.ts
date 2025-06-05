@@ -41,7 +41,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 
 	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER'));
 	
-	WS = new WebSocket(`wss://§{HOST}:§{PORT}/ws`);
+	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
 	WS.onopen = (event) => {
 		WS.send(JSON.stringify(payload("connect")));						// Read game layout ............................................................
