@@ -15,9 +15,7 @@ COPY . .
 RUN mkdir public
 RUN cp ./src/ui/index.html public/
 RUN cp ./src/ui/pong.png public/
-RUN node --run js
-RUN node --run css
-RUN node --run migrate
+RUN node --run css && node --run js && node --run migrate
 
 COPY --chmod=0777 ./tools/ssl.sh /
 
