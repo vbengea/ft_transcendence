@@ -561,6 +561,46 @@ template('template-profile', async () => {
 					<p class="text-sm text-gray-600 mt-2">Add an extra layer of security to your account.</p>
 				`;
 			}
+
+			statusContainer.innerHTML += `
+				<div class="mt-8 pt-6 border-t border-gray-200">
+					<h3 class="text-lg font-semibold text-gray-800 mb-3">Danger Zone</h3>
+					<p class="text-sm text-gray-600 mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+					<button id="delete-account" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+						Delete Account
+					</button>
+				</div>
+			`;
+
+			setTimeout(() => {
+				document.getElementById('delete-account').addEventListener('click', async () => {
+					if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+						const confirmText = prompt('Type "DELETE" to confirm account deletion:');
+						if (confirmText === 'DELETE') {
+							try {
+								const response = await fetch(`${BASE}/account`, {
+									method: 'DELETE',
+									credentials: 'include',
+								});
+
+								if (response.ok) {
+									alert('Your accout has beed deleted successfully');
+									location.hash = '#/login';
+								} else {
+									const result = await response.json();
+									alert(`Error: ${result.error || 'Failed to delete account'}`);
+								}
+							} catch (err) {
+								alert('An error ocurred. Please try again.');
+								console.error(err);
+							}
+						} else if (confirmText !== null) {
+							alert('Account deletion cancelled. You must type "DELETE" exactly to confirm.')
+						}
+					}
+				});
+			}, 100);
+
 		} else {
 			const statusContainer = document.getElementById('2fa-status-container');
 			statusContainer.innerHTML = `

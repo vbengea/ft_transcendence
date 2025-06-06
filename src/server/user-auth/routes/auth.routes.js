@@ -1,4 +1,5 @@
 
+const { errorCodes } = require('fastify');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const qrcode = require('qrcode');
@@ -227,6 +228,26 @@ function authRoutes(fastify, options, done) {
 			}
 		});
 	});
+
+	fastify.delete('/account', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+
+			await userService.deleteUser(userId);
+			
+			reply.clearCookie('access_token', {
+				path: '/',
+				secure: true,
+				httpOnly: true,
+				sameSite: 'strict'
+			});
+
+			reply.send({ message: 'Account deleted successfully' });
+		} catch (err) {
+			console.error('Error deleting account:', err);
+			reply.code(500).send({ error: 'Failed to delete account' });
+		}
+	})
 
 	done();
 }

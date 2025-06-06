@@ -34,6 +34,12 @@ function createUserService(prisma) {
 			});
 		},
 
+		async deleteUser(userId) {
+			return prisma.user.delete({
+				where: { id: userId }
+			});
+		},
+
 		async userExists(email, name) {
 			const count = await prisma.user.count({
 				where: {
