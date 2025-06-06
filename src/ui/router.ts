@@ -404,22 +404,33 @@ template('template-view3', async () => {
 		}
 		
 		async function handleGoogleSignIn(response) {
-			const id_token = response.credential;
-			
-			const resp = await fetch(`${BASE}/google`, {
-				method: "POST",
-				body: JSON.stringify({ id_token }),
-				headers: {
-					"Content-Type": "application/json"
+			try {
+				const id_token = response.credential;
+				
+				const resp = await fetch(`${BASE}/google`, {
+					method: "POST",
+					body: JSON.stringify({ id_token }),
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+				
+				const json = await resp.json();
+				if(resp.ok) {
+					if (json.message == '2FA required') {
+						localStorage.setItem('tempToken', json.tempToken);
+						location.hash = '/2fa/verify';
+					} else {
+						location.hash = '/';
+					}
+				} else {
+					const err = document.querySelector("#error");
+					err.innerHTML = json.message || json.error;
 				}
-			});
-			
-			const json = await resp.json();
-			if(resp.ok) {
-				location.hash = '/';
-			} else {
+			} catch (error) {
+				console.error('Error handling Google Sign In:', error);
 				const err = document.querySelector("#error");
-				err.innerHTML = json.message || json.error;
+				err.innerHTML = "An error occurred with Google Sign In. Please try again.";
 			}
 		}
 	});

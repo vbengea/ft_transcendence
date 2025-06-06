@@ -174,6 +174,15 @@ function authRoutes(fastify, options, done) {
 				user = await userService.createGoogleUser({ google_id, email, name, avatar });
 			}
 
+			if (user.two_fa_enabled) {
+				const tempToken = fastify.jwt.sign(
+					{ id: user.id, name: user.name, twoFA: true },
+					JWT_SECRET,
+					{ expiresIn: '5m' }
+				);
+				return reply.send({ message: '2FA required', tempToken });
+			}
+
 			const token = fastify.jwt.sign(
 				{ id: user.id, name: user.name },
 				JWT_SECRET,
