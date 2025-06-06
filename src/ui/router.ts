@@ -384,6 +384,9 @@ template('template-view3', async () => {
 	const link3 = createDiv('view3', login) as HTMLElement;
 	
 	link3.querySelector('#google-signin').addEventListener('click', async () => {
+		const configResponse = await fetch(`${BASE}/config`);
+		const config = await configResponse.json();
+
 		if (!window.google) {
 			const script = document.createElement('script');
 			script.src = 'https://accounts.google.com/gsi/client';
@@ -392,12 +395,12 @@ template('template-view3', async () => {
 			
 			script.onload = initGoogleSignIn;
 		} else {
-			initGoogleSignIn();
+			initGoogleSignIn(config.googleClientId);
 		}
 		
-		function initGoogleSignIn() {
+		function initGoogleSignIn(clientId) {
 			window.google.accounts.id.initialize({
-				client_id: '209539625617-o97333fo98qkd5dtd1c5otdd5abo4097.apps.googleusercontent.com',
+				client_id: clientId,
 				callback: handleGoogleSignIn
 			});
 			window.google.accounts.id.prompt();

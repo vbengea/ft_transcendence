@@ -234,7 +234,7 @@ function authRoutes(fastify, options, done) {
 			const userId = request.user.id;
 
 			await userService.deleteUser(userId);
-			
+
 			reply.clearCookie('access_token', {
 				path: '/',
 				secure: true,
@@ -247,7 +247,13 @@ function authRoutes(fastify, options, done) {
 			console.error('Error deleting account:', err);
 			reply.code(500).send({ error: 'Failed to delete account' });
 		}
-	})
+	});
+
+	fastify.get('/config', async (request, reply) => {
+		reply.send({
+			googleClientId: process.env.GOOGLE_CLIENT_ID
+		});
+	});
 
 	done();
 }
