@@ -121,6 +121,20 @@ function authRoutes(fastify, options, done) {
 		reply.send({ qrcode: qr, manualCode: secret.base32 });
 	});
 
+	fastify.delete('/2fa', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const user = await userService.getUserById(request.user.id);
+			if (!user || !user.two_fa_enabled) {
+				return reply.code(400).send({ error: '2FA is not enabled for this account' });
+			}
+
+			await userService.disable2FA(user.id);
+			reply.send({ message: '2FA disabled successfully' });
+		} catch (err) {
+			reply.code(500).send({ error: 'Failed to disable 2FA' });
+		}
+	});
+
 	fastify.post('/2fa/verify', { preHandler: verifyToken }, async (request, reply) => {
 		const { token: code } = request.body;
 		const user = await userService.getUserById(request.user.id);
@@ -195,7 +209,14 @@ function authRoutes(fastify, options, done) {
 	})
 
 	fastify.get('/status', { preHandler: fastify.authenticate }, async (request, reply) => {
-		reply.send({ authenticated: true, user: request.user });
+		const user = await userService.getUserById(request.user.id);
+		reply.send({ 
+			authenticated: true,
+			user: {
+				...request.user,
+				two_fa_enabled: user.two_fa_enabled
+			}
+		});
 	});
 
 	done();

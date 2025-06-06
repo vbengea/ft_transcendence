@@ -86,16 +86,16 @@ const twofa_verify = `<div class="flex min-h-full flex-col justify-center px-6 p
 </div>`;
 
 const links = `	<div class="absolute right-2 top-2 z-1000 inline-flex rounded-md shadow-xs">
-	<a href="#/profile" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-			Profile
+	<a href="#/profile" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+		Profile
 	</a>
-	<a href="#/pong" aria-current="page" class="px-4 py-2 text-sm font-medium text-blue-700 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+	<a href="#/pong" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-l-0 border-r-0 border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
 		Pong
 	</a>
 	<a href="#/tictactoe" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
 		Tic tac toe
 	</a>
-	<a href="#/logout" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+	<a href="#/logout" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
 		Logout
 	</a>
 	</div>`;
@@ -514,7 +514,34 @@ template('template-profile', async () => {
 						<span class="text-gray-800">Two-Factor Authentication is enabled</span>
 					</div>
 					<p class="text-sm text-gray-600 mb-3">Your account is protected with 2FA.</p>
+					<button id="disable-2fa" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+						Disable Two-Factor Authentication
+					</button>
 				`;
+
+				setTimeout(() => {
+					document.getElementById('disable-2fa').addEventListener('click', async () => {
+						if (confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
+							try {
+								const response = await fetch(`${BASE}/2fa`, {
+									method: 'DELETE',
+									credentials: 'include',
+								});
+
+								const result = await response.json();
+								if (response.ok) {
+									alert('2FA has beed disabled successfully');
+									location.reload();
+								} else {
+									alert(`Error: ${result.error || 'Failed to disable 2FA'}`);
+								}
+							} catch (err) {
+								alert('An error ocurred. Please try again.');
+								console.log(err);
+							}
+						}
+					});
+				}, 100);
 			} else {
 				statusContainer.innerHTML = `
 					<a href="#/2fa/setup" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">

@@ -60,6 +60,16 @@ function createUserService(prisma) {
 			});
 		},
 
+		async disable2FA(userId) {
+			return prisma.user.update ({
+				where: { id: userId },
+				data: {
+					two_fa_enabled: false,
+					two_fa_secret: null
+				}
+			});
+		},
+
 		verify2FACode(secret, code) {
 			return speakeasy.totp.verify({
 				secret,
