@@ -110,6 +110,11 @@ function authRoutes(fastify, options, done) {
 	});
 
 	fastify.get('/2fa/setup', { preHandler: verifyToken }, async (request, reply) => {
+		const user = await userService.getUserById(request.user.id);
+		if (user && user.two_fa_enabled) {
+			return reply.code(400).send({ error: '2FA is already enabled for this account' });
+		}
+
 		const secret = require('speakeasy').generateSecret({ name: `Transcendence (${request.user.name})` });
 		await userService.save2FASecret(request.user.id, secret.base32);
 		const qr = await qrcode.toDataURL(secret.otpauth_url);

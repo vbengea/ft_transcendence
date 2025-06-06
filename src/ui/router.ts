@@ -244,6 +244,18 @@ const register = `<div class="flex min-h-full flex-col justify-center px-6 py-12
 </div>`;
 
 template('template-2fa-setup', async () => {
+	const statusResponse = await fetch(`${BASE}/status`, {
+		credentials: "include"
+	});
+
+	if (statusResponse.ok) {
+		const userData = await statusResponse.json();
+		if (userData.user && userData.user.two_fa_enabled) {
+			location.hash = '#/profile';
+			return document.createElement('div');
+		}
+	}
+
 	let myDiv = document.getElementById(appDiv);
 	myDiv.innerHTML = "";
 	const setupDiv = createDiv('setup-2fa', twofa_setup);
@@ -326,17 +338,18 @@ template('template-2fa-verify', async ()  => {
 
 
 const profile = `<div class="p-8 max-w-2xl mx-auto">
-	<h1 class="text-2xl font-bold mb-6">User Profile</h1>
-	<div class="bg-white p-6 rounded-lg shadow-md">
-		<div class="mb-4">
-			<h2 class="text-lg font-semibold">Account Security</h2>
-			<div class="mt-4">
-				<a href="#/2fa/setup" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-					Setup Two-Factor Authentication
-				</a>
-			</div>
+		<h1 class="text-2xl font-bold mb-6">User Profile</h1>
+		<div class="bg-white p-6 rounded-lg shadow-md">
+				<div class="mb-4">
+						<h2 class="text-lg font-semibold">Account Security</h2>
+						<div id="2fa-status-container" class="mt-4">
+								<div class="flex items-center mb-3">
+										<div class="mr-3 animate-spin h-4 w-4 border-2 border-indigo-500 rounded-full border-t-transparent"></div>
+										<span class="text-gray-600">Loading 2FA status...</span>
+								</div>
+						</div>
+				</div>
 		</div>
-	</div>
 </div>`;
 
 
@@ -364,35 +377,6 @@ template('template-view2', async () => {
 		const link2 = createDiv('view2', tictactoe);
 		return myDiv.appendChild(link2);
 });
-
-// template('template-view3', async () => {
-//     let myDiv = document.getElementById(appDiv);
-//     myDiv.innerHTML = "";
-//     const link3 = createDiv('view3', login);
-// 	link3.addEventListener('submit', async (e) => {
-// 		e.preventDefault();
-// 		var data = new FormData(document.querySelector('form'));
-// 		const response = await fetch(`${BASE}/login`, {
-// 			method: "POST",
-// 			body: JSON.stringify({ email: data.get('email'), password: data.get('password') }),
-// 			headers: {
-// 				"Content-Type": "application/json"
-// 			}
-// 		});
-// 		const json = await response.json();
-// 		if(response.ok)
-// 		{
-// 			const routeResolved = await resolveRoute('/');
-// 			routeResolved();
-// 		}
-// 		else
-// 		{
-// 			const err = document.querySelector("#error");
-// 			err.innerHTML = json.message || json.error;
-// 		}
-// 	});
-//     return myDiv.appendChild(link3);
-// });
 
 template('template-view3', async () => {
 	let myDiv = document.getElementById(appDiv);
@@ -510,7 +494,53 @@ template('template-profile', async () => {
 	let myDiv = document.getElementById(appDiv);
 	myDiv.innerHTML = "";
 	const profileDiv = createDiv('profile', profile);
-	return myDiv.appendChild(profileDiv);
+	myDiv.appendChild(profileDiv);
+
+	try {
+		const response = await fetch(`${BASE}/status`, {
+			credentials: "include"
+		});
+
+		if (response.ok) {
+			const userData = await response.json();
+			const statusContainer = document.getElementById('2fa-status-container');
+
+			if (userData.user && userData.user.two_fa_enabled) {
+				statusContainer.innerHTML = `
+					<div class="flex items-center mb-3">
+						<svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+						</svg>
+						<span class="text-gray-800">Two-Factor Authentication is enabled</span>
+					</div>
+					<p class="text-sm text-gray-600 mb-3">Your account is protected with 2FA.</p>
+				`;
+			} else {
+				statusContainer.innerHTML = `
+					<a href="#/2fa/setup" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+						Setup Two-Factor Authentication
+					</a>
+					<p class="text-sm text-gray-600 mt-2">Add an extra layer of security to your account.</p>
+				`;
+			}
+		} else {
+			const statusContainer = document.getElementById('2fa-status-container');
+			statusContainer.innerHTML = `
+				<div class="text-red-500">
+					<p>Authentication error. Please <a href="#/login" class="text-indigo-600 hover:underline">log in</a> to view your profile.</p>
+				</div>
+			`;
+		}
+	} catch (err) {
+		console.error("Error fetching user data:", err);
+		const statusContainer = document.getElementById('2fa-status-container');
+		statusContainer.innerHTML = `
+			<div class="text-red-500">
+				<p>Error connecting to server. Please try again later.</p>
+			</div>
+		`;
+	}
+	return profileDiv;
 });
 
 route('/profile', 'template-profile');
@@ -543,16 +573,26 @@ async function resolveRoute(route) {
 		return routes[route];
 	}
 	else if (route == '/2fa/setup') {
-		const response = await fetch(`${BASE}/status`);
+		const response = await fetch(`${BASE}/status`, {
+			credentials: "include"
+		});
 		if (response.status == 401) {
 			location.hash = '#/login';
 			return () => {};
 		} else {
-			return routes[route];
+			const userData = await response.json();
+			if (userData.user && userData.user.two_fa_enabled) {
+				location.hash = '#/profile';
+				return () => {};
+			} else {
+				return routes[route];
+			}
 		}
 	}
 	else {
-		const response = await fetch(`${BASE}/status`);
+		const response = await fetch(`${BASE}/status`, {
+			credentials: "include"
+		});
 		if(response.status == 401){
 			location.hash = '#/login';
 			return () => {};
