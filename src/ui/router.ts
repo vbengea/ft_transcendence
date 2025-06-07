@@ -420,7 +420,7 @@ async function resolveRoute(route) {
 			const response = await fetch(`${BASE}/status`, {
 				credentials: "include"
 			});
-			if (authorized()) {
+			if (await authorized()) {
 				const userData = await response.json();
 				if (userData.user && userData.user.two_fa_enabled) {
 					location.hash = '#/profile';
@@ -430,7 +430,7 @@ async function resolveRoute(route) {
 				}
 			}
 		} else {
-			if (authorized()) {
+			if (await authorized()) {
 				if (route == '/') {
 					location.href = '#/landing/welcome';
 					return () => {};
@@ -510,8 +510,9 @@ let landing = async (url) => {
 
 let router = async (evt) => {
 	let url = window.location.hash.slice(1) || "/";
-	if (url.startsWith('/landing/') && authorized()) {
-		landing(url.slice(9));
+	if (url.startsWith('/landing/')) {
+		if (await authorized())
+			landing(url.slice(9));
 	} else {
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
