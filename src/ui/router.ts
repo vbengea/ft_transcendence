@@ -235,6 +235,14 @@ const register = `<div class="flex min-h-full flex-col justify-center px-6 py-12
 			</div>
 
 			<div>
+				<div class="flex items-center justify-between">
+					<label for="confirm-password" class="block text-sm/6 font-medium text-gray-900">Confirm Password</label>
+				</div>
+				<div class="mt-2">
+					<input type="password" name="confirm-password" id="confirm-password" autocomplete="new-password" maxlength="72" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+				</div>
+			</div>
+			<div>
 				<button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Register</button>
 			</div>
 		</form>
@@ -470,10 +478,29 @@ template('template-view3', async () => {
 template('template-view4', async () => {
 		let myDiv = document.getElementById(appDiv);
 		myDiv.innerHTML = "";
-		const link4 = createDiv('view4', register);
+		const link4 = createDiv('view4', register) as HTMLElement;
+
+		const passwordField = link4.querySelector('#password') as HTMLInputElement;
+		const confirmPasswordField = link4.querySelector('#confirm-password') as HTMLInputElement;
+		const errorElement = link4.querySelector('#error');
+
+		confirmPasswordField.addEventListener('input', () => {
+			if (passwordField.value !== confirmPasswordField.value) {
+				errorElement.innerHTML = "Passwords do not match";
+			} else {
+				errorElement.innerHTML = "";
+			}
+		});
+
 	link4.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		var data = new FormData(document.querySelector('form'));
+
+		if (data.get('password') !== data.get('confirm-password')) {
+			const err = document.querySelector("#error");
+			err.innerHTML = "Passwords do not match";
+			return;
+		}
 		const response = await fetch(`${BASE}/register`, {
 			method: "POST",
 			body: JSON.stringify({ name: data.get('name'), email: data.get('email'), password: data.get('password') }),
