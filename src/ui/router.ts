@@ -41,7 +41,7 @@ const twofa_setup = `<div class="flex min-h-full flex-col justify-center px-6 py
 			<p class="mb-4">Scan this QR code with your authenticator app:</p>
 			<div id="qrcode-container" class="flex justify-center"></div>
 			<p class="mt-4 text-sm text-gray-500">Or enter this code manually:</p>
-			<p id="manual-code" class="font-mono text-lg mt-2"></p>
+			<p id="manual-code" class="font-mono text-sm mt-2 p-2 bg-gray-100 rounded break-all overflow-auto max-w-full"></p>
 		</div>
 
 		<form class="space-y-6" action="#" method="POST">
