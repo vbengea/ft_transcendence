@@ -484,8 +484,16 @@ let landing = async (url) => {
 		app.innerHTML = await (await fetch(`./pages/template.html`)).text();
 		const menu = document.querySelector("#menu");
 		const user = document.querySelector("#user");
+		const bypass = ["user", "user_inner_1", "user_inner_21", "user_inner_2"];
 
-		user.addEventListener('click', (e) => menu.classList.remove('hidden'));
+		user.addEventListener('click', (e) => {
+			e.preventDefault();
+			menu.classList.remove('hidden');
+		});
+		document.addEventListener('click', (e) => {
+			if(!bypass.includes((e.target as HTMLElement).id))
+				menu.classList.add('hidden');
+		});
 
 		const content = document.querySelector('#content');
 		const response = await fetch(`./pages/${url}.html`);
