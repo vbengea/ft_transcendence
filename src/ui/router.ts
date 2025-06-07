@@ -20,15 +20,15 @@ let template = (name, templateFunction) => {
 };
 
 let route = (path, template) => {
-		if (typeof template == "function") {
-			return routes[path] = template;
-		}
-		else if (typeof template == "string") {
-			return routes[path] = templates[template];
-		}
-		else {
-			return;
-		}
+	if (typeof template == "function") {
+		return routes[path] = template;
+	}
+	else if (typeof template == "string") {
+		return routes[path] = templates[template];
+	}
+	else {
+		return;
+	}
 };
 
 template('template-2fa-setup', async () => {
@@ -125,27 +125,27 @@ template('template-2fa-verify', async ()  => {
 });
 
 template('template1', () => {
-		const myDiv = document.getElementById(appDiv);
-		myDiv.innerHTML = `${Templates.links}
-		<div class="flex justify-center ...">
-			<img class="w-100 h-100" src="pong.png">
-		</div>
+	const myDiv = document.getElementById(appDiv);
+	myDiv.innerHTML = `${Templates.links}
+	<div class="flex justify-center ...">
+		<img class="w-100 h-100" src="pong.png">
+	</div>
 	`;
-		return myDiv;
+	return myDiv;
 });
 
 template('template-view1', async () => {
-		let myDiv = document.getElementById(appDiv);
-		myDiv.innerHTML = "";
-		const link1 = createDiv('view1', Templates.pong);
-		return myDiv.appendChild(link1);
+	let myDiv = document.getElementById(appDiv);
+	myDiv.innerHTML = "";
+	const link1 = createDiv('view1', Templates.pong);
+	return myDiv.appendChild(link1);
 });
 
 template('template-view2', async () => {
-		let myDiv = document.getElementById(appDiv);
-		myDiv.innerHTML = "";
-		const link2 = createDiv('view2', Templates.tictactoe);
-		return myDiv.appendChild(link2);
+	let myDiv = document.getElementById(appDiv);
+	myDiv.innerHTML = "";
+	const link2 = createDiv('view2', Templates.tictactoe);
+	return myDiv.appendChild(link2);
 });
 
 template('template-view3', async () => {
@@ -238,60 +238,51 @@ template('template-view3', async () => {
 });
 
 template('template-view4', async () => {
-		let myDiv = document.getElementById(appDiv);
-		myDiv.innerHTML = "";
-		const link4 = createDiv('view4', Templates.register) as HTMLElement;
+	let myDiv = document.getElementById(appDiv);
+	myDiv.innerHTML = "";
+	const link4 = createDiv('view4', Templates.register) as HTMLElement;
 
-		const passwordField = link4.querySelector('#password') as HTMLInputElement;
-		const confirmPasswordField = link4.querySelector('#confirm-password') as HTMLInputElement;
-		const errorElement = link4.querySelector('#error');
+	const passwordField = link4.querySelector('#password') as HTMLInputElement;
+	const confirmPasswordField = link4.querySelector('#confirm-password') as HTMLInputElement;
+	const errorElement = link4.querySelector('#error');
 
-		confirmPasswordField.addEventListener('input', () => {
-			if (passwordField.value !== confirmPasswordField.value) {
-				errorElement.innerHTML = "Passwords do not match";
-			} else {
-				errorElement.innerHTML = "";
-			}
-		});
-
-	link4.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		var data = new FormData(document.querySelector('form'));
-
-		if (data.get('password') !== data.get('confirm-password')) {
-			const err = document.querySelector("#error");
-			err.innerHTML = "Passwords do not match";
-			return;
-		}
-		const response = await fetch(`${BASE}/register`, {
-			method: "POST",
-			body: JSON.stringify({ name: data.get('name'), email: data.get('email'), password: data.get('password') }),
-			headers: {
-				"Content-Type": "application/json"
-			}
-		});
-		const json = await response.json();
-		if(response.ok)
-		{
-			location.hash = '/';
-		}
-		else
-		{
-			const err = document.querySelector("#error");
-			err.innerHTML = json.message || json.error;
+	confirmPasswordField.addEventListener('input', () => {
+		if (passwordField.value !== confirmPasswordField.value) {
+			errorElement.innerHTML = "Passwords do not match";
+		} else {
+			errorElement.innerHTML = "";
 		}
 	});
-		return myDiv.appendChild(link4);
+
+link4.addEventListener('submit', async (e) => {
+	e.preventDefault();
+	var data = new FormData(document.querySelector('form'));
+
+	if (data.get('password') !== data.get('confirm-password')) {
+		const err = document.querySelector("#error");
+		err.innerHTML = "Passwords do not match";
+		return;
+	}
+	const response = await fetch(`${BASE}/register`, {
+		method: "POST",
+		body: JSON.stringify({ name: data.get('name'), email: data.get('email'), password: data.get('password') }),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
+	const json = await response.json();
+	if(response.ok)
+	{
+		location.hash = '/';
+	}
+	else
+	{
+		const err = document.querySelector("#error");
+		err.innerHTML = json.message || json.error;
+	}
 });
-
-route('/', 'template1');
-route('/pong', 'template-view1');
-route('/tictactoe', 'template-view2');
-route('/login', 'template-view3');
-route('/register', 'template-view4');
-
-route('/2fa/setup', 'template-2fa-setup');
-route('/2fa/verify', 'template-2fa-verify');
+return myDiv.appendChild(link4);
+});
 
 template('template-profile', async () => {
 	let myDiv = document.getElementById(appDiv);
@@ -413,23 +404,23 @@ template('template-profile', async () => {
 	return profileDiv;
 });
 
+route('/', 'template1');
+route('/pong', 'template-view1');
+route('/tictactoe', 'template-view2');
+route('/login', 'template-view3');
+route('/register', 'template-view4');
+
+route('/2fa/setup', 'template-2fa-setup');
+route('/2fa/verify', 'template-2fa-verify');
+
 route('/profile', 'template-profile');
 
-let createDiv = (id, xmlString) => {
-		let d = document.createElement('div');
-		d.id = id;
-		d.innerHTML = xmlString;
-		return d.firstChild;
-};
 
-let createLink = (title, text, href) => {
-		let a = document.createElement('a');
-	a.classList = 'm-10 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-6 border border-gray-400 rounded shadow text-center';
-		let linkText = document.createTextNode(text);
-		a.appendChild(linkText);
-		a.title = title;
-		a.href = href;
-		return a;
+let createDiv = (id, xmlString) => {
+	let d = document.createElement('div');
+	d.id = id;
+	d.innerHTML = xmlString;
+	return d.firstChild;
 };
 
 async function resolveRoute(route) {
