@@ -16,6 +16,19 @@ function authRoutes(fastify, options, done) {
 		const { email, name, password } = request.body;
 		if (!email || !name || !password) return reply.code(400).send({ error: 'Missing fields' });
 
+		if (email.length > 100) {
+			return reply.code(400).send({ error: 'Email exceeds maximum length of 100 characters' });
+		}
+
+		if (name.length > 50) {
+			return reply.code(400).send({ error: 'Name exceeds maximum length of 50 characters' });
+		}
+
+		if (password.length > 72) { // Bcrypt limit
+			return reply.code(400).send({ error: 'Password exceeds maximum length of 72 characters' });
+		}
+
+
 		const emailValidation = authUtils.verifyEmail(email);
 		if (!emailValidation.valid) {
 			return reply.code(400).send({ error: emailValidation.error });
@@ -42,6 +55,14 @@ function authRoutes(fastify, options, done) {
 		const { email, password } = request.body;
 		if (!email || !password) {
 			return reply.code(400).send({ error: 'Missing fields' });
+		}
+
+		if (email.length > 100) {
+			return reply.code(400).send({ error: 'Email exceeds maximum length of 100 characters' });
+		}
+
+		if (password.length > 72) { // Bcrypt limit
+			return reply.code(400).send({ error: 'Password exceeds maximum length of 72 characters' });
 		}
 
 		const user = await userService.getUserByEmail(email);

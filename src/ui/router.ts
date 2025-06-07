@@ -156,7 +156,7 @@ const login = `<div class="flex min-h-full flex-col justify-center px-6 py-12 lg
 			<div>
 				<label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
 				<div class="mt-2">
-					<input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+					<input type="email" name="email" id="email" autocomplete="email" maxlength="100" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
 				</div>
 			</div>
 
@@ -165,7 +165,7 @@ const login = `<div class="flex min-h-full flex-col justify-center px-6 py-12 lg
 					<label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
 				</div>
 				<div class="mt-2">
-					<input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+					<input type="password" name="password" id="password" autocomplete="current-password" maxlength="72" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
 				</div>
 			</div>
 
@@ -214,14 +214,14 @@ const register = `<div class="flex min-h-full flex-col justify-center px-6 py-12
 			<div>
 				<label for="name" class="block text-sm/6 font-medium text-gray-900">Your name</label>
 				<div class="mt-2">
-					<input type="text" name="name" id="name" autocomplete="name" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+					<input type="text" name="name" id="name" autocomplete="name" maxlength="50" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
 				</div>
 			</div>
 
 			<div>
 				<label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
 				<div class="mt-2">
-					<input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+					<input type="email" name="email" id="email" autocomplete="email" maxlength="100" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
 				</div>
 			</div>
 
@@ -230,7 +230,7 @@ const register = `<div class="flex min-h-full flex-col justify-center px-6 py-12
 					<label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
 				</div>
 				<div class="mt-2">
-					<input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+					<input type="password" name="password" id="password" autocomplete="current-password" maxlength="72" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
 				</div>
 			</div>
 
