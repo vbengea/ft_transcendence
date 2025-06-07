@@ -245,7 +245,7 @@ function authRoutes(fastify, options, done) {
 			authenticated: true,
 			user: {
 				...request.user,
-				two_fa_enabled: user.two_fa_enabled
+				two_fa_enabled: user ? user.two_fa_enabled : false
 			}
 		});
 	});

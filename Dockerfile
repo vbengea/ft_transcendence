@@ -12,9 +12,13 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir public
+RUN mkdir public public/images public/pages
+
+RUN cp ./src/ui/images -r public/
+RUN cp ./src/ui/pages -r public/
 RUN cp ./src/ui/index.html public/
 RUN cp ./src/ui/pong.png public/
+
 RUN node --run css && node --run js && node --run migrate
 
 COPY --chmod=0777 ./tools/ssl.sh /

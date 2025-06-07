@@ -1,0 +1,33 @@
+<div id="tictactoe" class="absolute flex items-center justify-center w-screen h-screen">
+	<div class="absolute right-2 top-2 z-1000 inline-flex rounded-md shadow-xs">
+		<a href="#/landing/welcome" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+			Back
+		</a>
+		<a href="#/logout" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+			Logout
+		</a>
+	</div>
+
+	<div id="score-left" class="absolute self-start left-0 w-1/2 text-black text-right text-9xl pr-12">0</div>
+	<table class="w-1/2 h-1/2">
+		<tr class="h-1/3 border-b-2">
+			<td id="cell_1" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_2" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_3" class="w-1/3 text-center text-9xl"></td>
+		</tr>
+		<tr class="h-1/3 border-b-2">
+			<td id="cell_4" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_5" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_6" class="w-1/3 text-center text-9xl"></td>
+		</tr>
+		<tr class="h-1/3">
+			<td id="cell_7" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_8" class="border-r-2 w-1/3 text-center text-9xl"></td>
+			<td id="cell_9" class="w-1/3 text-center text-9xl"></td>
+		</tr>
+	</table>
+
+	<div id="splash" class="bg-black absolute flex-col place-items-center h-screen w-screen top-0 invisible">
+		<div id="log" class="text-gray-50 text-center mt-5"></div>
+	</div>
+</div>

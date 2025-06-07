@@ -124,29 +124,6 @@ template('template-2fa-verify', async ()  => {
 	return myDiv.appendChild(verifyDiv);
 });
 
-template('template1', () => {
-	const myDiv = document.getElementById(appDiv);
-	myDiv.innerHTML = `${Templates.links}
-	<div class="flex justify-center ...">
-		<img class="w-100 h-100" src="pong.png">
-	</div>
-	`;
-	return myDiv;
-});
-
-template('template-view1', async () => {
-	let myDiv = document.getElementById(appDiv);
-	myDiv.innerHTML = "";
-	const link1 = createDiv('view1', Templates.pong);
-	return myDiv.appendChild(link1);
-});
-
-template('template-view2', async () => {
-	let myDiv = document.getElementById(appDiv);
-	myDiv.innerHTML = "";
-	const link2 = createDiv('view2', Templates.tictactoe);
-	return myDiv.appendChild(link2);
-});
 
 template('template-view3', async () => {
 	let myDiv = document.getElementById(appDiv);
@@ -225,8 +202,7 @@ template('template-view3', async () => {
 				localStorage.setItem('tempToken', json.tempToken);
 				location.hash = '/2fa/verify';
 			} else {
-				const routeResolved = await resolveRoute('/');
-				routeResolved();
+				location.hash = '#/landing/welcome';
 			}
 		} else {
 			const err = document.querySelector("#error");
@@ -405,8 +381,6 @@ template('template-profile', async () => {
 });
 
 route('/', 'template1');
-route('/pong', 'template-view1');
-route('/tictactoe', 'template-view2');
 route('/login', 'template-view3');
 route('/register', 'template-view4');
 
@@ -415,7 +389,6 @@ route('/2fa/verify', 'template-2fa-verify');
 
 route('/profile', 'template-profile');
 
-
 let createDiv = (id, xmlString) => {
 	let d = document.createElement('div');
 	d.id = id;
@@ -423,59 +396,119 @@ let createDiv = (id, xmlString) => {
 	return d.firstChild;
 };
 
+async function authorized() {
+	const response = await fetch(`${BASE}/status`, { credentials: "include" });
+	if (response.status == 401) {
+		location.hash = '#/login';
+		return false;
+	} else {
+		const json = await response.json();
+		localStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
+	}
+	return true;
+}
+
 async function resolveRoute(route) {
 	try {
-	if (route == '/logout') {
-		fetch(`${BASE}/logout`, {method: "DELETE" });
-		location.hash = '#/login';
-		return () => {};
-	}
-	else if (route == '/login' || route == '/register' || route == '/2fa/verify') {
-		return routes[route];
-	}
-	else if (route == '/2fa/setup') {
-		const response = await fetch(`${BASE}/status`, {
-			credentials: "include"
-		});
-		if (response.status == 401) {
+		if (route == '/logout') {
+			fetch(`${BASE}/logout`, { method: "DELETE" });
 			location.hash = '#/login';
 			return () => {};
+		} else if (route == '/login' || route == '/register' || route == '/2fa/verify') {
+			return routes[route];
+		} else if (route == '/2fa/setup') {
+			const response = await fetch(`${BASE}/status`, {
+				credentials: "include"
+			});
+			if (authorized()) {
+				const userData = await response.json();
+				if (userData.user && userData.user.two_fa_enabled) {
+					location.hash = '#/profile';
+					return () => {};
+				} else {
+					return routes[route];
+				}
+			}
 		} else {
-			const userData = await response.json();
-			if (userData.user && userData.user.two_fa_enabled) {
-				location.hash = '#/profile';
-				return () => {};
-			} else {
-				return routes[route];
+			if (authorized()) {
+				if (route == '/') {
+					location.href = '#/landing/welcome';
+					return () => {};
+				} else {
+					return routes[route];
+				}
 			}
 		}
-	}
-	else {
-		const response = await fetch(`${BASE}/status`, {
-			credentials: "include"
-		});
-		if(response.status == 401){
-			location.hash = '#/login';
-			return () => {};
-		} else {
-			const json = await response.json();
-			localStorage.setItem('TRANSCENDER_USER', JSON.stringify(json));
-			return routes[route];
-		}
-	}
 	} catch (error) {
 		throw new Error("The route is not defined");
 	}
 }
 
+let hydrateTemplate = async (url) => {
+	switch(url) {
+		case 'pongsel': case 'tictactoesel':
+			const sing = document.querySelector("#single");
+			const mult = document.querySelector("#multiplayer");
+			const tour = document.querySelector("#tournament");
+			const click = (e) => {
+				location.hash = '#/landing/players';
+			}
+			const selector = async (e) => {
+				const app = document.querySelector('#app');
+				if (url === 'pongsel') {
+					app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
+					play(getLayoutPayloadPong, displayPong, 'pong');
+				}
+				else if (url === 'tictactoesel') {
+					app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
+					play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+				}
+			}
+			if (sing) {
+				sing.addEventListener('click', selector);
+			}
+			if (mult){
+				mult.addEventListener('click', click);
+			}
+			if (tour) {
+				tour.addEventListener('click', click);
+			}
+		default:
+			break;
+	}
+}
+
+let landing = async (url) => {
+	const app = document.querySelector('#app');
+	try {
+		app.innerHTML = await (await fetch(`./pages/template.html`)).text();
+		const menu = document.querySelector("#menu");
+		const user = document.querySelector("#user");
+
+		user.addEventListener('click', (e) => menu.classList.remove('hidden'));
+
+		const content = document.querySelector('#content');
+		const response = await fetch(`./pages/${url}.html`);
+		if (response.ok) {
+			content.innerHTML = await response.text();
+			hydrateTemplate(url);
+		} else {
+			content.innerHTML = '<div class="mt-12 text-center text-2xl text-red-400">Content not found</div>';
+		}
+	} catch (e) {
+		console.log(e)
+	}
+};
+
 let router = async (evt) => {
-		const url = window.location.hash.slice(1) || "/";
+	let url = window.location.hash.slice(1) || "/";
+	if (url.startsWith('/landing/') && authorized()) {
+		landing(url.slice(9));
+	} else {
 		const routeResolved = await resolveRoute(url);
-		routeResolved();
-	if (url === '/pong')
-		play(getLayoutPayloadPong, displayPong, 'pong');
-	else if (url === '/tictactoe')
-		play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+		if (routeResolved)
+			routeResolved();
+	}
 };
 
 window.addEventListener('load', router);
