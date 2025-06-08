@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const jdenticon = require("jdenticon");
+const utils = require('../user-auth/services/user.service')()
 
 async function fill() {
 	const size = 200;
@@ -17,7 +17,7 @@ async function fill() {
             email: "edgar@gmail.com",
             name: "Edgar Allan Poe",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("edgar@gmail.com"),
             human: false,
         },
     });
@@ -26,7 +26,7 @@ async function fill() {
             email: "tolstoi@gmail.com",
             name: "Léon Tolstói",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("tolstoi@gmail.com"),
             human: false,
         },
     });
@@ -35,17 +35,16 @@ async function fill() {
             email: "unamuno@gmail.com",
             name: "Miguel de Unamuno",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("unamuno@gmail.com"),
             human: false,
         },
     });
-
     const c4 = await prisma.user.create({
         data: {
             email: "alincoln@gmail.com",
             name: "Abraham Lincoln",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("alincoln@gmail.com"),
             human: false,
         },
     });
@@ -54,7 +53,7 @@ async function fill() {
             email: "gwashing@gmail.com",
             name: "George Washington",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("gwashing@gmail.com"),
             human: false,
         },
     });
@@ -63,17 +62,16 @@ async function fill() {
             email: "tjefferson@gmail.com",
             name: "Thomas Jefferson",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("tjefferson@gmail.com"),
             human: false,
         },
     });
-
     const c7 = await prisma.user.create({
         data: {
             email: "ccolon@gmail.com",
             name: "Cristobal Colón",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("ccolon@gmail.com"),
             human: false,
         },
     });
@@ -82,7 +80,7 @@ async function fill() {
             email: "florca@gmail.com",
             name: "Federico García Lorca",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("florca@gmail.com"),
             human: false,
         },
     });
@@ -91,17 +89,16 @@ async function fill() {
             email: "avargas@gmail.com",
             name: "Alan Vargas",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("avargas@gmail.com"),
             human: false,
         },
     });
-
     const c10 = await prisma.user.create({
         data: {
             email: "jausten@gmail.com",
             name: "Jane Austen",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("jausten@gmail.com"),
             human: false,
         },
     });
@@ -110,7 +107,7 @@ async function fill() {
             email: "psmith@gmail.com",
             name: "Paul Smith",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("psmith@gmail.com"),
             human: false,
         },
     });
@@ -119,17 +116,16 @@ async function fill() {
             email: "jsiemens@gmail.com",
             name: "John Siemens",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("jsiemens@gmail.com"),
             human: false,
         },
     });
-
     const c13 = await prisma.user.create({
         data: {
             email: "jsolomon@gmail.com",
             name: "Jake Solomon",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("jsolomon@gmail.com"),
             human: false,
         },
     });
@@ -138,7 +134,7 @@ async function fill() {
             email: "ysoon@gmail.com",
             name: "Young Soon",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("ysoon@gmail.com"),
             human: false,
         },
     });
@@ -147,7 +143,7 @@ async function fill() {
             email: "cswam@gmail.com",
             name: "Chang Swam",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("cswam@gmail.com"),
             human: false,
         },
     });
@@ -177,7 +173,7 @@ async function fill() {
 			email: "juaflore@gmail.com",
             name: "Juan Daniel Flores",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: "",
+			avatar: utils.generateIcon("juaflore@gmail.com"),
 			friends: {
 				connect: friends.map(f => ({ id: f.id }))
 			}

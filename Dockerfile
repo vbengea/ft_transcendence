@@ -12,7 +12,7 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir public public/images public/pages
+RUN mkdir public public/images public/pages public/images/avatar
 
 RUN cp ./src/ui/images -r public/
 RUN cp ./src/ui/pages -r public/

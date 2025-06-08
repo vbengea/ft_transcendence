@@ -2,6 +2,8 @@
 
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
+const jdenticon = require("jdenticon")
+const fs = require("fs");
 
 function createUserService(prisma) {
 	return {
@@ -132,6 +134,12 @@ function createUserService(prisma) {
 			});
 			return u.friends.map(f => f.user);
 		},
+
+		generateIcon(email) {
+			const path = `images/avatar/${email}.png`;
+			fs.writeFileSync(`/app/public/${path}`, jdenticon.toPng(email, 200));
+			return path;
+		}
 	};
 }
 
