@@ -476,16 +476,31 @@ let hydrateTemplate = async (url) => {
 			break;
 		case 'players':
 			const div = document.querySelector("#players");
+			const sub = document.querySelector("#submit");
 			const response = await fetch('/auth/friends');
 			const friends = await response.json();
-			console.log(friends);
 			div.innerHTML = friends.map(f => {
 				return `
-				<div class="relative">
-					<img class="w-10 h-10 rounded-sm" src="${f.avatar}" alt="">
-					<span class="absolute bottom-0 left-8 transform translate-y-1/4 w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+				<div id="${f.id}" data-sid="${f.id}" class="player relative cursor-pointer w-full bg-white flex items-center p-2 rounded-sm shadow-2xs">
+					<img data-sid="${f.id}" class="w-10 h-10 rounded-sm" src="${f.avatar}" alt="">
+					<span data-sid="${f.id}" class="absolute bottom-2 left-10 transform translate-y-1/4 w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
 				</div>`
 			}).join('');
+			div.addEventListener('click', (e) => {
+				const cel : any = e.target;
+				if (cel.dataset) {
+					const el = document.querySelector(`#${cel.dataset.sid}`);
+					if (el) {
+						el.classList.toggle('bg-amber-400');
+						el.classList.toggle('bg-white');
+					}
+				}
+			});
+			sub.addEventListener('click', (e) => {
+				// gather info and submit tournament creation
+				console.log('CREATE')
+			});
 			break;
 		default:
 			break;
