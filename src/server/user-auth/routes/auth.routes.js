@@ -276,6 +276,16 @@ function authRoutes(fastify, options, done) {
 		});
 	});
 
+	fastify.get('/friends', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const friends = await userService.getFriends(userId);
+			reply.send(friends);
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
 	done();
 }
 

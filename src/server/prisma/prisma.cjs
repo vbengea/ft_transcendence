@@ -1,7 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const jdenticon = require("jdenticon");
 
 async function fill() {
+	const size = 200;
+
     await prisma.game.create({ data: { description: "Pong", name: "pont" } });
     await prisma.game.create({
         data: { description: "Tic tac toe", name: "tictactoe" },
@@ -13,8 +16,8 @@ async function fill() {
         data: {
             email: "edgar@gmail.com",
             name: "Edgar Allan Poe",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -22,8 +25,8 @@ async function fill() {
         data: {
             email: "tolstoi@gmail.com",
             name: "Léon Tolstói",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -31,8 +34,8 @@ async function fill() {
         data: {
             email: "unamuno@gmail.com",
             name: "Miguel de Unamuno",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -41,8 +44,8 @@ async function fill() {
         data: {
             email: "alincoln@gmail.com",
             name: "Abraham Lincoln",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -50,8 +53,8 @@ async function fill() {
         data: {
             email: "gwashing@gmail.com",
             name: "George Washington",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -59,8 +62,8 @@ async function fill() {
         data: {
             email: "tjefferson@gmail.com",
             name: "Thomas Jefferson",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -69,8 +72,8 @@ async function fill() {
         data: {
             email: "ccolon@gmail.com",
             name: "Cristobal Colón",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -78,8 +81,8 @@ async function fill() {
         data: {
             email: "florca@gmail.com",
             name: "Federico García Lorca",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -87,8 +90,8 @@ async function fill() {
         data: {
             email: "avargas@gmail.com",
             name: "Alan Vargas",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -97,8 +100,8 @@ async function fill() {
         data: {
             email: "jausten@gmail.com",
             name: "Jane Austen",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -106,8 +109,8 @@ async function fill() {
         data: {
             email: "psmith@gmail.com",
             name: "Paul Smith",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -115,8 +118,8 @@ async function fill() {
         data: {
             email: "jsiemens@gmail.com",
             name: "John Siemens",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -125,8 +128,8 @@ async function fill() {
         data: {
             email: "jsolomon@gmail.com",
             name: "Jake Solomon",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -134,8 +137,8 @@ async function fill() {
         data: {
             email: "ysoon@gmail.com",
             name: "Young Soon",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -143,8 +146,8 @@ async function fill() {
         data: {
             email: "cswam@gmail.com",
             name: "Chang Swam",
-            passwordHash:
-                "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
             human: false,
         },
     });
@@ -169,11 +172,12 @@ async function fill() {
 		await prisma.friend.create({ data: { userId: c15.id } })
 	];
 
-	const u = await prisma.user.create({ 
+	await prisma.user.create({ 
 		data: { 
 			email: "juaflore@gmail.com",
             name: "Juan Daniel Flores",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
+			avatar: "",
 			friends: {
 				connect: friends.map(f => ({ id: f.id }))
 			}

@@ -109,7 +109,29 @@ function createUserService(prisma) {
 					name: true
 				}
 			});
-		}
+		},
+
+		async getFriends(id) {
+			const u = await prisma.user.findUnique({
+				where: { id },
+				include: { 
+					friends: { 
+						include: { 
+							user: { 
+								select: { 
+									id:true, 
+									email:true, 
+									name:true, 
+									avatar:true, 
+									human:true 
+								} 
+							} 
+						}
+					} 
+				}
+			});
+			return u.friends.map(f => f.user);
+		},
 	};
 }
 
