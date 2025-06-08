@@ -10,28 +10,69 @@ generator client {
 }
 
 model User {
-  id String @id @default(cuid())
-  email String @unique
-  name String?
-  passwordHash String?
-  googleId String? @unique
-  avatar String?
-  two_fa_secret String?
-  two_fa_enabled Boolean @default(false)
-  human Boolean @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  friends Friend[] @relation("UserFriends")
+  id                    String        @id     @default(cuid())
+  email                 String        @unique
+  name                  String?
+  passwordHash          String?
+  googleId              String?       @unique
+  avatar                String?
+  two_fa_secret         String?
+  two_fa_enabled        Boolean       @default(false)
+  human                 Boolean       @default(true)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  friends               Friend[]      @relation("UserFriends")
+  organizedTournaments  Tournament[]
+  matchesAsUser1        Match[]       @relation("User1Matches")
+  matchesAsUser2        Match[]       @relation("User2Matches")
 }
 
 model Game {
-  id String @id @default(cuid())
-  name String @unique
-  description String @unique
+  id                    String        @id     @default(cuid())
+  name                  String        @unique
+  description           String        @unique
 }
 
 model Friend {
-  id  String  @id @default(cuid())
-  user User @relation("UserFriends", fields: [userId], references: [id])
-  userId String
+  id                    String        @id     @default(cuid())
+  user                  User          @relation("UserFriends", fields: [userId], references: [id])
+  userId                String
+}
+
+model Tournament {
+  id                    String        @id     @default(cuid())
+  name                  String
+  totalRounds           Int
+  totalPlayers          Int
+  customization         String
+  game                  Game          @relation(fields: [gameId, references: [id]])
+  gameId                String
+  organizer             User          @relation(fields: [organizerId], references: [id])
+  organizerId           String
+  matches               Match[]
+}
+
+model Round {
+  id                    String        @id     @default(cuid())
+  name                  String
+  number                Int
+  matches               Match[]
+}
+
+model Match {
+  id                    String        @id     @default(cuid())
+  user1                 User          @relation("User1Matches", fields: [user1Id], references: [id])
+  user1Id               String
+  user2                 User          @relation("User2Matches", fields: [user2Id], references: [id])
+  user2Id               String
+  creationTime          DateTime      @default(now())
+  startTime             DateTime?
+  endTime               DateTime?
+  user1Score            Int           @default(0)
+  user2Score            Int           @default(0)
+  tournament            Tournament?   @relation(fields: [tournamentId], references: [id])
+  tournamentId          String?
+  round                 Round?        @relation(field: [roundId], references: [id])
+  roundId               String?
+  winScore              Int
 }
