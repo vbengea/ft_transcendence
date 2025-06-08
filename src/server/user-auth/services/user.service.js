@@ -118,21 +118,17 @@ function createUserService(prisma) {
 				where: { id },
 				include: { 
 					friends: { 
-						include: { 
-							user: { 
-								select: { 
-									id:true, 
-									email:true, 
-									name:true, 
-									avatar:true, 
-									human:true 
-								} 
-							} 
-						}
+						select: { 
+							id: true, 
+							email: true, 
+							name: true, 
+							avatar: true, 
+							human: true 
+						} 
 					} 
 				}
 			});
-			return u.friends.map(f => f.user);
+			return u.friends;
 		},
 
 		generateIcon(email) {

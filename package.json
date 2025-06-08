@@ -6,7 +6,7 @@
   "scripts": {
     "js": "npx tsc",
     "css": "npx @tailwindcss/cli -o ./public/main.css",
-    "migrate": "npx prisma migrate dev --name init --schema=./src/server/prisma/schema.prisma && npx prisma generate --schema=./src/server/prisma/schema.prisma",
+    "migrate": "npx prisma format --schema=./src/server/prisma/schema.prisma && npx prisma migrate dev --name init --schema=./src/server/prisma/schema.prisma && npx prisma generate --schema=./src/server/prisma/schema.prisma",
     "start": "node ./src/server/index.cjs"
   },
   "keywords": [

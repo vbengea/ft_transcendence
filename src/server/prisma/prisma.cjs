@@ -150,24 +150,6 @@ async function fill() {
 
     // Humans ...........................................................................
 
-    const friends = [
-		await prisma.friend.create({ data: { userId: c1.id } }),
-		await prisma.friend.create({ data: { userId: c2.id } }),
-		await prisma.friend.create({ data: { userId: c3.id } }),
-		await prisma.friend.create({ data: { userId: c4.id } }),
-		await prisma.friend.create({ data: { userId: c5.id } }),
-		await prisma.friend.create({ data: { userId: c6.id } }),
-		await prisma.friend.create({ data: { userId: c7.id } }),
-		await prisma.friend.create({ data: { userId: c8.id } }),
-		await prisma.friend.create({ data: { userId: c9.id } }),
-		await prisma.friend.create({ data: { userId: c10.id } }),
-		await prisma.friend.create({ data: { userId: c11.id } }),
-		await prisma.friend.create({ data: { userId: c12.id } }),
-		await prisma.friend.create({ data: { userId: c13.id } }),
-		await prisma.friend.create({ data: { userId: c14.id } }),
-		await prisma.friend.create({ data: { userId: c15.id } })
-	];
-
 	await prisma.user.create({ 
 		data: { 
 			email: "juaflore@gmail.com",
@@ -175,7 +157,23 @@ async function fill() {
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
 			avatar: utils.generateIcon("juaflore@gmail.com"),
 			friends: {
-				connect: friends.map(f => ({ id: f.id }))
+				connect: [
+					{ id: c1.id },
+					{ id: c2.id },
+					{ id: c3.id },
+					{ id: c4.id },
+					{ id: c5.id },
+					{ id: c6.id },
+					{ id: c7.id },
+					{ id: c8.id },
+					{ id: c9.id },
+					{ id: c10.id },
+					{ id: c11.id },
+					{ id: c12.id },
+					{ id: c13.id },
+					{ id: c14.id },
+					{ id: c15.id },
+				]
 			}
 		} 
 	});

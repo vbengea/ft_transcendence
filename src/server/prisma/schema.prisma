@@ -21,7 +21,8 @@ model User {
   human                 Boolean       @default(true)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-  friends               Friend[]      @relation("UserFriends")
+  friends               User[]      @relation("UserFriends")
+  friendOf              User[]      @relation("UserFriends")
   organizedTournaments  Tournament[]
   matchesAsUser1        Match[]       @relation("User1Matches")
   matchesAsUser2        Match[]       @relation("User2Matches")
@@ -32,12 +33,6 @@ model Game {
   name                  String        @unique
   description           String        @unique
   tournaments           Tournament[]
-}
-
-model Friend {
-  id                    String        @id     @default(cuid())
-  user                  User          @relation("UserFriends", fields: [userId], references: [id])
-  userId                String
 }
 
 model Tournament {
