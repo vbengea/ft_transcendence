@@ -31,6 +31,7 @@ model Game {
   id                    String        @id     @default(cuid())
   name                  String        @unique
   description           String        @unique
+  tournaments           Tournament[]
 }
 
 model Friend {
@@ -45,7 +46,7 @@ model Tournament {
   totalRounds           Int
   totalPlayers          Int
   customization         String
-  game                  Game          @relation(fields: [gameId, references: [id]])
+  game                  Game          @relation(fields: [gameId], references: [id])
   gameId                String
   organizer             User          @relation(fields: [organizerId], references: [id])
   organizerId           String
@@ -72,7 +73,7 @@ model Match {
   user2Score            Int           @default(0)
   tournament            Tournament?   @relation(fields: [tournamentId], references: [id])
   tournamentId          String?
-  round                 Round?        @relation(field: [roundId], references: [id])
+  round                 Round?        @relation(fields: [roundId], references: [id])
   roundId               String?
   winScore              Int
 }
