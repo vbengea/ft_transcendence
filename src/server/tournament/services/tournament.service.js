@@ -67,6 +67,27 @@ function createTournamentService(prisma) {
 					}
 				}
 			});
+		},
+
+		async getTournamentById(id) {
+			return prisma.tournament.findUnique({
+				where: { id },
+				include: {
+					organizer: {
+						select: { id: true, name: true, avatar: true }
+					}
+				}
+			});
+		},
+
+		async deleteTournament(id) {
+			await prisma.match.deleteMany({
+				where: { tournamentId: id }
+			});
+
+			return prisma.tournament.delete({
+				where: { id }
+			});
 		}
 	};
 }

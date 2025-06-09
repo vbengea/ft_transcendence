@@ -36,6 +36,30 @@ function tournamentRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.delete('/tournament/:id', { preHandler: fastify.authenticate }, async (request, reply) => {
+		try {
+			const tournamentId = request.params.id;
+			const userId = request.user.id;
+
+			const tournament = await tournamentService.getTournamentById(tournamentId);
+
+			if (!tournament) {
+				return reply.code(404).send({ error: 'Tournament not found' });
+			}
+
+			if (tournament.organizerId !== userId) {
+				return reply.code(403).send({ error: 'You are not authorized to delete this tournament' });
+			}
+
+			await tournamentService.deleteTournament(tournamentId);
+
+			reply.code(200).send({ message: 'Tournament deleted successfully' });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to delete tournament' });
+		}
+	});
+
 	done();
 }
 
