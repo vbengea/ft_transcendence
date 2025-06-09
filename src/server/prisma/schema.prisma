@@ -45,7 +45,7 @@ model Tournament {
   gameId                String
   organizer             User          @relation(fields: [organizerId], references: [id])
   organizerId           String
-  matches               Match[]
+  rounds                Round[]
 }
 
 model Round {
@@ -53,6 +53,8 @@ model Round {
   name                  String
   number                Int
   matches               Match[]
+  tournament            Tournament    @relation(fields: [tournamentId], references: [id])
+  tournamentId          String
 }
 
 model Match {
@@ -66,9 +68,7 @@ model Match {
   endTime               DateTime?
   user1Score            Int           @default(0)
   user2Score            Int           @default(0)
-  tournament            Tournament?   @relation(fields: [tournamentId], references: [id])
-  tournamentId          String?
-  round                 Round?        @relation(fields: [roundId], references: [id])
-  roundId               String?
+  round                 Round         @relation(fields: [roundId], references: [id])
+  roundId               String
   winScore              Int
 }

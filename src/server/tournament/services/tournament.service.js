@@ -26,7 +26,8 @@ function createTournamentService(prisma) {
 				const round = await prisma.round.create({
 					data: {
 						name: roundData.name,
-						number: rounds.indexOf(roundData) + 1
+						number: rounds.indexOf(roundData) + 1,
+						tournamentId: tournament.id
 					}
 				});
 
@@ -36,7 +37,6 @@ function createTournamentService(prisma) {
 							data: {
 								user1Id: matchData.users[0].id,
 								user2Id: matchData.users[1].id,
-								tournamentId: tournament.id,
 								roundId: round.id,
 								winScore: 10
 							}
@@ -54,14 +54,17 @@ function createTournamentService(prisma) {
 						select: { id: true, name: true, avatar: true }
 					},
 					game: true,
-					matches: {
+					rounds: {
 						include: {
-							round: true,
-							user1: {
-								select: { id: true, name: true, avatar: true }
-							},
-							user2: {
-								select: { id: true, name: true, avatar: true }
+							matches: {
+								include: {
+									user1: {
+										select: { id: true, name: true, avatar: true }
+									},
+									user2: {
+										select: { id: true, name: true, avatar: true }
+									}
+								}
 							}
 						}
 					}
@@ -75,12 +78,28 @@ function createTournamentService(prisma) {
 				include: {
 					organizer: {
 						select: { id: true, name: true, avatar: true }
+					},
+					rounds: {
+						include: {
+							matches: true
+						}
 					}
 				}
 			});
 		},
 
 		async deleteTournament(id) {
+			const rounds = await prisma.round.findMany({
+				where: { tournamentId: id },
+				select: { id: true }
+			});
+
+			for (const round of rounds) {
+				await prisma.match.deleteMany({
+					where: { roundId: round.id}
+				});
+			}
+			
 			await prisma.match.deleteMany({
 				where: { tournamentId: id }
 			});
