@@ -26,7 +26,8 @@ function createUserService(prisma) {
 				data: {
 					email,
 					name,
-					passwordHash
+					passwordHash,
+					avatar: this.generateIcon(email)
 				},
 				select: {
 					id: true,
