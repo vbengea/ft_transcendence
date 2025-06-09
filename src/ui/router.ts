@@ -412,6 +412,7 @@ async function resolveRoute(route) {
 	try {
 		if (route == '/logout') {
 			fetch(`${BASE}/logout`, { method: "DELETE" });
+			localStorage.TRANSCENDER_USER = '';
 			location.hash = '#/login';
 			return () => {};
 		} else if (route == '/login' || route == '/register' || route == '/2fa/verify') {
@@ -489,6 +490,7 @@ let hydrateTemplate = async (url) => {
 			const sub = document.querySelector("#submit");
 			const response = await fetch('/auth/friends');
 			const friends = await response.json();
+			friends.push(JSON.parse(localStorage.TRANSCENDER_USER).user);
 			div.innerHTML = friends.map(f => {
 				return `
 				<div id="${f.id}" data-sid="${f.id}" data-name="${f.name}" data-avatar="${f.avatar}" class="player relative cursor-pointer w-full bg-white flex items-center p-2 rounded-sm shadow-2xs">
@@ -556,7 +558,7 @@ let hydrateTemplate = async (url) => {
 			break;
 		case 'stats':
 			const tournament = JSON.parse(localStorage.tournament);
-			console.log(tournament)
+			localStorage.tournament = '';
 			const r : HTMLInputElement = document.querySelector('#rounds');
 			const content = `
 			<div class="mb-4 grid grid-flow-col grid-cols-${tournament.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
@@ -609,7 +611,9 @@ let landing = async (url) => {
 		app.innerHTML = await (await fetch(`./pages/template.html`)).text();
 		const menu = document.querySelector("#menu");
 		const user = document.querySelector("#user");
-		const bypass = ["user", "user_inner_1", "user_inner_21", "user_inner_2"];
+		const img : any = document.querySelector('#user_inner_3');
+		const bypass = ["user", "user_inner_1", "user_inner_2", "user_inner_3"];
+		img.src = JSON.parse(localStorage.TRANSCENDER_USER).user.avatar;
 
 		user.addEventListener('click', (e) => {
 			e.preventDefault();

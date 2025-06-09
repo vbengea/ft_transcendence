@@ -89,7 +89,7 @@ function authRoutes(fastify, options, done) {
 			sameSite: 'strict'
 		});
 
-		reply.send({ message: 'Login successful', token, user: {id : user.id, email: user.email, name: user.name } });
+		reply.send({ message: 'Login successful', token, user: {id : user.id, email: user.email, name: user.name, avatar: user.avatar } });
 	});
 
 	fastify.post('/login/2fa', async (request, reply) => {
@@ -121,7 +121,7 @@ function authRoutes(fastify, options, done) {
 				sameSite: 'strict'
 			});
 
-			reply.send({ message: '2FA login successful', token: realToken, user: { id: user.id, email: user.email, name: user.name } });
+			reply.send({ message: '2FA login successful', token: realToken, user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar } });
 		} catch {
 			return reply.code(401).send({ error: 'Invalid or expired token' });
 		}
@@ -244,7 +244,7 @@ function authRoutes(fastify, options, done) {
 		reply.send({ 
 			authenticated: true,
 			user: {
-				...request.user,
+				...user,
 				two_fa_enabled: user ? user.two_fa_enabled : false
 			}
 		});
