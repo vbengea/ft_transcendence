@@ -483,6 +483,7 @@ let hydrateTemplate = async (url) => {
 			}
 			if (tour) {
 				tour.addEventListener('click', click);
+				sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pont' : 'tictactoe');
 			}
 			break;
 		case 'players':
@@ -547,7 +548,10 @@ let hydrateTemplate = async (url) => {
 						m /= 2;
 						rounds.push({ name, matches });
 					}
-					localStorage.tournament = JSON.stringify({ name: tname, users, rounds });
+
+					const gameType = sessionStorage.getItem('selectedGame');
+
+					localStorage.tournament = JSON.stringify({ name: tname, users, rounds, gameType: gameType });
 					location.hash = '#/landing/stats';
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
@@ -592,9 +596,20 @@ let hydrateTemplate = async (url) => {
 
 			const final = document.querySelector("#submit");
 			final.addEventListener('click', async (e) => {
+				const gameName = tournament.gameType;
+
+				const tournamentData = {
+					...tournament,
+					gameName: gameName
+				};
+
 				await fetch('/api/tournament', {
 					method: 'POST',
-					body: JSON.stringify(tournament)
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(tournamentData)
 				});
 				location.hash = '/';
 			});

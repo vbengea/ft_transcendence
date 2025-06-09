@@ -42,6 +42,8 @@ fastify.register(require('./user-auth/app.js'), {
 })
 // ....................................................................................
 
+fastify.register(require('./tournament/app.js'));
+
 fastify.register(require('@fastify/static'), {
   root: path.join(__dirname, '../../public'),
   prefix: '/'
