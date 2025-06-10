@@ -135,8 +135,6 @@ class TicTacToe {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 
-		console.log(down);
-
 		down -= 1;
 		let row = Math.floor(down / DIM);
 		let col = down % DIM;
@@ -151,9 +149,9 @@ class TicTacToe {
 				return ;																		// Player intending to play again ...................
 			}
 
-			// SCORES
+			// SCORES																			// Determine the winner .............................
 			let p = '';
-			for (let i = 0; i < this.matrix.length; i++) {
+			for (let i = 0; i < DIM; i++) {
 				p = this.verifyVertical(i);
 				if (p)
 					break;
@@ -225,22 +223,35 @@ class TicTacToe {
 	}
 
 	verifyVertical(c) {
-		if (this.matrix[0][c] === this.matrix[1][c] && this.matrix[1][c] === this.matrix[2][c] && this.matrix[0][c] !== 0 )
-			return this.matrix[0][c];
+		const a1r = this.matrix[0][c];
+		const a2r = this.matrix[1][c];
+		const a3r = this.matrix[2][c];
+		if (a1r == a2r && a2r == a3r && a1r !== 0)
+			return a1r;
 		return '';
 	}
 
 	verifyHorizontal(r) {
-		if (this.matrix[r][0] === this.matrix[r][1] && this.matrix[r][1] === this.matrix[r][2] && this.matrix[r][0] !== 0)
-			return this.matrix[0][r];
+		const ar1 = this.matrix[r][0];
+		const ar2 = this.matrix[r][1];
+		const ar3 = this.matrix[r][2];
+		if (ar1 == ar2 && ar2 == ar3 && ar1 !== 0)
+			return ar1;
 		return '';
 	}
 
 	verifyDiagonal() {
-		if (this.matrix[0][0] === this.matrix[1][1] && this.matrix[1][1] === this.matrix[2][2] && this.matrix[0][0] !== 0)
-			return this.matrix[0][0];
-		else if (this.matrix[0][2] === this.matrix[1][1] && this.matrix[1][1] === this.matrix[2][0] && this.matrix[0][2] !== 0)
-			return this.matrix[0][2];
+		const d11 = this.matrix[0][0];
+		const d12 = this.matrix[1][1];
+		const d13 = this.matrix[2][2];
+
+		const d21 = this.matrix[0][2];
+		const d22 = this.matrix[1][1];
+		const d23 = this.matrix[2][0];
+		if (d11 == d12 && d12 == d13 && d11 !== 0)
+			return d11;
+		if (d21 == d22 && d22 == d23 && d21 !== 0)
+			return d21;
 		return '';
 	}
 
