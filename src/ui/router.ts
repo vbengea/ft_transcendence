@@ -456,38 +456,6 @@ function shuffle(array) {
   }
 }
 
-let landing = async (url) => {
-	const app = document.querySelector('#app');
-	try {
-		app.innerHTML = await (await fetch(`./pages/template.html`)).text();
-		const menu = document.querySelector("#menu");
-		const user = document.querySelector("#user");
-		const img : any = document.querySelector('#user_inner_3');
-		const bypass = ["user", "user_inner_1", "user_inner_2", "user_inner_3"];
-		img.src = JSON.parse(localStorage.TRANSCENDER_USER).user.avatar;
-
-		user.addEventListener('click', (e) => {
-			e.preventDefault();
-			menu.classList.remove('hidden');
-		});
-		document.addEventListener('click', (e) => {
-			if(!bypass.includes((e.target as HTMLElement).id))
-				menu.classList.add('hidden');
-		});
-
-		const content = document.querySelector('#content');
-		const response = await fetch(`./pages/${url}.html`);
-		if (response.ok) {
-			content.innerHTML = await response.text();
-			hydrateTemplate(url);
-		} else {
-			content.innerHTML = '<div class="mt-12 text-center text-2xl text-red-400">Content not found</div>';
-		}
-	} catch (e) {
-		console.log(e)
-	}
-};
-
 let router = async (evt) => {
 	let url = window.location.hash.slice(1) || "/";
 	if (url.startsWith('/landing/')) {
