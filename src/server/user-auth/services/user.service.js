@@ -129,7 +129,21 @@ function createUserService(prisma) {
 					} 
 				}
 			});
-			return u.friends;
+			return u ? u.friends : [];
+		},
+
+		async getComputerPlayers(id) {
+			const users = await prisma.user.findMany({
+				where: { human: false },
+				select: { 
+					id: true, 
+					email: true, 
+					name: true, 
+					avatar: true, 
+					human: true 
+				} 
+			});
+			return users;
 		},
 
 		generateIcon(email) {

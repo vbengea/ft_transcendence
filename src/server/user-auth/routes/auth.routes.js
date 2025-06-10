@@ -242,7 +242,7 @@ function authRoutes(fastify, options, done) {
 	fastify.get('/status', { preHandler: fastify.authenticate }, async (request, reply) => {
 		const user = await userService.getUserById(request.user.id);
 		reply.send({ 
-			authenticated: true,
+			authenticated: !!user,
 			user: {
 				...user,
 				two_fa_enabled: user ? user.two_fa_enabled : false
@@ -277,6 +277,16 @@ function authRoutes(fastify, options, done) {
 	});
 
 	fastify.get('/friends', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const friends = await userService.getFriends(userId);
+			reply.send(friends);
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
+	fastify.get('/computer', { preHandler: verifyToken }, async (request, reply) => {
 		try {
 			const userId = request.user.id;
 			const friends = await userService.getFriends(userId);
