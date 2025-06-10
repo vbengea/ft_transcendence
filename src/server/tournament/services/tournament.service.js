@@ -72,6 +72,28 @@ function createTournamentService(prisma) {
 			});
 		},
 
+		async getCurrentTournamentMatchByUserId(userId) {
+			return prisma.match.findMany({
+				where: { 
+					OR: [{ 
+						user1Id: userId 
+					}, { 
+						user2Id: userId 
+					}],
+					user1Score: 0, 
+					user2Score: 0
+				},
+				include: {
+					user1: {
+						select: { id: true, name: true, avatar: true, human: true }
+					},
+					user2: {
+						select: { id: true, name: true, avatar: true, human: true }
+					}
+				}
+			});
+		},
+
 		async getTournamentById(id) {
 			return prisma.tournament.findUnique({
 				where: { id },

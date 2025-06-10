@@ -242,8 +242,12 @@ class Pong {
 		p1b.setY(p2b.getY() / hRatio);
 
 		const json = JSON.stringify(this);
-		this.players[0].getSocket().send("{ \"game\": " + json + ", \"side\": 0 }");
-		this.players[1].getSocket().send("{ \"game\": " + json + ", \"side\": 1 }");
+		const socket1 = this.players[0].getSocket();
+		const socket2 = this.players[1].getSocket();
+		if (socket1)
+			socket1.send("{ \"game\": " + json + ", \"side\": 0 }");
+		if (socket2)
+			socket2.send("{ \"game\": " + json + ", \"side\": 1 }");
 	}
 
 	isFull() {
@@ -255,12 +259,14 @@ class Pong {
 			return;
 
 		this.players.push(player);
-		
+		const socket = player.getSocket();
 		if (this.players.length == LIMIT) {
-			player.getSocket().send(JSON.stringify({ message: TXT.success }));
+			if (socket)
+				socket.send(JSON.stringify({ message: TXT.success }));
 			this.start();
 		} else {
-			player.getSocket().send(JSON.stringify({ message: TXT.waiting }));
+			if (socket)
+				socket.send(JSON.stringify({ message: TXT.waiting }));
 		}
 	}
 

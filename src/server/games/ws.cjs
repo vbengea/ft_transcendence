@@ -1,46 +1,73 @@
 const { Pong, PongPlayer, PongTXT } = require('./pong.cjs')
 const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 
-const socketGame = new Map();
-let currentPongGame = new Pong();
-let currentTicTacToeGame = new TicTacToe();
+const prisma = require('../prisma/prisma.cjs');
+const userSrv = require('../user-auth/services/user.service')(prisma);
+const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 
 function newGame(type) {
 	return type === 'pong' ? new Pong() : new TicTacToe();
 }
-function newPlayer(type, socket, raw) {
+function newPlayer(type, { socket, raw }) {
 	return type === 'pong' ? new PongPlayer(socket, raw) : new TicTacToePlayer(socket, raw);
 }
-function gameCur(type) {
-	return type === 'pong' ? currentPongGame : currentTicTacToeGame;
-}
+
+const socketGame = new Map();
+const matchMap = new Map();
+let currentPongGame = new Pong();
+let currentTicTacToeGame = new TicTacToe();
 
 module.exports = async function (fastify) {
-  fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, req) => {
+  fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
 
-	socket.on('message', (message) => {
+	socket.on('message', async (message) => {
 		const raw = JSON.parse(message.toString())
+
 		if (raw.type == 'pong' || raw.type == 'tictactoe') {
-			const currentGame = gameCur(raw.type);
-			if (raw.subtype === 'connect') {
-				if (currentGame.isFull()) {
-					currentGame = newGame(raw.type)
-					currentGame.addPlayer(newPlayer(raw.type, socket, raw))
-				} else {
-					currentGame.addPlayer(newPlayer(raw.type, socket, raw))
+			const user = await userSrv.getUserById(request.user.id);
+			const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(user.id);
+
+			if (matches.length){
+				/* Identifying match ............................. */
+				const match = matches[0];
+				if (!matchMap.has(match.id))
+					matchMap.set(match.id, match);
+				const currentMatch = matchMap.get(match.id);
+
+				if (raw.subtype === 'connect') {
+					/* Create game ............................... */
+					if (!currentMatch.game)
+						currentMatch.game = newGame(raw.type);
+
+					/* Update socket and layout information ...... */
+					if (currentMatch.user1Id === user.id) {
+						currentMatch.user1.socket = socket;
+						currentMatch.user1.raw = raw;
+						currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user1))
+
+						/* If the rest of the users are bots ..... */
+						if (!currentMatch.user2.human)  {
+							currentMatch.user2.raw = raw;
+							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2))
+						}
+
+					} else if (currentMatch.user2Id === user.id) {
+						currentMatch.user2.socket = null;
+						currentMatch.user2.socket = socket;
+						currentMatch.user2.raw = raw;
+						currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2))
+					}
+
+				} else if (raw.subtype === 'play') {
+					currentMatch.game.play(socket, raw.isDown); 
+				} else if (raw.subtype === 'play_ai') {
+					currentMatch.game.play_ai(socket); 
+				} else if (raw.subtype === 'layout') {
+					currentMatch.game.setLayout(socket, raw); 
 				}
-				socketGame.set(socket, currentGame);
-			} else if (raw.subtype === 'play') {
-				const game = socketGame.get(socket);
-				game.play(socket, raw.isDown); 
-			} else if (raw.subtype === 'play_ai') {
-				const game = socketGame.get(socket);
-				game.play_ai(socket); 
-			} else if (raw.subtype === 'layout') {
-				const game = socketGame.get(socket);
-				game.setLayout(socket, raw); 
 			}
 		}
+
 	})
 
 	socket.on('close', message => {

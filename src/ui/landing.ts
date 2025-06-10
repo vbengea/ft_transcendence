@@ -71,6 +71,7 @@ let hydrateTemplate = async (url) => {
 				const el : HTMLInputElement = document.querySelector('#tournament_name');
 				const tname = el.value;
 				const n = Math.log2(len);
+				
 				let m = len / 2;
 				if (tname && len != 1 && Number.isInteger(n)) {
 					const rounds = [];
@@ -99,21 +100,23 @@ let hydrateTemplate = async (url) => {
 					}
 
 					const gameType = sessionStorage.getItem('selectedGame');
+					const tournament = { name: tname, users, rounds, gameType: gameType };
 
-					localStorage.tournament = JSON.stringify({ name: tname, users, rounds, gameType: gameType });
+					localStorage.tournament = JSON.stringify(tournament);
+
 					if (isComputer) {
-
-						const app = document.querySelector('#app');
-						if (gameType === 'pong') {
-							app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
-							play(getLayoutPayloadPong, displayPong, 'pong');
-						}
-						else if (gameType === 'tictactoe') {
-							app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
-							play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
-						}
-
-						location.hash = `#/landing/${gameType}`;
+						createTournament(tournament, async () => {
+							const app = document.querySelector('#app');
+							if (gameType === 'pong') {
+								app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
+								play(getLayoutPayloadPong, displayPong, 'pong');
+							}
+							else if (gameType === 'tictactoe') {
+								app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
+								play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+							}
+							location.hash = `#/landing/${gameType}`;
+						})
 					} else {
 						location.hash = '#/landing/stats';
 					}
@@ -159,30 +162,33 @@ let hydrateTemplate = async (url) => {
 			r.innerHTML = content;
 
 			const final = document.querySelector("#submit");
-			final.addEventListener('click', async (e) => {
-				const gameName = tournament.gameType;
-
-				const tournamentData = {
-					...tournament,
-					gameName: gameName
-				};
-
-				await fetch('/api/tournament', {
-					method: 'POST',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(tournamentData)
-				});
-				location.hash = '/';
-			});
-
+			final.addEventListener('click', () => { createTournament(tournament, () => location.hash = '/' ) });
 			break;
 		default:
 			break;
 	}
 }
+
+const createTournament = async (tournament, callback) => {
+	const gameName = tournament.gameType;
+
+	const tournamentData = {
+		...tournament,
+		gameName: gameName
+	};
+
+	await fetch('/api/tournament', {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(tournamentData)
+	});
+	if (callback) {
+		callback();
+	}
+};
 
 let landing = async (url) => {
 	const app = document.querySelector('#app');
