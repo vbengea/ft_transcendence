@@ -5,7 +5,7 @@ const utils = require('../user-auth/services/user.service')()
 async function fill() {
 	const size = 200;
 
-    await prisma.game.create({ data: { description: "Pong", name: "pont" } });
+    await prisma.game.create({ data: { description: "Pong", name: "pong" } });
     await prisma.game.create({
         data: { description: "Tic tac toe", name: "tictactoe" },
     });

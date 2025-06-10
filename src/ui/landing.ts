@@ -16,7 +16,7 @@ let hydrateTemplate = async (url) => {
 				location.hash = '#/landing/players';
 			});
 
-			sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pont' : 'tictactoe');
+			sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pong' : 'tictactoe');
 			break;
 		case 'players':
 			const mode = sessionStorage.mode;
@@ -25,10 +25,10 @@ let hydrateTemplate = async (url) => {
 			const inp = document.querySelector("input");
 			const lab = document.querySelector("label");
 			const isComputer = ['single', 'multi'].includes(mode);
-			if (isComputer)
-			{
+			if (isComputer){
+				inp.value = mode === 'single' ? 'Single player' : 'Multi player';
 				inp.style.display = 'none';
-				lab.innerHTML = mode === 'single' ? 'Pick one' : 'Pick 2'
+				lab.innerHTML = mode === 'single' ? 'Pick one' : 'Pick 2';
 			}
 			const response = await fetch(isComputer ? '/auth/computer' : '/auth/friends');
 			const friends = await response.json();
@@ -62,7 +62,7 @@ let hydrateTemplate = async (url) => {
 					}
 				}
 			});
-			sub.addEventListener('click', (e) => {
+			sub.addEventListener('click', async (e) => {
 				const users = [];
 				document.querySelectorAll('div [class*="bg-amber-400"').forEach(n => {
 					const h : any = n;
@@ -71,7 +71,7 @@ let hydrateTemplate = async (url) => {
 				shuffle(users);
 				const tusers = users.slice();
 				const len = users.length;
-				const el : HTMLInputElement = document.querySelector('#first_name');
+				const el : HTMLInputElement = document.querySelector('#tournament_name');
 				const tname = el.value;
 				const n = Math.log2(len);
 				let m = len / 2;
@@ -104,7 +104,22 @@ let hydrateTemplate = async (url) => {
 					const gameType = sessionStorage.getItem('selectedGame');
 
 					localStorage.tournament = JSON.stringify({ name: tname, users, rounds, gameType: gameType });
-					location.hash = '#/landing/stats';
+					if (isComputer) {
+
+						const app = document.querySelector('#app');
+						if (gameType === 'pong') {
+							app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
+							play(getLayoutPayloadPong, displayPong, 'pong');
+						}
+						else if (gameType === 'tictactoe') {
+							app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
+							play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+						}
+
+						location.hash = `#/landing/${gameType}`;
+					} else {
+						location.hash = '#/landing/stats';
+					}
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
 				} else {
