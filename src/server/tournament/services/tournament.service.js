@@ -129,6 +129,30 @@ function createTournamentService(prisma) {
 			return prisma.tournament.delete({
 				where: { id }
 			});
+		},
+
+		async startMatch(id) {
+			await prisma.match.update({
+				where: {
+					id
+				},
+				data: {
+					startTime: new Date()
+				}
+			});
+		},
+
+		async endMatch(id, user1Score, user2Score) {
+			await prisma.match.update({
+				where: {
+					id
+				},
+				data: {
+					user1Score, 
+					user2Score,
+					endTime: new Date()
+				}
+			});
 		}
 	};
 }

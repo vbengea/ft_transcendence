@@ -1,3 +1,6 @@
+const prisma = require('../prisma/prisma.cjs');
+const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
+
 const LIMIT = 2;
 const MAX_SCORE = 10;
 
@@ -6,7 +9,8 @@ const TXT = {
 	success:  "",
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
-	win: "You win!"
+	win: "#/landing/win",
+	loose: "#/landing/loose"
 };
 
 class Ball {
@@ -207,21 +211,21 @@ class Player {
 
 class Pong {
 
-	constructor() {
+	constructor(mid) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
+		this.mid = mid;
 	}
 
 	start() {
+		tournamentSrv.startMatch(this.mid);
 		this.status = 1;
 		this.reset();
 		this.moveBall();
 	}
 
 	send() {
-		if (!this.isFull())
-			return;
 		const s1 = this.players[0].getScreen();
 		const b1 = s1.getBall();
 		const p1a = s1.getLeftPaddle();
@@ -250,23 +254,15 @@ class Pong {
 			socket2.send("{ \"game\": " + json + ", \"side\": 1 }");
 	}
 
-	isFull() {
-		return this.players.length >= LIMIT;
-	}
-
 	addPlayer(player) {
-		if (this.isFull())
-			return;
-
 		this.players.push(player);
-		const socket = player.getSocket();
+
 		if (this.players.length == LIMIT) {
-			if (socket)
-				socket.send(JSON.stringify({ message: TXT.success }));
+			for(let p of this.players) {
+				if (p.getSocket())
+					p.getSocket().send(JSON.stringify({ message: TXT.success }));
+			}
 			this.start();
-		} else {
-			if (socket)
-				socket.send(JSON.stringify({ message: TXT.waiting }));
 		}
 	}
 
@@ -304,11 +300,17 @@ class Pong {
 			paddle.setY(y);
 	}
 
-	play_ai(socket) {
-		const i = this.players[0].getSocket() == socket ? 0 : 1;
+	computer() {
+		let i = 0;
+		if (!this.players[0].getSocket())
+			i = 0;
+		else if (!this.players[1].getSocket())
+			i = 1;
+		else
+			return;
 		const p = this.players[i];
 		const s = p.getScreen();
-		const b = s.getBall();
+		const b = this.players[0].getScreen().getBall();													// ball moving from 1p ............................
 		const d = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
 
 		const half = d.getHeight() / 2.0;
@@ -362,8 +364,6 @@ class Pong {
 	}
 
 	moveBall() {
-		if (!this.isFull())
-			return;
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 		const s = p1.getScreen();
@@ -373,10 +373,10 @@ class Pong {
 		b.setY(b.getY() + b.getDy());
 		
 		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen ...........
-			p1.setScore(p1.getScore() + 1);
+			p2.setScore(p2.getScore() + 1);
 			this.reset();
 		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ..........
-			p2.setScore(p2.getScore() + 1);
+			p1.setScore(p1.getScore() + 1);
 			this.reset();
 		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ..........
 			b.setDy(-b.getDy());
@@ -388,23 +388,33 @@ class Pong {
 			}
 		}
 
-		this.send();																						// Refresh UI .....................................
-
 		if (p1.getScore() == MAX_SCORE) {																	// Check scores ...................................
+			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
 			p1.wins = true;
-			p1.getSocket(JSON.stringify({ message: TXT.win }));
-			return;
-		} else if (p2.getScore() == MAX_SCORE) {
-			p2.wins = true;
-			p2.getSocket(JSON.stringify({ message: TXT.win }));
-			return;
-		}
+			p2.wins = false;
+			const s1 = p1.getSocket();
+			if (s1)
+				s1.send(JSON.stringify({ redirect: TXT.win }));
+			const s2 = p2.getSocket();
+			if (s2)
+				s2.send(JSON.stringify({ redirect: TXT.loose }));
 
-		if (p1.isAi())
-			this.play_ai(p1.getSocket());
-		if (p2.isAi())
-			this.play_ai(p2.getSocket());
-		setTimeout(this.moveBall.bind(this), 1);															// Move ball again ................................
+		} else if (p2.getScore() == MAX_SCORE) {
+			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
+			p1.wins = false;
+			p2.wins = true;
+			const s1 = p1.getSocket();
+			if (s1)
+				s1.send(JSON.stringify({ message: TXT.loose }));
+			const s2 = p2.getSocket();
+			if (s2)
+				s2.send(JSON.stringify({ message: TXT.win }));
+
+		} else {
+			this.computer();
+			this.send();																					// Refresh UI .....................................
+			setTimeout(this.moveBall.bind(this), 1);														// Move ball again ................................
+		}
 	}
 
 	checkPaddleCollisions(screen) {

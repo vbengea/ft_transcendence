@@ -39,7 +39,16 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	if (WS != null)
 		WS.close();
 
-	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER'));
+	const paddleHandler = (e) => {
+		const code = e.code;
+		if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
+			WS.send(JSON.stringify({ 
+				type: "pong", 
+				subtype: "play", 
+				isDown: DOWN_KEYS.includes(code) 
+			}));
+		}
+	}
 	
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
@@ -50,9 +59,12 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	WS.onmessage = (event) => {
 		const LOG = document.querySelector(`#log`);
 		const SPLASH = document.querySelector(`#splash`);
-		const GAME = document.querySelector(`#${game}`);
 		const data = JSON.parse(event.data);
-		if (data.message){			
+		if (data.redirect) {
+			WS.close();
+			location.hash = data.redirect;
+			removeEventListener("mouseup", paddleHandler);
+		} else if (data.message){			
 			LOG.innerHTML = data.message;
 			SPLASH.classList.remove('invisible');
 		} else {															// Display game screen .........................................................
@@ -69,29 +81,17 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
 	});
 
-	if (profile.human)
-	{
-		addEventListener("keydown", (e) => {
-			const code = e.code;
-			if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
-				WS.send(JSON.stringify({ 
-					type: "pong", 
-					subtype: "play", 
-					isDown: DOWN_KEYS.includes(code) 
-				}));
-			}
-		});
+	addEventListener("keydown", paddleHandler);
 
-		addEventListener("mouseup", (e) => {
-			const target = e.target as HTMLTextAreaElement;
-			if(target.tagName == 'TD') {
-				WS.send(JSON.stringify({ 
-					type: "tictactoe", 
-					subtype: "play", 
-					isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
-				}));
-			}
-		});
-	}
+	// addEventListener("mouseup", (e) => {
+	// 	const target = e.target as HTMLTextAreaElement;
+	// 	if(target.tagName == 'TD') {
+	// 		WS.send(JSON.stringify({ 
+	// 			type: "tictactoe", 
+	// 			subtype: "play", 
+	// 			isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
+	// 		}));
+	// 	}
+	// });
 
 }

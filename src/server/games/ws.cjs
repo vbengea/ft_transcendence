@@ -5,17 +5,14 @@ const prisma = require('../prisma/prisma.cjs');
 const userSrv = require('../user-auth/services/user.service')(prisma);
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 
-function newGame(type) {
-	return type === 'pong' ? new Pong() : new TicTacToe();
+function newGame(type, mid) {
+	return type === 'pong' ? new Pong(mid) : new TicTacToe(mid);
 }
 function newPlayer(type, { socket, raw }) {
 	return type === 'pong' ? new PongPlayer(socket, raw) : new TicTacToePlayer(socket, raw);
 }
 
-const socketGame = new Map();
 const matchMap = new Map();
-let currentPongGame = new Pong();
-let currentTicTacToeGame = new TicTacToe();
 
 module.exports = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
@@ -37,7 +34,7 @@ module.exports = async function (fastify) {
 				if (raw.subtype === 'connect') {
 					/* Create game ............................... */
 					if (!currentMatch.game)
-						currentMatch.game = newGame(raw.type);
+						currentMatch.game = newGame(raw.type, currentMatch.id);
 
 					/* Update socket and layout information ...... */
 					if (currentMatch.user1Id === user.id) {
@@ -47,8 +44,9 @@ module.exports = async function (fastify) {
 
 						/* If the rest of the users are bots ..... */
 						if (!currentMatch.user2.human)  {
-							currentMatch.user2.raw = raw;
-							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2))
+							const r = Object.assign(raw, { });
+							currentMatch.user2.raw = r;
+							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2));
 						}
 
 					} else if (currentMatch.user2Id === user.id) {
@@ -56,6 +54,13 @@ module.exports = async function (fastify) {
 						currentMatch.user2.socket = socket;
 						currentMatch.user2.raw = raw;
 						currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2))
+
+						/* If the rest of the users are bots ..... */
+						if (!currentMatch.user1.human)  {
+							const r = Object.assign(raw, { });
+							currentMatch.user1.raw = r;
+							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user1));
+						}
 					}
 
 				} else if (raw.subtype === 'play') {
@@ -71,17 +76,17 @@ module.exports = async function (fastify) {
 	})
 
 	socket.on('close', message => {
-		const game = socketGame.get(socket);
-		for( let i = 0; i < game.players.length; i++ ) {
-			const p = game.players[i];
-			if (p.getSocket() == socket){
-				game.players.splice(i, 1);
-				break;
-			}
-		}
-		for ( let p of game.players ) {
-			p.getSocket().send(JSON.stringify({ message: PongTXT.giveup }))
-		}
+		// const game = socketGame.get(socket);
+		// for( let i = 0; i < game.players.length; i++ ) {
+		// 	const p = game.players[i];
+		// 	if (p.getSocket() == socket){
+		// 		game.players.splice(i, 1);
+		// 		break;
+		// 	}
+		// }
+		// for ( let p of game.players ) {
+		// 	p.getSocket().send(JSON.stringify({ message: PongTXT.giveup }))
+		// }
 	})
 
   })
