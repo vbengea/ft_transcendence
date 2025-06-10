@@ -1,14 +1,18 @@
+const prisma = require('../prisma/prisma.cjs');
+const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
+
 const TXT = {
 	full: "Room is full.",
 	success:  "",
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
-	win: "You win!"
+	win: "#/landing/win",
+	loose: "#/landing/loose"
 };
 
 const DIM = 3;
 const LIMIT = 2;
-const MAX_SCORE = 10;
+const MAX_SCORE = 3;
 
 class Screen {
 
@@ -82,16 +86,21 @@ class Player {
 
 class TicTacToe {
 
-	constructor() {
+	constructor(mid) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
 		this.matrix = [];
 		this.last = '';
+		this.mid = mid;
 	}
 
 	start() {
+		tournamentSrv.startMatch(this.mid);
 		this.reset();
+		if (!this.players[0].getSocket()){
+			this.play(null, 4, true);
+		}
 	}
 
 	reset() {
@@ -101,49 +110,46 @@ class TicTacToe {
 	}
 
 	send() {
-		if (!this.isFull())
-			return;
 		const json = JSON.stringify(this);
-		this.players[0].getSocket().send("{ \"game\": " + json + ", \"side\": 0 }");
-		this.players[1].getSocket().send("{ \"game\": " + json + ", \"side\": 1 }");
-	}
-
-	isFull() {
-		return this.players.length >= LIMIT;
+		const s1 = this.players[0].getSocket();
+		const s2 = this.players[1].getSocket();
+		if (s1)
+			s1.send("{ \"game\": " + json + ", \"side\": 0 }");
+		if (s2)
+			s2.send("{ \"game\": " + json + ", \"side\": 1 }");
 	}
 
 	addPlayer(player) {
-		if (this.isFull())
-			return;
-
 		this.players.push(player);
-		
+
 		if (this.players.length == LIMIT) {
-			player.getSocket().send(JSON.stringify({ message: TXT.success }));
+			for(let p of this.players) {
+				if (p.getSocket())
+					p.getSocket().send(JSON.stringify({ message: TXT.success }));
+			}
 			this.start();
-		} else {
-			player.getSocket().send(JSON.stringify({ message: TXT.waiting }));
 		}
 	}
 
 	play(socket, down) {
-		if (this.status === 0 && socket === this.players[1].getSocket())
-			return;
+		const p1 = this.players[0];
+		const p2 = this.players[1];
+
+		console.log(down);
 
 		down -= 1;
-		const row = Math.floor(down / DIM);
-		const col = down % DIM;
+		let row = Math.floor(down / DIM);
+		let col = down % DIM;
 		this.status = 1;
 
 		if (this.matrix[row][col] === 0) {
-			if (socket === this.players[0].getSocket() && this.last !== 'x') {
+			if (socket === p1.getSocket() && this.last !== 'x') {
 				this.matrix[row][col] = 'x';
-			} else if (socket === this.players[1].getSocket() && this.last !== 'o'){
+			} else if (socket === p2.getSocket() && this.last !== 'o'){
 				this.matrix[row][col] = 'o';
 			} else {
 				return ;																		// Player intending to play again ...................
 			}
-
 
 			// SCORES
 			let p = '';
@@ -159,21 +165,35 @@ class TicTacToe {
 				p = this.verifyDiagonal();
 
 			if (p === 'x') {
-				this.players[0].incrementScore();
+				p1.incrementScore();
 				this.reset();
 			} else if (p == 'o') {
-				this.players[1].incrementScore();
+				p2.incrementScore();
 				this.reset();
 			}
 
-			if (this.players[0].getScore() === MAX_SCORE) {										// Check scores .................................
-				this.players[0].wins = true;
-				this.players[0].getSocket().send(JSON.stringify({ message: TXT.win }));
-				this.reset();
-			} else if (this.players[1].getScore() === MAX_SCORE) {
-				this.players[1].wins = true;
-				this.players[1].getSocket().send(JSON.stringify({ message: TXT.win }));
-				this.reset();
+			if (p1.getScore() == MAX_SCORE) {													// Check scores .....................................
+				tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
+				p1.wins = true;
+				p2.wins = false;
+				const s1 = p1.getSocket();
+				if (s1)
+					s1.send(JSON.stringify({ redirect: TXT.win }));
+				const s2 = p2.getSocket();
+				if (s2)
+					s2.send(JSON.stringify({ redirect: TXT.loose }));
+
+			} else if (p2.getScore() == MAX_SCORE) {
+				tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
+				p1.wins = false;
+				p2.wins = true;
+				const s1 = p1.getSocket();
+				if (s1)
+					s1.send(JSON.stringify({ redirect: TXT.loose }));
+				const s2 = p2.getSocket();
+				if (s2)
+					s2.send(JSON.stringify({ redirect: TXT.win }));
+
 			} else {
 				let n = 0;
 				for (let i = 0; i < this.matrix.length; i++) {
@@ -187,7 +207,20 @@ class TicTacToe {
 				else
 					this.send();
 				this.last = this.matrix[row][col];
+
+				if (socket) {																	// Computer play ....................................
+					setTimeout(() => {
+						while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
+							down = Math.floor(Math.random() * 9) + 1
+							down -= 1;
+							row = Math.floor(down / DIM);
+							col = down % DIM;
+						}
+						this.play(undefined, down + 1);
+					}, 1000);
+				}
 			}
+
 		}
 	}
 

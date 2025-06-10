@@ -22,7 +22,7 @@ type Payload = {
 			w: string,
 			h: string
 		}
-	}, 
+	},
 	screen: { 
 		w: number, 
 		h: number, 
@@ -48,7 +48,18 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 				isDown: DOWN_KEYS.includes(code) 
 			}));
 		}
-	}
+	};
+
+	const tapHandler = (e) => {
+		const target = e.target as HTMLTextAreaElement;
+		if(target.tagName == 'TD') {
+			WS.send(JSON.stringify({ 
+				type: "tictactoe", 
+				subtype: "play", 
+				isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
+			}));
+		}
+	};
 	
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
@@ -82,16 +93,6 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	});
 
 	addEventListener("keydown", paddleHandler);
-
-	// addEventListener("mouseup", (e) => {
-	// 	const target = e.target as HTMLTextAreaElement;
-	// 	if(target.tagName == 'TD') {
-	// 		WS.send(JSON.stringify({ 
-	// 			type: "tictactoe", 
-	// 			subtype: "play", 
-	// 			isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
-	// 		}));
-	// 	}
-	// });
+	addEventListener("mouseup", tapHandler);
 
 }
