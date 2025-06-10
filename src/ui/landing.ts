@@ -22,7 +22,15 @@ let hydrateTemplate = async (url) => {
 			const mode = sessionStorage.mode;
 			const div = document.querySelector("#players");
 			const sub = document.querySelector("#submit");
-			const response = await fetch(['single', 'multi'].includes(mode) ? '/auth/computer' : '/auth/friends');
+			const inp = document.querySelector("input");
+			const lab = document.querySelector("label");
+			const isComputer = ['single', 'multi'].includes(mode);
+			if (isComputer)
+			{
+				inp.style.display = 'none';
+				lab.innerHTML = mode === 'single' ? 'Pick one' : 'Pick 2'
+			}
+			const response = await fetch(isComputer ? '/auth/computer' : '/auth/friends');
 			const friends = await response.json();
 			const currentUser = JSON.parse(localStorage.TRANSCENDER_USER).user;
 			const uid = currentUser.id;
@@ -40,8 +48,17 @@ let hydrateTemplate = async (url) => {
 				if (cel.dataset) {
 					const el = document.querySelector(`#${cel.dataset.sid}`);
 					if (el && el.id !== uid) {
-						el.classList.toggle('bg-amber-400');
-						el.classList.toggle('bg-white');
+						if (isComputer) {
+							const len = document.querySelectorAll('div [class*="bg-amber-400"').length;
+							if (len === 2 && el.classList.contains('bg-white')) {}
+							else {
+								el.classList.toggle('bg-amber-400');
+								el.classList.toggle('bg-white');
+							}
+						} else {
+							el.classList.toggle('bg-amber-400');
+							el.classList.toggle('bg-white');
+						}
 					}
 				}
 			});
