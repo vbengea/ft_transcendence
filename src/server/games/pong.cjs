@@ -301,21 +301,29 @@ class Pong {
 	}
 
 	computer() {
-		let i = 0;
-		if (!this.players[0].getSocket())
+		let i = 0, j = 0;
+		
+		if (!this.players[0].getSocket()) {
 			i = 0;
-		else if (!this.players[1].getSocket())
+			j = 1;
+		} else if (!this.players[1].getSocket()) {
 			i = 1;
-		else
+			j = 0;
+		} else {
 			return;
+		}
+
+		const gap = 30;
 		const p = this.players[i];
 		const s = p.getScreen();
-		const b = this.players[0].getScreen().getBall();													// ball moving from 1p ............................
+		const b = this.players[j].getScreen().getBall();													// ball moving from 1p ............................
 		const d = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
 
 		const half = d.getHeight() / 2.0;
 		const center = d.getY() + half;
 		const screen_center = s.getHeight() / 2.0 - half;
+
+		let y = 0;
 		
 		let ball_speed = b.getDy();
 		if (ball_speed < 0) {
@@ -323,38 +331,40 @@ class Pong {
 		}
 
 		if (b.getDx() > 0) {																				// ball moving right...............................
-
-			if (center < screen_center) {																	// return to center position.......................
-				d.setY(d.getY() + ball_speed);
-			} else {
-				d.setY(d.getY() - ball_speed);	
-			}
-			
-		} else {																							// ball moving left................................
-		
 			if (b.getDy() > 0) {																			// ball moving down................................
 				if (b.getY() > center) { 
-					d.setY(d.getY() + ball_speed);
+					y = d.getY() + ball_speed;
 				} else {
-					d.setY(d.getY() - ball_speed);	
+					y = d.getY() - ball_speed;
 				}
 			}
 			
 			if (b.getDy() < 0) {																			// ball moving up..................................
 				if (b.getY() < center) {
-					d.setY(d.getY() - ball_speed);
+					y = d.getY() - ball_speed;
 				} else {
-					d.setY(d.getY() + ball_speed)
+					y = d.getY() + ball_speed;
 				}
 			}
 
 			if (b.getDy() == 0) {																			// ball moving stright across......................
 				if (b.getY() < center) {
-					d.setY(d.getY() - 5);
+					y = d.getY() - 5;
 				} else {
-					d.setY(d.getY() + 5);
+					y = d.getY() + 5;
 				}
-			}	 		
+			}
+
+		} else {																							// ball moving left................................
+			if (center < screen_center) {																	// return to center position.......................
+				y = d.getY() + ball_speed;
+			} else {
+				y = d.getY() - ball_speed;
+			}
+		}
+
+		if (y > gap && y < (s.getHeight() - d.getHeight())){
+			d.setY(y);
 		}
 	}
 
