@@ -405,10 +405,10 @@ class Pong {
 			p2.wins = true;
 			const s1 = p1.getSocket();
 			if (s1)
-				s1.send(JSON.stringify({ message: TXT.loose }));
+				s1.send(JSON.stringify({ redirect: TXT.loose }));
 			const s2 = p2.getSocket();
 			if (s2)
-				s2.send(JSON.stringify({ message: TXT.win }));
+				s2.send(JSON.stringify({ redirect: TXT.win }));
 
 		} else {
 			this.computer();

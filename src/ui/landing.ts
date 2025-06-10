@@ -71,7 +71,7 @@ let hydrateTemplate = async (url) => {
 				const el : HTMLInputElement = document.querySelector('#tournament_name');
 				const tname = el.value;
 				const n = Math.log2(len);
-				
+
 				let m = len / 2;
 				if (tname && len != 1 && Number.isInteger(n)) {
 					const rounds = [];
@@ -163,6 +163,32 @@ let hydrateTemplate = async (url) => {
 
 			const final = document.querySelector("#submit");
 			final.addEventListener('click', () => { createTournament(tournament, () => location.hash = '/' ) });
+			break;
+		case 'win': case 'loose':
+			setTimeout(() => location.hash = '#/landing/matches', 3000);
+			break;
+		case 'matches':
+			const it = document.querySelector("#submit");
+			const user = JSON.parse(localStorage.TRANSCENDER_USER).user;
+			const matchesRaw = await fetch('/api/matches');
+			const matches = await matchesRaw.json();
+			const mt : HTMLInputElement = document.querySelector('#matches');
+			it.addEventListener('click', () => {
+				location.hash = '/';
+			});
+			mt.innerHTML = matches.map(m => {
+				return `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+					<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+						${m.user1Id == user.id ? m.user2.name : m.user1.name}
+					</th>
+					<td class="px-6 py-4 text-center">
+						${ m.user1Id == user.id ? (m.user1Score > m.user2Score ? 1 : '') : (m.user2Score > m.user1Score ? 1 : '') }
+					</td>
+					<td class="px-6 py-4 text-center">
+						${ m.user1Id == user.id ? (m.user1Score < m.user2Score ? 1 : '') : (m.user2Score < m.user1Score ? 1 : '') }
+					</td>
+				</tr>`;
+			}).join('');
 			break;
 		default:
 			break;

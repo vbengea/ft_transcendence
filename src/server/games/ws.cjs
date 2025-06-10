@@ -76,17 +76,7 @@ module.exports = async function (fastify) {
 	})
 
 	socket.on('close', message => {
-		// const game = socketGame.get(socket);
-		// for( let i = 0; i < game.players.length; i++ ) {
-		// 	const p = game.players[i];
-		// 	if (p.getSocket() == socket){
-		// 		game.players.splice(i, 1);
-		// 		break;
-		// 	}
-		// }
-		// for ( let p of game.players ) {
-		// 	p.getSocket().send(JSON.stringify({ message: PongTXT.giveup }))
-		// }
+		// TODO: Gestionar desconexion
 	})
 
   })

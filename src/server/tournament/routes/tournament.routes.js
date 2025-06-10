@@ -60,6 +60,16 @@ function tournamentRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.get('/matches', { preHandler: fastify.authenticate }, async (request, reply) => {
+		try {
+			const matches = await tournamentService.getMatchesByUserId(request.user.id);
+			reply.send(matches);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to fetch matches' });
+		}
+	});
+
 	done();
 }
 
