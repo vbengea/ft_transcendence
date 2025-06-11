@@ -26,6 +26,8 @@ model User {
   organizedTournaments  Tournament[]
   matchesAsUser1        Match[]       @relation("User1Matches")
   matchesAsUser2        Match[]       @relation("User2Matches")
+  matchesAsUser3        Match[]       @relation("User3Matches")
+  matchesAsUser4        Match[]       @relation("User4Matches")
 }
 
 model Game {
@@ -63,6 +65,10 @@ model Match {
   user1Id               String?
   user2                 User?         @relation("User2Matches", fields: [user2Id], references: [id])
   user2Id               String?
+  user3                 User?         @relation("User3Matches", fields: [user3Id], references: [id])
+  user3Id               String?
+  user4                 User?         @relation("User4Matches", fields: [user4Id], references: [id])
+  user4Id               String?
   creationTime          DateTime      @default(now())
   startTime             DateTime?
   endTime               DateTime?

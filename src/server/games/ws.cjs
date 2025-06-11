@@ -7,8 +7,8 @@ const tournamentSrv = require('../tournament/services/tournament.service')(prism
 function newGame(type, mid) {
 	return type === 'pong' ? new Pong(mid) : new TicTacToe(mid);
 }
-function newPlayer(type, { socket, raw }) {
-	return type === 'pong' ? new PongPlayer(socket, raw) : new TicTacToePlayer(socket, raw);
+function newPlayer(type, player) {
+	return type === 'pong' ? new PongPlayer(player) : new TicTacToePlayer(player.socket, player.raw);
 }
 
 const MAX_USERS = 4;

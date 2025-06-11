@@ -5,7 +5,6 @@ const LIMIT = 2;
 const MAX_SCORE = 10;
 
 const TXT = {
-	full: "Room is full.",
 	success:  "",
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
@@ -164,16 +163,20 @@ class Screen {
 }
 
 class Player {
-	constructor (socket, raw) {
+	constructor (user) {
 		this.wins = false;
-		this.socket = socket;
-		this.screen = new Screen(raw);
+		this.screen = new Screen(user.raw);
 		this.score = 0;
-		this.ai = raw.ai;
+		this.ai = !user.human;
+		this.user = user;
+	}
+
+	getUser() {
+		return this.user;
 	}
 
 	getSocket() {
-		return this.socket;
+		return this.user.socket;
 	}
 
 	getScreen() {
@@ -302,7 +305,7 @@ class Pong {
 
 	computer() {
 		let i = 0, j = 0;
-		
+
 		if (!this.players[0].getSocket()) {
 			i = 0;
 			j = 1;
