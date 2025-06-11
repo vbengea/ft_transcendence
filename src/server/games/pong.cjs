@@ -167,6 +167,15 @@ class Player {
 		this.score = 0;
 		this.ai = !user.human;
 		this.user = user;
+		this.side = 0;
+	}
+
+	getSide() {
+		return this.side;
+	}
+
+	setSide(side) {
+		this.side = side;
 	}
 
 	getUser() {
@@ -227,38 +236,52 @@ class Pong {
 		this.moveBall();
 	}
 
+	getFirstNonComputerPlayer() {
+		for(let p of this.players){
+			if (p.getUser().human)
+				return p;
+		}
+	}
+
 	send() {
-		const s1 = this.players[0].getScreen();
+		const u1 = this.getFirstNonComputerPlayer();
+		const s1 = u1.getScreen();
 		const b1 = s1.getBall();
 		const p1a = s1.getLeftPaddle();
 		const p1b = s1.getRightPaddle();
-
-		const s2 = this.players[1].getScreen();
-		const b2 = s2.getBall();
-		const p2a = s2.getLeftPaddle();
-		const p2b = s2.getRightPaddle();
-
-		const wRatio = s2.getWidth() / s1.getWidth();
-		const hRatio = s2.getHeight() / s1.getHeight();
-
-		b2.setX(b1.getX() * wRatio);
-		b2.setY(b1.getY() * hRatio);
-
-		p2a.setY(p1a.getY() * hRatio);
-		p1b.setY(p2b.getY() / hRatio);
+		const so1 = u1.getSocket();
 
 		const json = JSON.stringify(this);
-		const socket1 = this.players[0].getSocket();
-		const socket2 = this.players[1].getSocket();
-		if (socket1)
-			socket1.send("{ \"game\": " + json + ", \"side\": 0 }");
-		if (socket2)
-			socket2.send("{ \"game\": " + json + ", \"side\": 1 }");
+		if (so1)
+			so1.send("{ \"game\": " + json + ", \"side\": " + u1.getSide() + " }");
+
+		for(let p of this.players){
+			if (p.getUser().id !== u1.getUser().id) {
+				const s2 = p.getScreen();
+				const b2 = s2.getBall();
+				const p2a = s2.getLeftPaddle();
+				const p2b = s2.getRightPaddle();
+
+				const wRatio = s2.getWidth() / s1.getWidth();
+				const hRatio = s2.getHeight() / s1.getHeight();
+
+				b2.setX(b1.getX() * wRatio);
+				b2.setY(b1.getY() * hRatio);
+
+				p2a.setY(p1a.getY() * hRatio);
+				p1b.setY(p2b.getY() / hRatio);
+
+				const so = p.getSocket();
+				if (so) {
+					so.send("{ \"game\": " + json + ", \"side\": " + p.getSide() + " }");
+				}
+			}
+		}
 	}
 
 	addPlayer(player) {
+		player.setSide(this.players.length % 2);
 		this.players.push(player);
-
 		if (this.players.length == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
@@ -277,7 +300,7 @@ class Pong {
 	}
 
 	reset() {
-		const p = this.players[0];
+		const p = this.getFirstNonComputerPlayer();
 		const s = p.getScreen();
 		const b = s.getBall();
 		b.setX(s.getWidth() / 2.0 - b.getWidth() / 2.0);
@@ -286,11 +309,9 @@ class Pong {
 		b.setDy(this.randomSign());
 	}
 
-	play(socket, down) {
-		const i = this.players[0].getSocket() == socket ? 0 : 1;
-		const p = this.players[i];
+	play(p, down) {
 		const s = p.getScreen();
-		const paddle = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
+		const paddle = p.side == 0 ? s.getLeftPaddle() : s.getRightPaddle();
 		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
 		const top = s.getLineHeight();																		// Cap paddle vertical position ...................
 		const bot = s.getHeight() - paddle.getHeight() - s.getLineHeight() * 4;

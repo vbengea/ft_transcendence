@@ -14,12 +14,16 @@ function newPlayer(type, player) {
 const MAX_USERS = 4;
 const matchMap = new Map();
 const socketMap = new Map();
+const userMap = new Map();
 
 function setUser(i, socket, raw, uid, match) {
 	if (match[`user${i}Id`] === uid && match[`user${i}`].human) {
 		match[`user${i}`].socket = socket;
 		match[`user${i}`].raw = raw;
-		match.game.addPlayer(newPlayer(raw.type, match[`user${i}`]))
+		const player = newPlayer(raw.type, match[`user${i}`]);
+		match[`user${i}`].player = player;
+		match.game.addPlayer(player);
+		userMap[uid] = match[`user${i}`];
 
 		/* If the rest of the users are bots ................................... */
 		for (let j = 1; j <= MAX_USERS; j++){
@@ -28,7 +32,9 @@ function setUser(i, socket, raw, uid, match) {
 				const r = Object.assign(raw, { });
 				p.raw = r;
 				p.initialized = true;
-				match.game.addPlayer(newPlayer(raw.type, p));
+				const computer = newPlayer(raw.type, p);
+				p.player = computer;
+				match.game.addPlayer(computer);
 			}
 		}
 	}
@@ -52,13 +58,21 @@ module.exports = async function (fastify) {
 					matchMap.set(match.id, match);
 				const currentMatch = matchMap.get(match.id);
 
+				/* Verify user is already loaded ............................................... */
+				let user = userMap[uid];
+
 				if (raw.subtype === 'connect') {
+
+					if (user) {
+						user.socket = socket;
+						return;
+					}
+
 					/* Create game ............................................................. */
 					if (!currentMatch.game) {
 						let limit = 2;
 						if (currentMatch.round.tournament.totalRounds == 1)
 							limit = currentMatch.round.tournament.totalPlayers;
-						console.log(currentMatch.round.tournament.totalPlayers)
 						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
 					}
 
@@ -67,7 +81,8 @@ module.exports = async function (fastify) {
 						setUser(i, socket, raw,  uid, currentMatch);
 
 				} else if (raw.subtype === 'play') {
-					currentMatch.game.play(socket, raw.isDown); 
+					if (user)
+						currentMatch.game.play(user.player, raw.isDown); 
 				} else if (raw.subtype === 'layout') {
 					currentMatch.game.setLayout(socket, raw); 
 				}
