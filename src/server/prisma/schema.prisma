@@ -79,5 +79,4 @@ model Match {
   round                 Round         @relation(fields: [roundId], references: [id])
   roundId               String
   winScore              Int
-  is4Player             Boolean       @default(false)
 }

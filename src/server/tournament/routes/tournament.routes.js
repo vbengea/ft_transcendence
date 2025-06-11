@@ -7,7 +7,6 @@ function tournamentRoutes(fastify, options, done) {
 		try {
 			const userId = request.user.id;
 			const tournamentData = request.body;
-			const is4Player = !!tournamentData.is4Player;
 
 			const tournament = await tournamentService.createTournament(
 				userId,

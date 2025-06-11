@@ -16,7 +16,7 @@ function createTournamentService(prisma) {
 					name,
 					totalRounds: rounds.length,
 					totalPlayers: users.length,
-					customization: JSON.stringify({ is4Player: is4Player}),
+					customization: JSON.stringify({}),
 					gameId: game.id,
 					organizerId
 				}
@@ -41,7 +41,6 @@ function createTournamentService(prisma) {
 						user4Id: matchUsers[3].id,
 						roundId: round.id,
 						winScore: 10,
-						is4Player: true
 					}
 				});
 				return tournament;
