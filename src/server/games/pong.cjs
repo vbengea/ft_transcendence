@@ -346,10 +346,16 @@ class Pong {
 
 	play(p, down) {
 		const s = p.getScreen();
-		const paddle = s.getPaddles()[p.getPaddleIndex()];
+		const index = p.getPaddleIndex();
+		const paddle = s.getPaddles()[index];
+		const count = this.paddleCounter / 2.0;
+		const height = s.getHeight() / (count);
 		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
-		const top = s.getLineHeight();																		// Cap paddle vertical position ...................
-		const bot = s.getHeight() - paddle.getHeight() - s.getLineHeight() * 4;
+		
+		const ph = paddle.getHeight() + 30;
+		const bot = height * ((index / 2) + 1) - ph;
+		const top = bot - height + ph;																			// Cap paddle vertical position ...................
+		
 		if (y < top)
 			paddle.setY(top);
 		else if (y > bot)
