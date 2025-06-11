@@ -200,7 +200,7 @@ const createTournament = async (tournament, callback) => {
 
 	const tournamentData = {
 		...tournament,
-		gameName: gameName
+		gameName: gameName,
 	};
 
 	await fetch('/api/tournament', {

@@ -16,11 +16,36 @@ function createTournamentService(prisma) {
 					name,
 					totalRounds: rounds.length,
 					totalPlayers: users.length,
-					customization: JSON.stringify({}),
+					customization: JSON.stringify({ is4Player: is4Player}),
 					gameId: game.id,
 					organizerId
 				}
 			});
+
+			if (rounds === 1) {
+				const round = await prisma.round.create({
+					data: {
+						name: "4-Player Round",
+						number: 1,
+						tournamentId: tournament.id
+					}
+				});
+
+				let matchUsers = users.slice(0, 4);
+				
+				await prisma.match.create({
+					data: {
+						user1Id: matchUsers[0].id,
+						user2Id: matchUsers[1].id,
+						user3Id: matchUsers[2].id,
+						user4Id: matchUsers[3].id,
+						roundId: round.id,
+						winScore: 10,
+						is4Player: true
+					}
+				});
+				return tournament;
+			}
 
 			for (const roundData of rounds) {
 				const round = await prisma.round.create({
@@ -32,7 +57,7 @@ function createTournamentService(prisma) {
 				});
 
 				for (const matchData of roundData.matches) {
-					if (matchData.users.length == 2) {
+					if (matchData.users && matchData.users.length == 2) {
 						await prisma.match.create({
 							data: {
 								user1Id: matchData.users[0].id,
@@ -41,7 +66,8 @@ function createTournamentService(prisma) {
 								winScore: 10
 							}
 						});
-					} else {
+					} 
+					else {
 						await prisma.match.create({
 							data: {
 								roundId: round.id,
@@ -170,17 +196,30 @@ function createTournamentService(prisma) {
 			});
 		},
 
-		async endMatch(id, user1Score, user2Score) {
-			await prisma.match.update({
-				where: {
-					id
-				},
-				data: {
-					user1Score, 
-					user2Score,
-					endTime: new Date()
-				}
-			});
+		async endMatch(id, user1Score, user2Score, user3Score = 0, user4Score = 0, rounds = 0) {
+			if (rounds === 1) {
+				await prisma.match.update({
+					where: { id },
+					data: {
+						user1Score,
+						user2Score,
+						user3Score,
+						user4Score,
+						endTime: new Date()
+					}
+				});
+			} else {
+				await prisma.match.update({
+					where: {
+						id
+					},
+					data: {
+						user1Score, 
+						user2Score,
+						endTime: new Date()
+					}
+				});
+			}
 		}
 	};
 }
