@@ -13,18 +13,12 @@ type Player = {
 			"dx": number,
 			"dy": number
 		},
-		"leftPaddle":{
+		"paddles":{
 			"x": number,
 			"y": number,
 			"width": number,
 			"height": number
-		},
-		"rightPaddle":{
-			"x": number,
-			"y": number,
-			"width": number,
-			"height": number
-		}
+		} []
 	}
 };
 
@@ -46,20 +40,17 @@ function getLayoutPayloadPong(subtype : string) {
 		lineHeight: get(TOPLINE, "height")
 	};
 
-	const paddle = {
-		left: {
-			x: get(LEFT, "left"),
-			y: get(LEFT, "top"),
-			w: get(LEFT, "width"),
-			h: get(LEFT, "height"),
-		},
-		right: {
-			x: get(RIGHT, "left"),
-			y: get(RIGHT, "top"),
-			w: get(RIGHT, "width"),
-			h: get(RIGHT, "height"),
-		},
-	};
+	const paddles = [{
+		x: get(LEFT, "left"),
+		y: get(LEFT, "top"),
+		w: get(LEFT, "width"),
+		h: get(LEFT, "height"),
+	},{
+		x: get(RIGHT, "left"),
+		y: get(RIGHT, "top"),
+		w: get(RIGHT, "width"),
+		h: get(RIGHT, "height"),
+	}]
 
 	const ball = {
 		w: get(BALL, "width"),
@@ -68,7 +59,7 @@ function getLayoutPayloadPong(subtype : string) {
 
 	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER')).user;
 
-	return { type: "pong", subtype, paddle, screen: sc, ball, ai: !profile.human };
+	return { type: "pong", subtype, paddles, screen: sc, ball, ai: !profile.human };
 }
 
 function displayPong(raw: string) {
@@ -92,8 +83,8 @@ function displayPong(raw: string) {
 			SCORE_RIGHT.innerHTML = player.score.toString();
 
 		if (side == i) {
-			LEFT.style.top = `${player.screen.leftPaddle.y}px`;
-			RIGHT.style.top = `${player.screen.rightPaddle.y}px`;
+			LEFT.style.top = `${player.screen.paddles[0].y}px`;
+			RIGHT.style.top = `${player.screen.paddles[1].y}px`;
 			BALL.style.left = `${player.screen.ball.x}px`;
 			BALL.style.top = `${player.screen.ball.y}px`;
 		}

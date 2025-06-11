@@ -118,20 +118,21 @@ class Screen {
 		this.height = raw.screen.h;
 		this.lineHeight = raw.screen.lineHeight;
 		this.ball = new Ball(0, 0, raw.ball.w, raw.ball.h);
-		this.leftPaddle = new Paddle(raw.paddle.left);
-		this.rightPaddle = new Paddle(raw.paddle.right);
+		this.paddles = [];
+		for (let p of raw.paddles)
+			this.paddles.push(new Paddle(p));
 	}
 	
 	getBall() {
 		return this.ball;
 	}
 
-	getLeftPaddle() {
-		return this.leftPaddle;
+	getPaddle(i) {
+		return this.paddles[i];
 	}
 
-	getRightPaddle() {
-		return this.rightPaddle;
+	getPaddles() {
+		return this.paddles;
 	}
 
 	getWidth() {
@@ -161,6 +162,7 @@ class Screen {
 }
 
 class Player {
+
 	constructor (user) {
 		this.wins = false;
 		this.screen = new Screen(user.raw);
@@ -168,6 +170,12 @@ class Player {
 		this.ai = !user.human;
 		this.user = user;
 		this.side = 0;
+		this.segment = 0;
+		this.paddleIndex = 0;
+	}
+
+	getPaddleIndex() {
+		return this.paddleIndex;
 	}
 
 	getSide() {
@@ -176,6 +184,14 @@ class Player {
 
 	setSide(side) {
 		this.side = side;
+	}
+
+	getSegment() {
+		return this.segment;
+	}
+
+	setSegment(segment) {
+		this.segment = segment;
 	}
 
 	getUser() {
@@ -231,6 +247,9 @@ class Pong {
 		this.players = [];
 		this.mid = mid;
 		this.limit = limit;
+		this.paddleLeftCounter = 0;
+		this.paddleRightCounter = 0;
+		this.paddleCounter = 0;
 	}
 
 	start() {
@@ -251,20 +270,17 @@ class Pong {
 		const u1 = this.getFirstNonComputerPlayer();
 		const s1 = u1.getScreen();
 		const b1 = s1.getBall();
-		const p1a = s1.getLeftPaddle();
-		const p1b = s1.getRightPaddle();
+		const p1s = s1.getPaddles();
 		const so1 = u1.getSocket();
+		const sos = new Map();
 
-		const json = JSON.stringify(this);
 		if (so1)
-			so1.send("{ \"game\": " + json + ", \"side\": " + u1.getSide() + " }");
-
+			sos.set(so1, u1.getSide());
+			
 		for(let p of this.players){
 			if (p.getUser().id !== u1.getUser().id) {
 				const s2 = p.getScreen();
 				const b2 = s2.getBall();
-				const p2a = s2.getLeftPaddle();
-				const p2b = s2.getRightPaddle();
 
 				const wRatio = s2.getWidth() / s1.getWidth();
 				const hRatio = s2.getHeight() / s1.getHeight();
@@ -272,19 +288,34 @@ class Pong {
 				b2.setX(b1.getX() * wRatio);
 				b2.setY(b1.getY() * hRatio);
 
-				p2a.setY(p1a.getY() * hRatio);
-				p1b.setY(p2b.getY() / hRatio);
+				const paddles = s2.getPaddles();
+				for( let i = 0; i < paddles.length; i++ ) {
+					if (i % 2 == 0)
+						paddles[i].setY(p1s[i].getY() * hRatio);
+					else
+						p1s[i].setY(paddles[i].getY() / hRatio);
+				}
 
 				const so = p.getSocket();
-				if (so) {
-					so.send("{ \"game\": " + json + ", \"side\": " + p.getSide() + " }");
-				}
+				if (so)
+					sos.set(so, p.getSide());
 			}
+		}
+
+		const json = JSON.stringify(this);
+		
+		for (let [so, side] of sos.entries()) {
+			so.send("{ \"game\": " + json + ", \"side\": " + side + " }");
 		}
 	}
 
 	addPlayer(player) {
 		player.setSide(this.players.length % 2);
+		if (this.players.length % 2 == 0)
+			player.setSegment(this.paddleLeftCounter++);
+		else
+			player.setSegment(this.paddleRightCounter++);
+		player.paddleIndex = this.paddleCounter++;
 		this.players.push(player);
 		if (this.players.length == this.limit) {
 			for(let p of this.players) {
@@ -315,7 +346,7 @@ class Pong {
 
 	play(p, down) {
 		const s = p.getScreen();
-		const paddle = p.side == 0 ? s.getLeftPaddle() : s.getRightPaddle();
+		const paddle = s.getPaddles()[p.getPaddleIndex()];
 		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
 		const top = s.getLineHeight();																		// Cap paddle vertical position ...................
 		const bot = s.getHeight() - paddle.getHeight() - s.getLineHeight() * 4;
@@ -332,7 +363,7 @@ class Pong {
 		const p = player;
 		const s = p.getScreen();
 		const b = ball;																						// ball moving from 1p ............................
-		const d = p.getSide() == 0 ? s.getLeftPaddle() : s.getRightPaddle();
+		const d = s.getPaddles()[p.getPaddleIndex()];
 
 		const half = d.getHeight() / 2.0;
 		const center = d.getY() + half;
@@ -506,14 +537,7 @@ class Pong {
 	checkPaddleCollisions(screen) {
 		const s = screen;
 		const ball = s.getBall();
-		let paddle = null;
-
-		if (s.getWidth() * 0.1 > ball.getX())
-			paddle = s.getLeftPaddle();
-		else if (s.getWidth() * 0.9 <  ball.getX())
-			paddle = s.getRightPaddle();
-		else
-			return null;
+		let padd = null;
 
 		let left_a, left_b;
 		let right_a, right_b;
@@ -525,22 +549,43 @@ class Pong {
 		top_a = ball.getY();
 		bottom_a = ball.getY() + ball.getHeight();
 
-		left_b = paddle.getX();
-		right_b = paddle.getX() + paddle.getWidth();
-		top_b = paddle.getY();
-		bottom_b = paddle.getY() + paddle.getHeight();
-
-		if (left_a > right_b) {
-			return null;
-		} else if (right_a < left_b) {
-			return null;
-		} else if (top_a > bottom_b) {
-			return null;
-		} else if (bottom_a < top_b) {
+		const paddles = s.getPaddles();
+		const ps = [];
+		if (s.getWidth() * 0.1 > ball.getX()) {
+			for (let i = 0; i < paddles.length; i++){
+				if (i % 2 === 0)
+					ps.push(paddles[i]);
+			}
+		} else if (s.getWidth() * 0.9 <  ball.getX()) {
+			for (let i = 0; i < paddles.length; i++){
+				if (i % 2 !== 0)
+					ps.push(paddles[i]);
+			}
+		} else {
 			return null;
 		}
 
-		return paddle;
+		for (let paddle of ps) {
+			left_b = paddle.getX();
+			right_b = paddle.getX() + paddle.getWidth();
+			top_b = paddle.getY();
+			bottom_b = paddle.getY() + paddle.getHeight();
+
+			if (left_a > right_b) {																				// LHS: Ball left edge passed paddle right edge ...
+				
+			} else if (right_a < left_b) {																		// RHS: Ball right edge passed paddle left edge ...
+				
+			} else if (top_a > bottom_b) {																		// Ball top edge lower than paddle bottom edge ....
+				
+			} else if (bottom_a < top_b) {																		// Ball bottom edge higher than paddle top edge ...
+				
+			} else {
+				padd = paddle;
+				break;
+			}
+		}
+
+		return padd;
 	}
 
 	changeBallDirection(ball) {
