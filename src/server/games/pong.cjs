@@ -430,7 +430,7 @@ class Pong {
 	}
 
 	moveBall() {
-		const p1 = this.players[0];
+		const p1 = this.getFirstNonComputerPlayer();
 		const p2 = this.players[1];
 		const s = p1.getScreen();
 		const b = s.getBall();
@@ -439,10 +439,16 @@ class Pong {
 		b.setY(b.getY() + b.getDy());
 		
 		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen ...........
-			p2.setScore(p2.getScore() + 1);
+			for(let p of this.players) {
+				if (p.getSide() === 1)
+					p.setScore(p.getScore() + 1);
+			}
 			this.reset();
 		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ..........
-			p1.setScore(p1.getScore() + 1);
+			for(let p of this.players) {
+				if (p.getSide() === 0)
+					p.setScore(p.getScore() + 1);
+			}
 			this.reset();
 		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ..........
 			b.setDy(-b.getDy());
@@ -456,33 +462,42 @@ class Pong {
 
 		if (p1.getScore() == MAX_SCORE) {																	// Check scores ...................................
 			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-			p1.wins = true;
-			p2.wins = false;
-			const s1 = p1.getSocket();
-			if (s1)
-				s1.send(JSON.stringify({ redirect: TXT.win }));
-			const s2 = p2.getSocket();
-			if (s2)
-				s2.send(JSON.stringify({ redirect: TXT.loose }));
+
+			for(let p of this.players) {
+				if (p.getSide() === 0) {
+					p.wins = true;
+					const s1 = p.getSocket();
+					if (s1)
+						s1.send(JSON.stringify({ redirect: TXT.win }));
+				} else {
+					p.wins = false;
+					const s2 = p.getSocket();
+					if (s2)
+						s2.send(JSON.stringify({ redirect: TXT.loose }));
+				}
+			}
 
 		} else if (p2.getScore() == MAX_SCORE) {
 			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-			p1.wins = false;
-			p2.wins = true;
-			const s1 = p1.getSocket();
-			if (s1)
-				s1.send(JSON.stringify({ redirect: TXT.loose }));
-			const s2 = p2.getSocket();
-			if (s2)
-				s2.send(JSON.stringify({ redirect: TXT.win }));
 
-		} else {
 			for(let p of this.players) {
-				if (!p.getUser().human) {
-					this.computer(p, b);
+				if (p.getSide() === 0) {
+					p.wins = false;
+					const s1 = p.getSocket();
+					if (s1)
+						s1.send(JSON.stringify({ redirect: TXT.loose }));
+				} else {
+					p.wins = true;
+					const s2 = p.getSocket();
+					if (s2)
+						s2.send(JSON.stringify({ redirect: TXT.win }));
 				}
 			}
-			
+
+		} else {
+			for(let p of this.players)
+				if (!p.getUser().human)
+					this.computer(p, b);
 			this.send();																					// Refresh UI .....................................
 			setTimeout(this.moveBall.bind(this), 1);														// Move ball again ................................
 		}
