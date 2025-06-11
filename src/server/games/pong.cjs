@@ -253,6 +253,7 @@ class Pong {
 	}
 
 	start() {
+		console.log('START')
 		tournamentSrv.startMatch(this.mid);
 		this.status = 1;
 		this.reset();
@@ -310,6 +311,7 @@ class Pong {
 	}
 
 	addPlayer(player) {
+		console.log(player.user.name)
 		player.setSide(this.players.length % 2);
 		if (this.players.length % 2 == 0)
 			player.setSegment(this.paddleLeftCounter++);

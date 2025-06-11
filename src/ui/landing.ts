@@ -1,4 +1,5 @@
 let hydrateTemplate = async (url) => {
+	console.log(url)
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
 			document.querySelector("#single").addEventListener('click', (e) => {
@@ -22,10 +23,15 @@ let hydrateTemplate = async (url) => {
 			const inp = document.querySelector("input");
 			const lab = document.querySelector("label");
 			const isComputer = ['single', 'multi'].includes(mode);
+			let num = 0;
+			if (mode === 'single')
+				num = 2;
+			else 
+				num = 4;
 			if (isComputer){
 				inp.value = mode === 'single' ? 'Single player' : 'Multi player';
 				inp.style.display = 'none';
-				lab.innerHTML = mode === 'single' ? 'Pick one' : 'Pick 2';
+				lab.innerHTML = mode === 'single' ? 'Pick 2' : 'Pick 4';
 			}
 			const response = await fetch(isComputer ? '/auth/computer' : '/auth/friends');
 			const friends = await response.json();
@@ -47,7 +53,7 @@ let hydrateTemplate = async (url) => {
 					if (el && el.id !== uid) {
 						if (isComputer) {
 							const len = document.querySelectorAll('div [class*="bg-amber-400"').length;
-							if (len === 2 && el.classList.contains('bg-white')) {}
+							if (len === num && el.classList.contains('bg-white')) {}
 							else {
 								el.classList.toggle('bg-amber-400');
 								el.classList.toggle('bg-white');
@@ -76,27 +82,32 @@ let hydrateTemplate = async (url) => {
 				if (tname && len != 1 && Number.isInteger(n)) {
 					const rounds = [];
 					let name;
-					for (let i = 1, j = n - 3, k = 0; i <= n; i++, j--, k+=2) {
-						let matches = [];
-						for (let p = 0; p < m; p++){
-							const us = [tusers.pop(), tusers.pop()];
-							matches.push({ users: us.filter(r => !!r) });
+
+					if (isComputer && mode === 'multi') {
+						rounds.push({ name: '2v2', matches: [{ users }] });
+					} else {
+						for (let i = 1, j = n - 3, k = 0; i <= n; i++, j--, k+=2) {
+							let matches = [];
+							for (let p = 0; p < m; p++){
+								const us = [tusers.pop(), tusers.pop()];
+								matches.push({ users: us.filter(r => !!r) });
+							}
+							switch (n - i) {
+								case 0:
+									name = isComputer ? '1v1' : 'Finals';
+									break;
+								case 1:
+									name = 'Semifinals';
+									break;
+								case 2:
+									name = 'Quarterfinals'
+									break;
+								default:
+									name = `Round ${j}`;
+							}
+							m /= 2;
+							rounds.push({ name, matches });
 						}
-						switch (n - i) {
-							case 0:
-								name = 'Finals';
-								break;
-							case 1:
-								name = 'Semifinals';
-								break;
-							case 2:
-								name = 'Quarterfinals'
-								break;
-							default:
-								name = `Round ${j}`;
-						}
-						m /= 2;
-						rounds.push({ name, matches });
 					}
 
 					const gameType = sessionStorage.getItem('selectedGame');
@@ -105,18 +116,7 @@ let hydrateTemplate = async (url) => {
 					localStorage.tournament = JSON.stringify(tournament);
 
 					if (isComputer) {
-						createTournament(tournament, async () => {
-							const app = document.querySelector('#app');
-							if (gameType === 'pong') {
-								app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
-								play(getLayoutPayloadPong, displayPong, 'pong');
-							}
-							else if (gameType === 'tictactoe') {
-								app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
-								play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
-							}
-							location.hash = `#/landing/${gameType}`;
-						})
+						createTournament(tournament, async () => location.hash = `#/landing/${gameType}`)
 					} else {
 						location.hash = '#/landing/stats';
 					}
@@ -190,6 +190,7 @@ let hydrateTemplate = async (url) => {
 				</tr>`;
 			}).join('');
 			break;
+
 		default:
 			break;
 	}
@@ -216,11 +217,45 @@ const createTournament = async (tournament, callback) => {
 	}
 };
 
+const playPong = async () => {
+	const mode = sessionStorage.mode;
+	console.log('PONG', mode);
+	const app = document.querySelector('#app');
+
+	app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
+
+	const LHS = document.querySelector("#paddle-left-wrapper");
+	const RHS = document.querySelector("#paddle-right-wrapper");
+
+	if (mode === 'single') {
+		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>
+			<div id="paddle-left-1" class="mx-3 my-3 w-3 h-24 bg-white absolute self-center"></div>`;
+		RHS.innerHTML = `<div id="score-right" class="absolute w-1/2 text-white text-left text-9xl pl-12"></div>
+			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-white absolute self-center right-0"></div>`;
+	} else {
+		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>
+			<div id="paddle-left-1" class="mx-3 my-3 w-3 h-24 bg-red absolute self-center"></div>
+			<div id="paddle-left-3" class="mx-3 my-3 w-3 h-24 bg-green absolute self-center"></div>`;
+		RHS.innerHTML = `<div id="score-right" class="absolute w-1/2 text-white text-left text-9xl pl-12"></div>
+			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-blue absolute self-center right-0"></div>
+			<div id="paddle-right-4" class="mx-1 my-3 w-3 h-24 bg-yellow absolute self-center right-0"></div>`;
+	}
+	play(getLayoutPayloadPong, displayPong, 'pong');
+};
+
+const playTicTacToe = async () => {
+	const app = document.querySelector('#app');
+	app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
+	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+};
+
 let landing = async (url) => {
 	const app = document.querySelector('#app');
 	try {
-		if (url === 'pong' || url == 'tictactoe') {
-			app.innerHTML = await (await fetch(`./pages/${url}.html`)).text();
+		if (url === 'pong') {
+			playPong();
+		} else if (url === 'tictactoe') {
+			playTicTacToe();
 		} else {
 			app.innerHTML = await (await fetch(`./pages/template.html`)).text();
 			const menu = document.querySelector("#menu");
