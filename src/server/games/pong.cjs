@@ -323,36 +323,73 @@ class Pong {
 			paddle.setY(y);
 	}
 
-	computer() {
-		let i = 0, j = 0;
-
-		if (!this.players[0].getSocket()) {
-			i = 0;
-			j = 1;
-		} else if (!this.players[1].getSocket()) {
-			i = 1;
-			j = 0;
-		} else {
-			return;
-		}
-
+	computer(player, ball) {
 		const gap = 30;
-		const p = this.players[i];
+		const p = player;
 		const s = p.getScreen();
-		const b = this.players[j].getScreen().getBall();													// ball moving from 1p ............................
-		const d = i == 0 ? s.getLeftPaddle() : s.getRightPaddle();
+		const b = ball;																						// ball moving from 1p ............................
+		const d = p.getSide() == 0 ? s.getLeftPaddle() : s.getRightPaddle();
 
 		const half = d.getHeight() / 2.0;
 		const center = d.getY() + half;
 		const screen_center = s.getHeight() / 2.0 - half;
-
-		let y = 0;
 		
 		let ball_speed = b.getDy();
 		if (ball_speed < 0) {
 			ball_speed = -ball_speed;
 		}
 
+		let y = 0;
+		if (p.getSide() == 0) {
+			y = this.computerLeft(b, d, ball_speed, center, screen_center);
+		} else {
+			y = this.computerRight(b, d, ball_speed, center, screen_center);
+		}
+
+		if (y > gap && y < (s.getHeight() - d.getHeight())){
+			d.setY(y);
+		}
+	}
+
+	computerLeft(b, d, ball_speed, center, screen_center) {
+		let y = 0;
+		if (b.getDx() > 0) {																				// ball moving right...............................
+			if (center < screen_center) {																	// return to center position.......................
+				y = d.getY() + ball_speed;
+			} else {
+				y = d.getY() - ball_speed;
+			}
+
+		} else {																							// ball moving left................................
+			if (b.getDy() > 0) {																			// ball moving down................................
+				if (b.getY() > center) { 
+					y = d.getY() + ball_speed;
+				} else {
+					y = d.getY() - ball_speed;
+				}
+			}
+			
+			if (b.getDy() < 0) {																			// ball moving up..................................
+				if (b.getY() < center) {
+					y = d.getY() - ball_speed;
+				} else {
+					y = d.getY() + ball_speed;
+				}
+			}
+
+			if (b.getDy() == 0) {																			// ball moving stright across......................
+				if (b.getY() < center) {
+					y = d.getY() - 5;
+				} else {
+					y = d.getY() + 5;
+				}
+			}
+		}
+		return y;
+	}
+
+	computerRight(b, d, ball_speed, center, screen_center) {
+		let y = 0;
 		if (b.getDx() > 0) {																				// ball moving right...............................
 			if (b.getDy() > 0) {																			// ball moving down................................
 				if (b.getY() > center) { 
@@ -385,10 +422,7 @@ class Pong {
 				y = d.getY() - ball_speed;
 			}
 		}
-
-		if (y > gap && y < (s.getHeight() - d.getHeight())){
-			d.setY(y);
-		}
+		return y;
 	}
 
 	setLayout(socket, raw) {
@@ -444,7 +478,12 @@ class Pong {
 				s2.send(JSON.stringify({ redirect: TXT.win }));
 
 		} else {
-			this.computer();
+			for(let p of this.players) {
+				if (!p.getUser().human) {
+					this.computer(p, b);
+				}
+			}
+			
 			this.send();																					// Refresh UI .....................................
 			setTimeout(this.moveBall.bind(this), 1);														// Move ball again ................................
 		}
