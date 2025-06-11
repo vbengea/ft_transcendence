@@ -74,6 +74,8 @@ model Match {
   endTime               DateTime?
   user1Score            Int           @default(0)
   user2Score            Int           @default(0)
+  user3Score            Int           @default(0)
+  user4Score            Int           @default(0)
   round                 Round         @relation(fields: [roundId], references: [id])
   roundId               String
   winScore              Int
