@@ -56,24 +56,24 @@ module.exports = async function (fastify) {
 				const match = matches[0];
 				if (!matchMap.has(match.id))
 					matchMap.set(match.id, match);
+
 				const currentMatch = matchMap.get(match.id);
 
 				/* Verify user is already loaded ............................................... */
 				let user = userMap[uid];
 
 				if (raw.subtype === 'connect') {
-
-					if (user) {
-						user.socket = socket;
-						return;
-					}
-
 					/* Create game ............................................................. */
 					if (!currentMatch.game) {
 						let limit = 2;
 						if (currentMatch.round.tournament.totalRounds == 1)
 							limit = currentMatch.round.tournament.totalPlayers;
 						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
+					} else {
+						if (user) {
+							user.socket = socket;
+							return;
+						}
 					}
 
 					/* Update socket and layout information .................................... */
@@ -95,7 +95,7 @@ module.exports = async function (fastify) {
 	})
 
 	socket.on('close', message => {
-		// TODO: Gestionar desconexion
+		socketMap.delete(socket);
 	})
 
   })
