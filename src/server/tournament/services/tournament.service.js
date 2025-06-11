@@ -41,6 +41,13 @@ function createTournamentService(prisma) {
 								winScore: 10
 							}
 						});
+					} else {
+						await prisma.match.create({
+							data: {
+								roundId: round.id,
+								winScore: 10
+							}
+						});
 					}
 				}
 			}

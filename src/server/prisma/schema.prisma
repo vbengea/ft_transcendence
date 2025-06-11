@@ -59,10 +59,10 @@ model Round {
 
 model Match {
   id                    String        @id     @default(cuid())
-  user1                 User          @relation("User1Matches", fields: [user1Id], references: [id])
-  user1Id               String
-  user2                 User          @relation("User2Matches", fields: [user2Id], references: [id])
-  user2Id               String
+  user1                 User?         @relation("User1Matches", fields: [user1Id], references: [id])
+  user1Id               String?
+  user2                 User?         @relation("User2Matches", fields: [user2Id], references: [id])
+  user2Id               String?
   creationTime          DateTime      @default(now())
   startTime             DateTime?
   endTime               DateTime?
