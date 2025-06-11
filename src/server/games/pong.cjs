@@ -190,6 +190,10 @@ class Player {
 		return this.screen;
 	}
 
+	setScreen(raw) {
+		this.screen = new Screen(user.raw);
+	}
+
 	setWins(w) {
 		this.wins = w;
 	}
@@ -390,8 +394,8 @@ class Pong {
 
 	computerRight(b, d, ball_speed, center, screen_center) {
 		let y = 0;
-		if (b.getDx() > 0) {																				// ball moving right...............................
-			if (b.getDy() > 0) {																			// ball moving down................................
+		if (b.getDx() > 0) {											
+			if (b.getDy() > 0) {																	
 				if (b.getY() > center) { 
 					y = d.getY() + ball_speed;
 				} else {
@@ -423,11 +427,6 @@ class Pong {
 			}
 		}
 		return y;
-	}
-
-	setLayout(socket, raw) {
-		const i = this.players[0].getSocket() == socket ? 0 : 1;
-		this.players[i] = new Player(socket, raw);
 	}
 
 	moveBall() {

@@ -84,7 +84,10 @@ module.exports = async function (fastify) {
 					if (user)
 						currentMatch.game.play(user.player, raw.isDown); 
 				} else if (raw.subtype === 'layout') {
-					currentMatch.game.setLayout(socket, raw); 
+					if (user) {
+						user.raw = raw;
+						user.player.setScreen(raw);
+					}
 				}
 			}
 		}
