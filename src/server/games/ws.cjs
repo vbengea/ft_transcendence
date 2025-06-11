@@ -57,8 +57,8 @@ module.exports = async function (fastify) {
 					if (!currentMatch.game) {
 						let limit = 2;
 						if (currentMatch.tournament.totalRounds == 1)
-							limit = currentMatch.tournament.totalPlayers;
-						console.log(currentMatch.tournament.totalPlayers)
+							limit = currentMatch.round.tournament.totalPlayers;
+						console.log(currentMatch.round.tournament.totalPlayers)
 						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
 					}
 
