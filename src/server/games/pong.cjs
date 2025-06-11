@@ -1,11 +1,8 @@
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
-
-const LIMIT = 2;
 const MAX_SCORE = 10;
 
 const TXT = {
-	full: "Room is full.",
 	success:  "",
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
@@ -164,16 +161,20 @@ class Screen {
 }
 
 class Player {
-	constructor (socket, raw) {
+	constructor (user) {
 		this.wins = false;
-		this.socket = socket;
-		this.screen = new Screen(raw);
+		this.screen = new Screen(user.raw);
 		this.score = 0;
-		this.ai = raw.ai;
+		this.ai = !user.human;
+		this.user = user;
+	}
+
+	getUser() {
+		return this.user;
 	}
 
 	getSocket() {
-		return this.socket;
+		return this.user.socket;
 	}
 
 	getScreen() {
@@ -211,11 +212,12 @@ class Player {
 
 class Pong {
 
-	constructor(mid) {
+	constructor(mid, limit) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
 		this.mid = mid;
+		this.limit = limit;
 	}
 
 	start() {
@@ -257,7 +259,7 @@ class Pong {
 	addPlayer(player) {
 		this.players.push(player);
 
-		if (this.players.length == LIMIT) {
+		if (this.players.length == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success }));
@@ -302,7 +304,7 @@ class Pong {
 
 	computer() {
 		let i = 0, j = 0;
-		
+
 		if (!this.players[0].getSocket()) {
 			i = 0;
 			j = 1;

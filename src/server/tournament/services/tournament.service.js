@@ -114,7 +114,9 @@ function createTournamentService(prisma) {
 						user2Id: userId 
 					}],
 					user1Score: 0, 
-					user2Score: 0
+					user2Score: 0,
+					user3Score: 0, 
+					user4Score: 0
 				},
 				include: {
 					user1: {
@@ -122,6 +124,21 @@ function createTournamentService(prisma) {
 					},
 					user2: {
 						select: { id: true, name: true, avatar: true, human: true }
+					},
+					user3: {
+						select: { id: true, name: true, avatar: true, human: true }
+					},
+					user4: {
+						select: { id: true, name: true, avatar: true, human: true }
+					},
+					round: {
+						include: {
+							tournament: { 
+								select: {
+									id: true, name: true, totalPlayers: true, totalRounds: true
+								}
+							}
+						}
 					}
 				}
 			});

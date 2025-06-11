@@ -2,17 +2,37 @@ const { Pong, PongPlayer, PongTXT } = require('./pong.cjs')
 const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 
 const prisma = require('../prisma/prisma.cjs');
-const userSrv = require('../user-auth/services/user.service')(prisma);
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 
-function newGame(type, mid) {
-	return type === 'pong' ? new Pong(mid) : new TicTacToe(mid);
+function newGame(type, mid, limit) {
+	return type === 'pong' ? new Pong(mid, limit) : new TicTacToe(mid);
 }
-function newPlayer(type, { socket, raw }) {
-	return type === 'pong' ? new PongPlayer(socket, raw) : new TicTacToePlayer(socket, raw);
+function newPlayer(type, player) {
+	return type === 'pong' ? new PongPlayer(player) : new TicTacToePlayer(player.socket, player.raw);
 }
 
+const MAX_USERS = 4;
 const matchMap = new Map();
+const socketMap = new Map();
+
+function setUser(i, socket, raw, uid, match) {
+	if (match[`user${i}Id`] === uid && match[`user${i}`].human) {
+		match[`user${i}`].socket = socket;
+		match[`user${i}`].raw = raw;
+		match.game.addPlayer(newPlayer(raw.type, match[`user${i}`]))
+
+		/* If the rest of the users are bots ................................... */
+		for (let j = 1; j <= MAX_USERS; j++){
+			const p = match[`user${j}`];
+			if (p && i != j && !p.human && !p.initialized) {
+				const r = Object.assign(raw, { });
+				p.raw = r;
+				p.initialized = true;
+				match.game.addPlayer(newPlayer(raw.type, p));
+			}
+		}
+	}
+}
 
 module.exports = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
@@ -21,52 +41,33 @@ module.exports = async function (fastify) {
 		const raw = JSON.parse(message.toString())
 
 		if (raw.type == 'pong' || raw.type == 'tictactoe') {
-			const user = await userSrv.getUserById(request.user.id);
-			const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(user.id);
-
+			const uid = request.user.id;
+			const matches = socketMap[socket] || await tournamentSrv.getCurrentTournamentMatchByUserId(uid);
+			socketMap[socket] = matches;
 			if (matches.length){
-				/* Identifying match ............................. */
+
+				/* Identifying match ........................................................... */
 				const match = matches[0];
 				if (!matchMap.has(match.id))
 					matchMap.set(match.id, match);
 				const currentMatch = matchMap.get(match.id);
 
 				if (raw.subtype === 'connect') {
-					/* Create game ............................... */
-					if (!currentMatch.game)
-						currentMatch.game = newGame(raw.type, currentMatch.id);
-
-					/* Update socket and layout information ...... */
-					if (currentMatch.user1Id === user.id) {
-						currentMatch.user1.socket = socket;
-						currentMatch.user1.raw = raw;
-						currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user1))
-
-						/* If the rest of the users are bots ..... */
-						if (!currentMatch.user2.human)  {
-							const r = Object.assign(raw, { });
-							currentMatch.user2.raw = r;
-							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2));
-						}
-
-					} else if (currentMatch.user2Id === user.id) {
-						currentMatch.user2.socket = null;
-						currentMatch.user2.socket = socket;
-						currentMatch.user2.raw = raw;
-						currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user2))
-
-						/* If the rest of the users are bots ..... */
-						if (!currentMatch.user1.human)  {
-							const r = Object.assign(raw, { });
-							currentMatch.user1.raw = r;
-							currentMatch.game.addPlayer(newPlayer(raw.type, currentMatch.user1));
-						}
+					/* Create game ............................................................. */
+					if (!currentMatch.game) {
+						let limit = 2;
+						if (currentMatch.round.tournament.totalRounds == 1)
+							limit = currentMatch.round.tournament.totalPlayers;
+						console.log(currentMatch.round.tournament.totalPlayers)
+						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
 					}
+
+					/* Update socket and layout information .................................... */
+					for (let i = 1; i <= MAX_USERS; i++)
+						setUser(i, socket, raw,  uid, currentMatch);
 
 				} else if (raw.subtype === 'play') {
 					currentMatch.game.play(socket, raw.isDown); 
-				} else if (raw.subtype === 'play_ai') {
-					currentMatch.game.play_ai(socket); 
 				} else if (raw.subtype === 'layout') {
 					currentMatch.game.setLayout(socket, raw); 
 				}
