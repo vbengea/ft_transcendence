@@ -98,9 +98,6 @@ class TicTacToe {
 	start() {
 		tournamentSrv.startMatch(this.mid);
 		this.reset();
-		if (!this.players[0].getSocket()){
-			this.play(null, 4, true);
-		}
 	}
 
 	reset() {
@@ -131,9 +128,10 @@ class TicTacToe {
 		}
 	}
 
-	play(socket, down) {
-		const p1 = this.players[0];
+	play(player, down, i) {
+		const p1 = player || this.players[0];
 		const p2 = this.players[1];
+		const socket = this.players[i].getSocket();
 
 		down -= 1;
 		let row = Math.floor(down / DIM);
@@ -214,7 +212,7 @@ class TicTacToe {
 							row = Math.floor(down / DIM);
 							col = down % DIM;
 						}
-						this.play(undefined, down + 1);
+						this.play(undefined, down + 1, 1);
 					}, 1000);
 				}
 			}

@@ -82,7 +82,7 @@ module.exports = async function (fastify) {
 
 				} else if (raw.subtype === 'play') {
 					if (user)
-						currentMatch.game.play(user.player, raw.isDown); 
+						currentMatch.game.play(user.player, raw.isDown, 0); 
 				} else if (raw.subtype === 'layout') {
 					if (user) {
 						user.raw = raw;
