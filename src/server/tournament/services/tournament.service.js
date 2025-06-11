@@ -212,30 +212,19 @@ function createTournamentService(prisma) {
 			});
 		},
 
-		async endMatch(id, user1Score, user2Score, user3Score = 0, user4Score = 0, rounds = 0) {
-			if (rounds === 1) {
-				await prisma.match.update({
-					where: { id },
-					data: {
-						user1Score,
-						user2Score,
-						user3Score,
-						user4Score,
-						endTime: new Date()
-					}
-				});
-			} else {
-				await prisma.match.update({
-					where: {
-						id
-					},
-					data: {
-						user1Score, 
-						user2Score,
-						endTime: new Date()
-					}
-				});
-			}
+		async endMatch(id, user1Score, user2Score, user3Score = 0, user4Score = 0) {
+			await prisma.match.update({
+				where: {
+					id
+				},
+				data: {
+					user1Score, 
+					user2Score,
+					user3Score,
+					user4Score,
+					endTime: new Date()
+				}
+			});
 		}
 	};
 }
