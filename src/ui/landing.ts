@@ -121,6 +121,7 @@ let hydrateTemplate = async (url) => {
 					if (isComputer) {
 						createTournament(tournament, async () => location.hash = `#/landing/${gameType}`)
 					} else {
+						sessionStorage.mode = 'tournament';
 						location.hash = '#/landing/stats';
 					}
 				} else if (!tname) {
@@ -132,8 +133,10 @@ let hydrateTemplate = async (url) => {
 			break;
 		case 'stats':
 			const tournament = JSON.parse(localStorage.tournament);
-			localStorage.tournament = '';
 			const r : HTMLInputElement = document.querySelector('#rounds');
+			const button = sessionStorage.mode === 'tournament' ? `<button id="submit" type="submit" class="text-white bg-blue-700 mt-5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create tournament</button>` : '';
+			localStorage.tournament = '';
+			sessionStorage.mode = '';
 			const content = `
 			<div class="mb-4 grid grid-flow-col grid-cols-${tournament.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
 				${tournament.rounds.map(r => `<div>${r.name}</div>`).join('')}
@@ -146,11 +149,11 @@ let hydrateTemplate = async (url) => {
 							const rows = `
 							<div class="grid grid-flow-col grid-cols-2">
 								<p class="font-semibold w-60">${m.users[0] ? m.users[0].name : ''}</p>
-								<p class="text-right">0</p>
+								<p class="text-right">${m.user1Score || 0}</p>
 							</div>
 							<div class="grid grid-flow-col grid-cols-2">
 								<p class="font-semibold w-60">${m.users[1] ? m.users[1].name : ''}</p>
-								<p class="text-right">0</p>
+								<p class="text-right">${m.user2Score || 0}</p>
 							</div>`
 
 							let html = `<div class="mb-4 rounded-md bg-gray-200 px-4 py-2 text-gray-900 space-y-2 text-xs md:text-base">${rows}</div>`
@@ -161,14 +164,70 @@ let hydrateTemplate = async (url) => {
 					</div>
 				`).join('')}
 			</div>
-			<button id="submit" type="submit" class="text-white bg-blue-700 mt-5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create tournament</button>`
+			${button}`
 			r.innerHTML = content;
 
 			const final = document.querySelector("#submit");
 			final.addEventListener('click', () => { createTournament(tournament, () => location.hash = '/' ) });
 			break;
+		case 't_stats':
+			const tournament1 = JSON.parse(localStorage.tournament);
+			const r1 : HTMLInputElement = document.querySelector('#rounds');
+			const content1 = `
+			<div class="mb-4 grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
+				${tournament1.rounds.map(r1 => `<div>${r1.name}</div>`).join('')}
+			</div>
+			<div class="grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center">
+				${tournament1.rounds.map((r, i) => `
+					<div class="${i > 0 ? "mx-2" : ""} grid h-1/${i > 0 ? i * 2 : 1} grid-flow-row grid-rows-${r.matches.length}">
+						${ r.matches.map((m, j) => {
+
+							const rows = `
+							<div class="grid grid-flow-col grid-cols-2">
+								<p class="font-semibold w-60">${m.user1 ? m.user1.name : ''}</p>
+								<p class="text-right">${m.user1Score || 0}</p>
+							</div>
+							<div class="grid grid-flow-col grid-cols-2">
+								<p class="font-semibold w-60">${m.user2 ? m.user2.name : ''}</p>
+								<p class="text-right">${m.user2Score || 0}</p>
+							</div>`
+
+							let html = `<div class="mb-4 rounded-md bg-gray-200 px-4 py-2 text-gray-900 space-y-2 text-xs md:text-base">${rows}</div>`
+
+							return html;
+
+						}).join('')}
+					</div>
+				`).join('')}
+			</div>`
+			r1.innerHTML = content1;
+			break;
 		case 'win': case 'loose':
-			setTimeout(() => location.hash = '#/landing/matches', 3000);
+			if (url === 'win'){
+				const match = await (await fetch('/api/tournaments/current_match')).json();
+				if (match) {
+					setTimeout(async () => {
+						const t = await (await fetch(`/api/tournament/${match.round.tournamentId}`)).json();
+						localStorage.tournament = JSON.stringify(t);
+						location.hash = '#/landing/t_stats';
+						setTimeout(() => location.hash = `#/landing/${match.round.tournament.game.name}`, 3000);
+					 }, 3000);
+				} else {
+					const tid = JSON.parse(localStorage.tournament).id;
+					const t = await (await fetch(`/api/tournament/${tid}`)).json();
+					localStorage.tournament = JSON.stringify(t);
+					location.hash = '#/landing/t_stats';
+					setTimeout(() => {
+						location.hash = `#/`;
+						localStorage.tournament = '';
+					}, 3000);
+				}
+			} else {
+				setTimeout(() => location.hash = '#/landing/matches', 3000);
+			}
+			break;
+		case 'nogame':
+			setTimeout(() => location.hash = '#/', 3000);
 			break;
 		case 'matches':
 			const it = document.querySelector("#submit");
@@ -221,13 +280,18 @@ const createTournament = async (tournament, callback) => {
 };
 
 const playPong = async () => {
-	const mode = sessionStorage.mode;
+	let mode = 'single';
 	const app = document.querySelector('#app');
 
 	app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
 
 	const LHS = document.querySelector("#paddle-left-wrapper");
 	const RHS = document.querySelector("#paddle-right-wrapper");
+
+	const match : any = await (await fetch('/api/tournaments/current_match')).json();
+
+	if (match && match.round && match.round.tournament && match.round.tournament.totalRounds == 1 && match.round.tournament.totalPlayers === 4)
+		mode = 'multi';
 
 	if (mode === 'single') {
 		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>

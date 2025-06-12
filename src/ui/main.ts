@@ -34,11 +34,13 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	const paddleHandler = (e) => {
 		const code = e.code;
 		if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
-			WS.send(JSON.stringify({ 
-				type: "pong", 
-				subtype: "play", 
-				isDown: DOWN_KEYS.includes(code) 
-			}));
+			if (WS) {
+				WS.send(JSON.stringify({ 
+					type: "pong", 
+					subtype: "play", 
+					isDown: DOWN_KEYS.includes(code) 
+				}));
+			}				
 		}
 	};
 
@@ -59,22 +61,35 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
 	WS.onopen = (_event) => {
-		WS.send(JSON.stringify(payload("connect")));						// Read game layout ............................................................
+		if (WS)
+			WS.send(JSON.stringify(payload("connect")));						// Read game layout ............................................................
 	};
 
-	WS.onmessage = (event) => {
-		const LOG = document.querySelector(`#log`);
-		const SPLASH = document.querySelector(`#splash`);
+	WS.onmessage = async (event) => {
 		const data = JSON.parse(event.data);
+		const SPLASH = document.querySelector(`#splash`);
 		if (data.redirect) {
 			WS.close();
 			WS = null;
 			location.hash = data.redirect;
 		} else if (data.message){
-			if (LOG)		
-				LOG.innerHTML = data.message;
-			if (SPLASH)
+			if (SPLASH) {
+				SPLASH.innerHTML = await (await fetch(`./pages/vs.html`)).text();
 				SPLASH.classList.remove('invisible');
+				const LOG = document.querySelector(`#messanger`);
+				if (LOG)		
+					LOG.innerHTML = data.message;
+				for (let i = 1; i <= 4; i++){
+					const img : HTMLImageElement = document.querySelector(`#user-${i}-img`);
+					const txt : HTMLImageElement = document.querySelector(`#user-${i}-name`);
+					if (data.match.counter >= i){
+						img.src = data.match[`user${i}`].avatar;
+						txt.innerHTML = data.match[`user${i}`].name;
+					} else {
+						img.parentElement.classList.add('hidden');
+					}
+				}
+			}
 		} else {															// Display game screen .........................................................
 			display(event.data);
 			if (SPLASH)
@@ -87,7 +102,8 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 	}
 
 	addEventListener("resize", (e) => {
-		WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
+		if (WS)
+			WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
 	});
 
 	addEventListener("keydown", paddleHandler);

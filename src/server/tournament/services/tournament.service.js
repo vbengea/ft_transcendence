@@ -119,8 +119,8 @@ function createTournamentService(prisma) {
 					round: {
 						include: {
 							tournament: { 
-								select: {
-									id: true, name: true, totalPlayers: true, totalRounds: true
+								include: {
+									game: true
 								}
 							}
 						}
@@ -172,9 +172,15 @@ function createTournamentService(prisma) {
 					},
 					rounds: {
 						include: {
-							matches: true
+							matches: {
+								include: {
+									user1: true,
+									user2: true
+								}
+							}
 						}
-					}
+					},
+					game: true
 				}
 			});
 		},
@@ -224,6 +230,28 @@ function createTournamentService(prisma) {
 					endTime: new Date()
 				}
 			});
+		},
+
+		async advanceToNextMatch(match, user) {
+			if (match.round.tournament.totalRounds > match.round.number) {
+				round = await prisma.round.findUnique({ where: { id: match.round.id }, include: { matches: true } });
+				let i = 0;
+				for(let r of round.matches) {
+					if (r.user1Id === user.id || r.user2Id === user.id)
+						break;
+					i++;
+				}
+				let j = Math.floor(i / 2);
+				round = (await prisma.round.findMany({
+					where: { tournamentId: match.round.tournament.id, number: round.number + 1 }, 
+					include: { matches: true } 
+				}))[0];
+				match = round.matches[j];
+				if (i % 2 == 0)
+					await prisma.match.update({ where:{ id: match.id }, data: { user1Id: user.id }})
+				else if (match.user2 == null)
+					await prisma.match.update({ where:{ id: match.id }, data: { user2Id: user.id }})
+			}
 		}
 	};
 }

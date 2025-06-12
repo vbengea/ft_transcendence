@@ -7,7 +7,8 @@ const TXT = {
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
 	win: "#/landing/win",
-	loose: "#/landing/loose"
+	loose: "#/landing/loose",
+	wait: 'Please wait for other peer(s) to connect'
 };
 
 class Ball {
@@ -245,7 +246,7 @@ class Player {
 
 class Pong {
 
-	constructor(mid, limit) {
+	constructor(mid, limit, match) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -254,6 +255,13 @@ class Pong {
 		this.paddleLeftCounter = 0;
 		this.paddleRightCounter = 0;
 		this.paddleCounter = 0;
+		this.match = match;
+	}
+
+	toJSON() {
+		return {
+			players: this.players
+		}
 	}
 
 	start() {
@@ -329,10 +337,32 @@ class Pong {
 		if (this.players.length == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
-					p.getSocket().send(JSON.stringify({ message: TXT.success }));
+					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
-			this.start();
+			setTimeout(() => { this.start(); }, 2000);
+		} else if(player.getSocket()) {
+			for(let p of this.players) {
+				if (p.getSocket())
+					p.getSocket().send(JSON.stringify({ message: TXT.wait, match: this.getMatch() }));
+			}
 		}
+	}
+
+	getMatch() {
+		const match = { counter: 2 };
+		const u1 = this.match.user1;
+		const u2 = this.match.user2;
+		match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
+		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png' };
+		if (this.match.user3) {
+			match.user3 = { name: this.match.user3.name, avatar: this.match.user3.avatar };
+			match.counter++;
+		}
+		if (this.match.user4) {
+			match.user4 = { name: this.match.user4.name, avatar: this.match.user4.avatar };
+			match.counter++;
+		}
+		return match;
 	}
 
 	rand(max) {
@@ -521,38 +551,10 @@ class Pong {
 		}
 
 		if (p1.getScore() == MAX_SCORE) {																	// Check scores ...................................
-			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-
-			for(let p of this.players) {
-				if (p.getSide() === 0) {
-					p.wins = true;
-					const s1 = p.getSocket();
-					if (s1)
-						s1.send(JSON.stringify({ redirect: TXT.win }));
-				} else {
-					p.wins = false;
-					const s2 = p.getSocket();
-					if (s2)
-						s2.send(JSON.stringify({ redirect: TXT.loose }));
-				}
-			}
+			this.manageResults(0)
 
 		} else if (p2.getScore() == MAX_SCORE) {
-			tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-
-			for(let p of this.players) {
-				if (p.getSide() === 0) {
-					p.wins = false;
-					const s1 = p.getSocket();
-					if (s1)
-						s1.send(JSON.stringify({ redirect: TXT.loose }));
-				} else {
-					p.wins = true;
-					const s2 = p.getSocket();
-					if (s2)
-						s2.send(JSON.stringify({ redirect: TXT.win }));
-				}
-			}
+			this.manageResults(1)
 
 		} else {
 			for(let p of this.players)
@@ -560,6 +562,24 @@ class Pong {
 					this.computer(p, b);
 			this.send();																					// Refresh UI .....................................
 			setTimeout(this.moveBall.bind(this), 1);														// Move ball again ................................
+		}
+	}
+
+	manageResults(winnerSide) {
+		tournamentSrv.endMatch(this.mid, this.players[0].getScore(), this.players[1].getScore());  			// TODO: what about user3, user4?
+		for(let p of this.players) {
+			if (p.getSide() === winnerSide) {
+				p.wins = true;
+				const s1 = p.getSocket();
+				if (s1)
+					s1.send(JSON.stringify({ redirect: TXT.win }));
+				tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+			} else {
+				p.wins = false;
+				const s2 = p.getSocket();
+				if (s2)
+					s2.send(JSON.stringify({ redirect: TXT.loose }));
+			}
 		}
 	}
 

@@ -7,7 +7,8 @@ const TXT = {
 	waiting: "Waiting for a peer to connect.",
 	giveup: "You win. the other player just gave up!",
 	win: "#/landing/win",
-	loose: "#/landing/loose"
+	loose: "#/landing/loose",
+	wait: 'Please wait for other peer(s) to connect'
 };
 
 const DIM = 3;
@@ -86,13 +87,14 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid) {
+	constructor(mid, match) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
 		this.matrix = [];
 		this.last = '';
 		this.mid = mid;
+		this.match = match;
 	}
 
 	start() {
@@ -125,6 +127,16 @@ class TicTacToe {
 					p.getSocket().send(JSON.stringify({ message: TXT.success }));
 			}
 			this.start();
+		} else if(player.getSocket()) {
+			const match = { counter: 2 };
+			const u1 = this.match.user1;
+			const u2 = this.match.user2;
+			match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
+			match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png' };
+			for(let p of this.players) {
+				if (p.getSocket())
+					p.getSocket().send(JSON.stringify({ message: TXT.wait, match }));
+			}
 		}
 	}
 

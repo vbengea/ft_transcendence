@@ -4,8 +4,8 @@ const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 
-function newGame(type, mid, limit) {
-	return type === 'pong' ? new Pong(mid, limit) : new TicTacToe(mid);
+function newGame(type, mid, limit, match) {
+	return type === 'pong' ? new Pong(mid, limit, match) : new TicTacToe(mid, match);
 }
 function newPlayer(type, player) {
 	return type === 'pong' ? new PongPlayer(player) : new TicTacToePlayer(player.socket, player.raw);
@@ -54,6 +54,12 @@ module.exports = async function (fastify) {
 			if (!matches)
 				matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid);
 
+			if (!matches || matches.length === 0)
+			{
+				socket.send(JSON.stringify({ redirect: '#/landing/nogame'}));
+				return;
+			}
+
 			socketMap.set(socket, matches);
 
 			if (matches.length){
@@ -74,7 +80,7 @@ module.exports = async function (fastify) {
 						let limit = 2;
 						if (currentMatch.round.tournament.totalRounds == 1)
 							limit = currentMatch.round.tournament.totalPlayers;
-						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
+						currentMatch.game = newGame(raw.type, currentMatch.id, limit, currentMatch);
 
 					} else  {
 

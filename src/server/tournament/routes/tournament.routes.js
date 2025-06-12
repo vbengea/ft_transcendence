@@ -36,6 +36,28 @@ function tournamentRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.get('/tournaments/current_match', { preHandler: fastify.authenticate }, async (request, reply) => {
+		try {
+			const uid = request.user.id;
+			const match = matches = await tournamentService.getCurrentTournamentMatchByUserId(uid);
+			const currentMatch = match.length ? match[0] : null;
+			reply.send(currentMatch);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to fetch current match' });
+		}
+	});
+
+	fastify.get('/tournament/:id', { preHandler: fastify.authenticate }, async (request, reply) => {
+		try {
+			const tournament = await tournamentService.getTournamentById(request.params.id);
+			reply.send(tournament);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to fetch tournament' });
+		}
+	});
+
 	fastify.delete('/tournament/:id', { preHandler: fastify.authenticate }, async (request, reply) => {
 		try {
 			const tournamentId = request.params.id;
