@@ -177,6 +177,10 @@ class Player {
 	getPaddleIndex() {
 		return this.paddleIndex;
 	}
+	
+	setPaddleIndex(i) {
+		this.paddleIndex = i;
+	}
 
 	getSide() {
 		return this.side;
@@ -314,7 +318,7 @@ class Pong {
 			player.setSegment(this.paddleLeftCounter++);
 		else
 			player.setSegment(this.paddleRightCounter++);
-		player.paddleIndex = this.paddleCounter++;
+		player.setPaddleIndex(this.paddleCounter++);
 		this.players.push(player);
 		if (this.players.length == this.limit) {
 			for(let p of this.players) {
@@ -355,12 +359,22 @@ class Pong {
 		const s = p.getScreen();
 		const index = p.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
-		const count = this.paddleCounter / 2.0;
-		const height = s.getHeight() / (count);		
-		const gap = 30;
-		const ph = paddle.getHeight() + gap;
-		const bot = height * ((index / 2) + 1) - ph;
-		const top = bot - height + ph + gap / 3;															// Cap paddle vertical position ...................
+		const gap = 13;
+
+		const c = this.paddleCounter / 2;
+		const i = p.getSegment() + 1;
+		const l = s.getHeight();
+		const h = paddle.getHeight();
+		const g = l / c;
+
+		let bot = i * g - h - gap;
+		let top = bot - g + h + gap;
+
+		if (top < gap - 3)
+			top = gap - 3;
+		if (bot > (s.getHeight() - h - gap * 2))
+			bot = s.getHeight() - h - gap * 2;
+
 		if (y < top)
 			paddle.setY(top);
 		else if (y > bot)
