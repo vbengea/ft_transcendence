@@ -276,6 +276,8 @@ class Pong {
 		const b1 = s1.getBall();
 		const p1s = s1.getPaddles();
 		const so1 = u1.getSocket();
+		const sindex = u1.getPaddleIndex();
+		const sin = p1s[sindex];
 		const sos = new Map();
 
 		if (so1)
@@ -297,6 +299,7 @@ class Pong {
 				const index = p.getPaddleIndex();
 
 				p1s[index].setY(paddles[index].getY() / hRatio);
+				paddles[sindex].setY(sin.getY() * hRatio);
 
 				const so = p.getSocket();
 				if (so)
