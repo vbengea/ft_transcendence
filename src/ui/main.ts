@@ -1,8 +1,6 @@
 const UP_KEYS = ["KeyA", "Keya"];
 const DOWN_KEYS = ["KeyZ", "Keyz"];
 
-const abortController = new AbortController();
-
 function get(obj : Element | null, prop : string) {
 	if (obj != null)
     	return (obj.getBoundingClientRect() as any)[prop];
@@ -88,7 +86,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
 	});
 
-	addEventListener("keydown", paddleHandler, { signal: abortController.signal });
-	addEventListener("mouseup", tapHandler, { signal: abortController.signal });
+	addEventListener("keydown", paddleHandler);
+	addEventListener("mouseup", tapHandler);
 
 }

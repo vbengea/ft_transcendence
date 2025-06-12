@@ -101,10 +101,7 @@ function createTournamentService(prisma) {
 					}, { 
 						user4Id: userId 
 					}],
-					user1Score: 0, 
-					user2Score: 0,
-					user3Score: 0, 
-					user4Score: 0
+					startTime: null
 				},
 				include: {
 					user1: {
@@ -128,7 +125,10 @@ function createTournamentService(prisma) {
 							}
 						}
 					}
-				}
+				},
+				orderBy: [{
+					creationTime: 'asc'
+				}]
 			});
 		},
 

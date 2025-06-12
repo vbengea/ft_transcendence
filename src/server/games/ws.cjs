@@ -23,7 +23,8 @@ function setUser(i, socket, raw, uid, match) {
 		const player = newPlayer(raw.type, match[`user${i}`]);
 		match[`user${i}`].player = player;
 		match.game.addPlayer(player);
-		userMap[uid] = match[`user${i}`];
+		match[`user${i}`].matchId = match.id;
+		userMap.set(uid, match[`user${i}`]);
 
 		/* If the rest of the users are bots ................................... */
 		for (let j = 1; j <= MAX_USERS; j++){
@@ -48,8 +49,13 @@ module.exports = async function (fastify) {
 
 		if (raw.type == 'pong' || raw.type == 'tictactoe') {
 			const uid = request.user.id;
-			const matches = socketMap[socket] || await tournamentSrv.getCurrentTournamentMatchByUserId(uid);
-			socketMap[socket] = matches;
+			let matches = socketMap.get(socket);
+
+			if (!matches)
+				matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid);
+
+			socketMap.set(socket, matches);
+
 			if (matches.length){
 
 				/* Identifying match ........................................................... */
@@ -60,7 +66,7 @@ module.exports = async function (fastify) {
 				const currentMatch = matchMap.get(match.id);
 
 				/* Verify user is already loaded ............................................... */
-				let user = userMap[uid];
+				let user = userMap.get(uid);
 
 				if (raw.subtype === 'connect') {
 					/* Create game ............................................................. */
@@ -69,14 +75,17 @@ module.exports = async function (fastify) {
 						if (currentMatch.round.tournament.totalRounds == 1)
 							limit = currentMatch.round.tournament.totalPlayers;
 						currentMatch.game = newGame(raw.type, currentMatch.id, limit);
-					} else {
+
+					} else  {
+
 						if (user) {
 							user.socket = socket;
 							return;
 						}
+
 					}
 
-					/* Update socket and layout information .................................... */
+					/* Update socket and layout information ................................ */
 					for (let i = 1; i <= MAX_USERS; i++)
 						setUser(i, socket, raw,  uid, currentMatch);
 
@@ -95,6 +104,14 @@ module.exports = async function (fastify) {
 	})
 
 	socket.on('close', message => {
+		const uid = request.user.id;
+		let user = userMap.get(uid);
+		if (user) {
+			const match = matchMap.get(user.matchId);
+			if (match)
+				matchMap.delete(user.matchId);
+			userMap.delete(uid);
+		}
 		socketMap.delete(socket);
 	})
 
