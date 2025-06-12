@@ -229,7 +229,7 @@ const playPong = async () => {
 	const LHS = document.querySelector("#paddle-left-wrapper");
 	const RHS = document.querySelector("#paddle-right-wrapper");
 
-	if (mode === 'single') {
+	if (mode === 'single_') {
 		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>
 			<div id="paddle-left-1" class="mx-1 my-3 w-3 h-24 bg-white absolute self-center"></div>`;
 		RHS.innerHTML = `<div id="score-right" class="absolute w-1/2 text-white text-left text-9xl pl-12"></div>

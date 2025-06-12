@@ -27,7 +27,7 @@ async function fill() {
             name: "Léon Tolstói",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
 			avatar: utils.generateIcon("tolstoi@gmail.com"),
-            human: false,
+            human: true,
         },
     });
     const c3 = await prisma.user.create({
@@ -36,7 +36,7 @@ async function fill() {
             name: "Miguel de Unamuno",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
 			avatar: utils.generateIcon("unamuno@gmail.com"),
-            human: false,
+            human: true,
         },
     });
     const c4 = await prisma.user.create({

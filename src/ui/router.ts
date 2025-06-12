@@ -124,6 +124,24 @@ template('template-2fa-verify', async ()  => {
 	return myDiv.appendChild(verifyDiv);
 });
 
+function testUsers() {
+	const username : HTMLInputElement = document.querySelector('#email');
+	const password : HTMLInputElement = document.querySelector('#password');
+
+	if (username && password) {
+		password.value = '1234';
+
+		if (navigator.userAgent.includes('OPR')){
+			username.value = 'unamuno@gmail.com';
+		} else if (navigator.userAgent.includes('Firefox')) {
+			username.value = 'tolstoi@gmail.com';
+		} else if (navigator.userAgent.includes('Chrome')) {
+			username.value = 'juaflore@gmail.com';
+		} else if (navigator.userAgent.includes('Safari')) {
+			username.value = 'edgar@gmail.com';
+		}
+	}
+}
 
 template('template-view3', async () => {
 	let myDiv = document.getElementById(appDiv);

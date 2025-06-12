@@ -297,9 +297,12 @@ class Pong {
 
 				const paddles = s2.getPaddles();
 				const index = p.getPaddleIndex();
+				const pad = paddles[index];
 
-				p1s[index].setY(paddles[index].getY() / hRatio);
-				paddles[sindex].setY(sin.getY() * hRatio);
+				if (pad)
+					p1s[index].setY(pad.getY() / hRatio);
+				if (sin)
+					paddles[sindex].setY(sin.getY() * hRatio);
 
 				const so = p.getSocket();
 				if (so)
