@@ -253,7 +253,6 @@ class Pong {
 	}
 
 	start() {
-		console.log('START')
 		tournamentSrv.startMatch(this.mid);
 		this.status = 1;
 		this.reset();
@@ -278,6 +277,7 @@ class Pong {
 		if (so1)
 			sos.set(so1, u1.getSide());
 			
+		let i = 0;
 		for(let p of this.players){
 			if (p.getUser().id !== u1.getUser().id) {
 				const s2 = p.getScreen();
@@ -290,17 +290,15 @@ class Pong {
 				b2.setY(b1.getY() * hRatio);
 
 				const paddles = s2.getPaddles();
-				for( let i = 0; i < paddles.length; i++ ) {
-					if (i % 2 == 0)
-						paddles[i].setY(p1s[i].getY() * hRatio);
-					else
-						p1s[i].setY(paddles[i].getY() / hRatio);
-				}
+				const index = p.getPaddleIndex();
+
+				p1s[index].setY(paddles[index].getY() / hRatio);
 
 				const so = p.getSocket();
 				if (so)
 					sos.set(so, p.getSide());
 			}
+			i++;
 		}
 
 		const json = JSON.stringify(this);
@@ -311,7 +309,6 @@ class Pong {
 	}
 
 	addPlayer(player) {
-		console.log(player.user.name)
 		player.setSide(this.players.length % 2);
 		if (this.players.length % 2 == 0)
 			player.setSegment(this.paddleLeftCounter++);
@@ -350,15 +347,20 @@ class Pong {
 		const s = p.getScreen();
 		const index = p.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
-		const count = this.paddleCounter / 2.0;
-		const height = s.getHeight() / (count);
 		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
-		
+		this.cap(p, y);
+	}
+
+	cap(p, y) {
+		const s = p.getScreen();
+		const index = p.getPaddleIndex();
+		const paddle = s.getPaddles()[index];
+		const count = this.paddleCounter / 2.0;
+		const height = s.getHeight() / (count);		
 		const gap = 30;
 		const ph = paddle.getHeight() + gap;
 		const bot = height * ((index / 2) + 1) - ph;
 		const top = bot - height + ph + gap / 3;															// Cap paddle vertical position ...................
-		
 		if (y < top)
 			paddle.setY(top);
 		else if (y > bot)
@@ -390,9 +392,7 @@ class Pong {
 			y = this.computerRight(b, d, ball_speed, center, screen_center);
 		}
 
-		if (y > gap && y < (s.getHeight() - d.getHeight())){
-			d.setY(y);
-		}
+		this.cap(p, y);
 	}
 
 	computerLeft(b, d, ball_speed, center, screen_center) {

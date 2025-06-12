@@ -9,20 +9,12 @@ function get(obj : Element | null, prop : string) {
 type Payload = { 
 	type: string, 
 	subtype: string, 
-	paddle?: { 
-		left: {
-			x: string,
-			y: string,
-			w: string,
-			h: string
-		}, 
-		right: {
-			x: string,
-			y: string,
-			w: string,
-			h: string
-		}
-	},
+	paddles?:{
+		x: number,
+		y: number,
+		w: number,
+		h: number
+	}[],
 	screen: { 
 		w: number, 
 		h: number, 

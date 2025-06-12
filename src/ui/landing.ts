@@ -1,5 +1,4 @@
 let hydrateTemplate = async (url) => {
-	console.log(url)
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
 			document.querySelector("#single").addEventListener('click', (e) => {
@@ -219,7 +218,6 @@ const createTournament = async (tournament, callback) => {
 
 const playPong = async () => {
 	const mode = sessionStorage.mode;
-	console.log('PONG', mode);
 	const app = document.querySelector('#app');
 
 	app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
@@ -234,11 +232,11 @@ const playPong = async () => {
 			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-white absolute self-center right-0"></div>`;
 	} else {
 		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>
-			<div id="paddle-left-1" class="mx-3 my-3 w-3 h-24 bg-red absolute self-center"></div>
-			<div id="paddle-left-3" class="mx-3 my-3 w-3 h-24 bg-green absolute self-center"></div>`;
+			<div id="paddle-left-1" class="mx-3 my-3 w-3 h-24 bg-red-300 absolute self-center"></div>
+			<div id="paddle-left-3" class="mx-3 my-3 w-3 h-24 bg-green-300 absolute self-center"></div>`;
 		RHS.innerHTML = `<div id="score-right" class="absolute w-1/2 text-white text-left text-9xl pl-12"></div>
-			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-blue absolute self-center right-0"></div>
-			<div id="paddle-right-4" class="mx-1 my-3 w-3 h-24 bg-yellow absolute self-center right-0"></div>`;
+			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-blue-300 absolute self-center right-0"></div>
+			<div id="paddle-right-4" class="mx-1 my-3 w-3 h-24 bg-yellow-300 absolute self-center right-0"></div>`;
 	}
 	play(getLayoutPayloadPong, displayPong, 'pong');
 };

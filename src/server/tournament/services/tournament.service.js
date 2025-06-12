@@ -22,30 +22,6 @@ function createTournamentService(prisma) {
 				}
 			});
 
-			if (rounds === 1) {
-				const round = await prisma.round.create({
-					data: {
-						name: "4-Player Round",
-						number: 1,
-						tournamentId: tournament.id
-					}
-				});
-
-				let matchUsers = users.slice(0, 4);
-				
-				await prisma.match.create({
-					data: {
-						user1Id: matchUsers[0].id,
-						user2Id: matchUsers[1].id,
-						user3Id: matchUsers[2].id,
-						user4Id: matchUsers[3].id,
-						roundId: round.id,
-						winScore: 10,
-					}
-				});
-				return tournament;
-			}
-
 			for (const roundData of rounds) {
 				const round = await prisma.round.create({
 					data: {
@@ -56,11 +32,14 @@ function createTournamentService(prisma) {
 				});
 
 				for (const matchData of roundData.matches) {
-					if (matchData.users && matchData.users.length == 2) {
+					const len = matchData.users.length;
+					if (matchData.users && len) {
 						await prisma.match.create({
 							data: {
 								user1Id: matchData.users[0].id,
 								user2Id: matchData.users[1].id,
+								user3Id: len == 2 ? null : matchData.users[2].id,
+								user4Id: len == 2 ? null : matchData.users[3].id,
 								roundId: round.id,
 								winScore: 10
 							}
@@ -95,6 +74,12 @@ function createTournamentService(prisma) {
 									},
 									user2: {
 										select: { id: true, name: true, avatar: true }
+									},
+									user3: {
+										select: { id: true, name: true, avatar: true }
+									},
+									user4: {
+										select: { id: true, name: true, avatar: true }
 									}
 								}
 							}
@@ -111,6 +96,10 @@ function createTournamentService(prisma) {
 						user1Id: userId 
 					}, { 
 						user2Id: userId 
+					},{ 
+						user3Id: userId 
+					}, { 
+						user4Id: userId 
 					}],
 					user1Score: 0, 
 					user2Score: 0,
@@ -150,6 +139,10 @@ function createTournamentService(prisma) {
 						user1Id: userId 
 					}, { 
 						user2Id: userId 
+					},{ 
+						user3Id: userId 
+					}, { 
+						user4Id: userId 
 					}],
 					NOT: { endTime: null }
 				},
@@ -158,6 +151,12 @@ function createTournamentService(prisma) {
 						select: { id: true, name: true, avatar: true, human: true }
 					},
 					user2: {
+						select: { id: true, name: true, avatar: true, human: true }
+					},
+					user3: {
+						select: { id: true, name: true, avatar: true, human: true }
+					},
+					user4: {
 						select: { id: true, name: true, avatar: true, human: true }
 					}
 				}

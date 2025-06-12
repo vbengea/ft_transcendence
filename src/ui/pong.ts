@@ -75,9 +75,9 @@ function getLayoutPayloadPong(subtype : string) {
 		h: get(BALL, "height"),
 	};
 
-	const profile = JSON.parse(localStorage.getItem('TRANSCENDER_USER')).user;
+	const ret : Payload = { type: "pong", subtype, paddles, screen: sc, ball };
 
-	return { type: "pong", subtype, paddles, screen: sc, ball, ai: !profile.human };
+	return ret;
 }
 
 function displayPong(raw: string) {
