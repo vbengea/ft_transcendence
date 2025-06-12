@@ -1,6 +1,8 @@
 const UP_KEYS = ["KeyA", "Keya"];
 const DOWN_KEYS = ["KeyZ", "Keyz"];
 
+const abortController = new AbortController();
+
 function get(obj : Element | null, prop : string) {
 	if (obj != null)
     	return (obj.getBoundingClientRect() as any)[prop];
@@ -65,7 +67,9 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		const data = JSON.parse(event.data);
 		if (data.redirect) {
 			WS.close();
+			WS = null;
 			location.hash = data.redirect;
+			removeEventListener("keydown", paddleHandler);
 			removeEventListener("mouseup", paddleHandler);
 		} else if (data.message){			
 			LOG.innerHTML = data.message;
@@ -84,7 +88,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		WS.send(JSON.stringify(payload("layout")));							// Read game layout ............................................................
 	});
 
-	addEventListener("keydown", paddleHandler);
-	addEventListener("mouseup", tapHandler);
+	addEventListener("keydown", paddleHandler, { signal: abortController.signal });
+	addEventListener("mouseup", tapHandler, { signal: abortController.signal });
 
 }
