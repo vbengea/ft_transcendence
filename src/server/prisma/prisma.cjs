@@ -18,7 +18,7 @@ async function fill() {
             name: "Edgar Allan Poe",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
 			avatar: utils.generateIcon("edgar@gmail.com"),
-            human: false,
+            human: true,
         },
     });
     const c2 = await prisma.user.create({

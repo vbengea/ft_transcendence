@@ -52,10 +52,13 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 			}));
 		}
 	};
+
+	removeEventListener("keydown", paddleHandler);
+	removeEventListener("mouseup", paddleHandler);
 	
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
-	WS.onopen = (event) => {
+	WS.onopen = (_event) => {
 		WS.send(JSON.stringify(payload("connect")));						// Read game layout ............................................................
 	};
 
@@ -67,14 +70,15 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 			WS.close();
 			WS = null;
 			location.hash = data.redirect;
-			removeEventListener("keydown", paddleHandler);
-			removeEventListener("mouseup", paddleHandler);
-		} else if (data.message){			
-			LOG.innerHTML = data.message;
-			SPLASH.classList.remove('invisible');
+		} else if (data.message){
+			if (LOG)		
+				LOG.innerHTML = data.message;
+			if (SPLASH)
+				SPLASH.classList.remove('invisible');
 		} else {															// Display game screen .........................................................
 			display(event.data);
-			SPLASH.classList.add('invisible');
+			if (SPLASH)
+				SPLASH.classList.add('invisible');
 		}
 	};
 

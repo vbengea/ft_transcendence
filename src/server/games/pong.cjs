@@ -210,8 +210,8 @@ class Player {
 		return this.screen;
 	}
 
-	setScreen(raw) {
-		this.screen = new Screen(user.raw);
+	setScreen() {
+		this.screen = new Screen(this.user.raw);
 	}
 
 	setWins(w) {

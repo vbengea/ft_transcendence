@@ -1,6 +1,10 @@
 let hydrateTemplate = async (url) => {
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
+			document.querySelector("#play").addEventListener('click', (e) => {
+				sessionStorage.mode = 'single';
+				location.hash = url == 'pongsel' ? '#/landing/pong' : '#/landing/tictactoe';
+			});
 			document.querySelector("#single").addEventListener('click', (e) => {
 				sessionStorage.mode = 'single';
 				location.hash = '#/landing/players';
