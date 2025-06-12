@@ -90,7 +90,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 					}
 				}
 			}
-		} else {															// Display game screen .........................................................
+		} else {																// Display game screen .........................................................
 			display(event.data);
 			if (SPLASH)
 				SPLASH.classList.add('invisible');

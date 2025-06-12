@@ -401,10 +401,8 @@ template('template-profile', async () => {
 route('/', 'template1');
 route('/login', 'template-view3');
 route('/register', 'template-view4');
-
 route('/2fa/setup', 'template-2fa-setup');
 route('/2fa/verify', 'template-2fa-verify');
-
 route('/profile', 'template-profile');
 
 let createDiv = (id, xmlString) => {
@@ -483,7 +481,6 @@ let router = async (evt) => {
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
 			routeResolved();
-		testUsers();
 	}
 };
 
