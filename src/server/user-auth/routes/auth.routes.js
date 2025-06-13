@@ -336,6 +336,35 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.put('/password', { preHandler: verifyToken }, async (request, reply) => {
+		const { currentPassword, newPassword } = request.body;
+
+		if (!currentPassword || !newPassword) {
+			return reply.code(400).send({ error: 'Missing required fields' });
+		}
+
+		const passwordValidation = authUtils.verifyPassword(newPassword);
+		if (!passwordValidation.valid) {
+			return reply.code(400).send({ error: passwordValidation.error });
+		}
+
+		try {
+			const user = await userService.getUserById(request.user.id);
+
+			const isValid = await userService.validatePassword(currentPassword, user.passwordHash);
+			if (!isValid) {
+				return reply.code(401).send({ error: 'Current password is incorrect' });
+			}
+
+			await userService.updatePassword(user.id, newPassword);
+
+			reply.send({ message: 'Passowrd updated successfully' });
+		} catch (err) {
+			console.error('Passowrd update error:', err);
+			reply.code(500).send({ error: 'Failed to update password' });
+		}
+	});
+
 	done();
 }
 

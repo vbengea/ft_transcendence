@@ -91,6 +91,15 @@ function createUserService(prisma) {
 			});
 		},
 
+		async updatePassword(userId, newPassword) {
+			const passwordHash = await bcrypt.hash(newPassword, 10);
+
+			return prisma.user.update({
+				where: { id: userId },
+				data: { passwordHash }
+			});
+		},
+
 		validatePassword(plain, hash) {
 			return bcrypt.compare(plain, hash);
 		},
