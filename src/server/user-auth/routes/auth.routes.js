@@ -3,6 +3,8 @@ const { errorCodes } = require('fastify');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const qrcode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
 
 function authRoutes(fastify, options, done) {
 	const userService = options.userService;
@@ -293,6 +295,44 @@ function authRoutes(fastify, options, done) {
 			reply.send(friends);
 		} catch (err) {
 			console.log(err);
+		}
+	});
+
+	fastify.post('/avatar', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const data = await request.file();
+
+			if (!data) {
+				return reply.code(400).send({ message: 'No file uploaded' });
+			}
+
+			if (!data.mimetype.startsWith('image/')) {
+				return reply.code(400).send({ message: 'Only image files are allowed' });
+			}
+
+			const user = await userService.getUserById(userId);
+			if (!user) {
+				return reply.code(404).send({ message: 'User not found' });
+			}
+
+			const path = `images/avatar/${user.email}.png`;
+			const filePath = `/app/public/${path}`;
+
+			await new Promise((resolve, reject) => {
+				const fileStream = fs.createWriteStream(filePath);
+				data.file.pipe(fileStream);
+				fileStream.on('finish', resolve);
+				fileStream.on('error', reject);
+			});
+
+			return reply.send({
+				message: 'Avatar updated successfully',
+				avatar: path
+			});
+		} catch (err) {
+			fastify.log.error(err);
+			return reply.code(500).send({ message: 'Failed to update avatar' });
 		}
 	});
 

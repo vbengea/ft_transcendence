@@ -263,6 +263,14 @@ let hydrateTemplate = async (url) => {
 			}).join('');
 			break;
 
+		case 'settings':
+			await hydrateSettings();
+			break;
+
+		case 'profile':
+			await hydrateProfile();
+			break;
+
 		default:
 			break;
 	}

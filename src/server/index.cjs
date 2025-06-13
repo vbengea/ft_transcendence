@@ -4,6 +4,7 @@ const { ADDRESS, PORT, TKEY, TCRT, JWT_SECRET, COOKIE_SECRET_KEY } = process.env
 
 const fs = require('fs')
 const path = require('path')
+const multipart = require('@fastify/multipart');
 
 const fastify = require('fastify')({
     https: {
@@ -11,6 +12,13 @@ const fastify = require('fastify')({
       cert: fs.readFileSync(TCRT)
     }
 })
+
+fastify.register(multipart, {
+  limits: {
+    fileSize: 2 * 1024 * 1024
+  }
+});
+
 
 // AUTH VERIFICATION ................................................................................
 const fjwt = require('@fastify/jwt')

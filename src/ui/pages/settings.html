@@ -1,1 +1,21 @@
-<div class="mt-12 text-center text-2xl text-red-400">Settings screen</div>
+<div class="p-8 max-w-2xl mx-auto">
+	<h1 class="text-2xl font-bold mb-6">Account Settings</h1>
+	
+	<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+		<h2 class="text-lg font-semibold mb-4">Two-Factor Authentication</h2>
+		<div id="2fa-status-container" class="mt-4">
+			<div class="flex items-center mb-3">
+				<div class="mr-3 animate-spin h-4 w-4 border-2 border-indigo-500 rounded-full border-t-transparent"></div>
+				<span class="text-gray-600">Loading 2FA status...</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="bg-white p-6 rounded-lg shadow-md">
+		<h2 class="text-lg font-semibold text-gray-800 mb-3">Danger Zone</h2>
+		<p class="text-sm text-gray-600 mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+		<button id="delete-account" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+			Delete Account
+		</button>
+	</div>
+</div>
