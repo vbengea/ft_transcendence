@@ -26,10 +26,19 @@ async function fill() {
 
 	// Humans ...........................................................................
 
-	await utils.createUser("edgar@gmail.com", "Edgar Allan Poe", true, DEFAULT_PASSWORD);
-	await utils.createUser("tolstoi@gmail.com", "Léon Tolstói", true, DEFAULT_PASSWORD);
-	await utils.createUser("unamuno@gmail.com", "Miguel de Unamuno", true, DEFAULT_PASSWORD);
-	await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD);
+	const edgar = await utils.createUser("edgar@gmail.com", "Edgar Allan Poe", true, DEFAULT_PASSWORD);
+	const leon = await utils.createUser("tolstoi@gmail.com", "Léon Tolstói", true, DEFAULT_PASSWORD);
+	const miguel = await utils.createUser("unamuno@gmail.com", "Miguel de Unamuno", true, DEFAULT_PASSWORD);
+	const juan = await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD);
+
+	await prisma.user.update({ 
+		where: { id: juan.id }, 
+		data: { 
+			friends: { 
+				connect: [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }] 
+			}
+		}
+	})
 }
 
 fill();
