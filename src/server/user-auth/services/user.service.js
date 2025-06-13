@@ -152,10 +152,19 @@ function createUserService(prisma) {
 							avatar: true, 
 							human: true 
 						} 
+					},
+					friendOf: { 
+						select: { 
+							id: true, 
+							email: true, 
+							name: true, 
+							avatar: true, 
+							human: true 
+						} 
 					} 
 				}
 			});
-			return u ? u.friends : [];
+			return u ? [...u.friends, ...u.friendOf] : [];
 		},
 
 		async getComputerPlayers() {
