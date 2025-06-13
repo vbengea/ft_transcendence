@@ -1,6 +1,8 @@
 const UP_KEYS = ["KeyA", "Keya"];
 const DOWN_KEYS = ["KeyZ", "Keyz"];
 
+let WS = null;
+
 function get(obj : Element | null, prop : string) {
 	if (obj != null)
     	return (obj.getBoundingClientRect() as any)[prop];
@@ -26,37 +28,40 @@ type Payload = {
 	} 
 };
 
-let WS = null;
+const paddleHandler = (e) => {
+	const code = e.code;
+	if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
+		if (WS) {
+			WS.send(JSON.stringify({ 
+				type: "pong", 
+				subtype: "play", 
+				isDown: DOWN_KEYS.includes(code) 
+			}));
+		}				
+	}
+};
+
+const tapHandler = (e) => {
+	const target = e.target as HTMLTextAreaElement;
+	if(target.tagName == 'TD') {
+		WS.send(JSON.stringify({ 
+			type: "tictactoe", 
+			subtype: "play", 
+			isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
+		}));
+	}
+};
+
+const removeEvents = () => {
+	removeEventListener("keydown", paddleHandler);
+	removeEventListener("mouseup", paddleHandler);
+}
+
 function play(payload : (a : string) => Payload, display : (a : string) => void, game : string) {
 	if (WS != null)
 		WS.close();
 
-	const paddleHandler = (e) => {
-		const code = e.code;
-		if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
-			if (WS) {
-				WS.send(JSON.stringify({ 
-					type: "pong", 
-					subtype: "play", 
-					isDown: DOWN_KEYS.includes(code) 
-				}));
-			}				
-		}
-	};
-
-	const tapHandler = (e) => {
-		const target = e.target as HTMLTextAreaElement;
-		if(target.tagName == 'TD') {
-			WS.send(JSON.stringify({ 
-				type: "tictactoe", 
-				subtype: "play", 
-				isDown: target.id.substring(target.id.indexOf('cell_') + 5) 
-			}));
-		}
-	};
-
-	removeEventListener("keydown", paddleHandler);
-	removeEventListener("mouseup", paddleHandler);
+	removeEvents();
 	
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
@@ -69,6 +74,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 		const data = JSON.parse(event.data);
 		const SPLASH = document.querySelector(`#splash`);
 		if (data.redirect) {
+			removeEvents();
 			WS.close();
 			WS = null;
 			location.hash = data.redirect;
@@ -99,6 +105,7 @@ function play(payload : (a : string) => Payload, display : (a : string) => void,
 
 	WS.onerror = (event) => {
 		console.log(event)
+		removeEvents();
 	}
 
 	addEventListener("resize", (e) => {

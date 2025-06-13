@@ -205,23 +205,26 @@ let hydrateTemplate = async (url) => {
 		case 'win': case 'loose':
 			if (url === 'win'){
 				const match = await (await fetch('/api/tournaments/current_match')).json();
-				if (match) {
-					setTimeout(async () => {
+				
+				setTimeout(async () => {
+					if (match) {					
 						const t = await (await fetch(`/api/tournament/${match.round.tournamentId}`)).json();
 						localStorage.tournament = JSON.stringify(t);
 						location.hash = '#/landing/t_stats';
 						setTimeout(() => location.hash = `#/landing/${match.round.tournament.game.name}`, 3000);
-					 }, 3000);
-				} else {
-					const tid = JSON.parse(localStorage.tournament).id;
-					const t = await (await fetch(`/api/tournament/${tid}`)).json();
-					localStorage.tournament = JSON.stringify(t);
-					location.hash = '#/landing/t_stats';
-					setTimeout(() => {
-						location.hash = `#/`;
-						localStorage.tournament = '';
-					}, 3000);
-				}
+
+					} else {
+						const tid = JSON.parse(localStorage.tournament).id;
+						const t = await (await fetch(`/api/tournament/${tid}`)).json();
+						localStorage.tournament = JSON.stringify(t);
+						location.hash = '#/landing/t_stats';
+						setTimeout(() => {
+							location.hash = `#/`;
+							localStorage.tournament = '';
+						}, 3000);
+					}
+				}, 3000);
+
 			} else {
 				setTimeout(() => location.hash = '#/landing/matches', 3000);
 			}
