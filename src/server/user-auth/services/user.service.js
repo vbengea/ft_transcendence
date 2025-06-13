@@ -2,8 +2,10 @@
 
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
-const jdenticon = require("jdenticon")
+const jdenticon = require("jdenticon");
+const fetch = require('node-fetch');
 const fs = require("fs");
+const Buffer = require('buffer').Buffer 
 
 function createUserService(prisma) {
 	return {
@@ -27,7 +29,8 @@ function createUserService(prisma) {
 					email,
 					name,
 					passwordHash,
-					avatar: this.generateIcon(email)
+					avatar: await this.generateIcon(email, true),
+					human: true
 				},
 				select: {
 					id: true,
@@ -146,9 +149,17 @@ function createUserService(prisma) {
 			return users;
 		},
 
-		generateIcon(email) {
+		async generateIcon(email, human) {
 			const path = `images/avatar/${email}.png`;
-			fs.writeFileSync(`/app/public/${path}`, jdenticon.toPng(email, 200));
+			const file = `/app/public/${path}`;
+			if (human) {
+				fs.writeFileSync(file, jdenticon.toPng(email, 200));
+			} else {
+				const blob = await (await fetch(`https://robohash.org/${email}`)).blob();
+				let buffer = await blob.arrayBuffer();
+				buffer = Buffer.from(buffer);
+				fs.createWriteStream(file).write(buffer);
+			}
 			return path;
 		}
 	};

@@ -17,7 +17,7 @@ async function fill() {
             email: "edgar@gmail.com",
             name: "Edgar Allan Poe",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("edgar@gmail.com"),
+			avatar: await utils.generateIcon("edgar@gmail.com", true),
             human: true,
         },
     });
@@ -26,7 +26,7 @@ async function fill() {
             email: "tolstoi@gmail.com",
             name: "Léon Tolstói",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("tolstoi@gmail.com"),
+			avatar: await utils.generateIcon("tolstoi@gmail.com", true),
             human: true,
         },
     });
@@ -35,7 +35,7 @@ async function fill() {
             email: "unamuno@gmail.com",
             name: "Miguel de Unamuno",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("unamuno@gmail.com"),
+			avatar: await utils.generateIcon("unamuno@gmail.com", true),
             human: true,
         },
     });
@@ -44,7 +44,7 @@ async function fill() {
             email: "alincoln@gmail.com",
             name: "Abraham Lincoln",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("alincoln@gmail.com"),
+			avatar: await utils.generateIcon("alincoln@gmail.com", false),
             human: false,
         },
     });
@@ -53,7 +53,7 @@ async function fill() {
             email: "gwashing@gmail.com",
             name: "George Washington",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("gwashing@gmail.com"),
+			avatar: await utils.generateIcon("gwashing@gmail.com", false),
             human: false,
         },
     });
@@ -62,7 +62,7 @@ async function fill() {
             email: "tjefferson@gmail.com",
             name: "Thomas Jefferson",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("tjefferson@gmail.com"),
+			avatar: await utils.generateIcon("tjefferson@gmail.com", false),
             human: false,
         },
     });
@@ -71,7 +71,7 @@ async function fill() {
             email: "ccolon@gmail.com",
             name: "Cristobal Colón",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("ccolon@gmail.com"),
+			avatar: await utils.generateIcon("ccolon@gmail.com", false),
             human: false,
         },
     });
@@ -80,7 +80,7 @@ async function fill() {
             email: "florca@gmail.com",
             name: "Federico García Lorca",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("florca@gmail.com"),
+			avatar: await utils.generateIcon("florca@gmail.com", false),
             human: false,
         },
     });
@@ -89,7 +89,7 @@ async function fill() {
             email: "avargas@gmail.com",
             name: "Alan Vargas",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("avargas@gmail.com"),
+			avatar: await utils.generateIcon("avargas@gmail.com", false),
             human: false,
         },
     });
@@ -98,7 +98,7 @@ async function fill() {
             email: "jausten@gmail.com",
             name: "Jane Austen",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("jausten@gmail.com"),
+			avatar: await utils.generateIcon("jausten@gmail.com", false),
             human: false,
         },
     });
@@ -107,7 +107,7 @@ async function fill() {
             email: "psmith@gmail.com",
             name: "Paul Smith",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("psmith@gmail.com"),
+			avatar: await utils.generateIcon("psmith@gmail.com", false),
             human: false,
         },
     });
@@ -116,7 +116,7 @@ async function fill() {
             email: "jsiemens@gmail.com",
             name: "John Siemens",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("jsiemens@gmail.com"),
+			avatar: await utils.generateIcon("jsiemens@gmail.com", false),
             human: false,
         },
     });
@@ -125,7 +125,7 @@ async function fill() {
             email: "jsolomon@gmail.com",
             name: "Jake Solomon",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("jsolomon@gmail.com"),
+			avatar: await utils.generateIcon("jsolomon@gmail.com", false),
             human: false,
         },
     });
@@ -134,7 +134,7 @@ async function fill() {
             email: "ysoon@gmail.com",
             name: "Young Soon",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("ysoon@gmail.com"),
+			avatar: await utils.generateIcon("ysoon@gmail.com", false),
             human: false,
         },
     });
@@ -143,7 +143,7 @@ async function fill() {
             email: "cswam@gmail.com",
             name: "Chang Swam",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("cswam@gmail.com"),
+			avatar: await utils.generateIcon("cswam@gmail.com", false),
             human: false,
         },
     });
@@ -155,7 +155,7 @@ async function fill() {
 			email: "juaflore@gmail.com",
             name: "Juan Daniel Flores",
             passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: utils.generateIcon("juaflore@gmail.com"),
+			avatar: await utils.generateIcon("juaflore@gmail.com", true),
 			friends: {
 				connect: [
 					{ id: c1.id },
