@@ -12,7 +12,6 @@ const TXT = {
 };
 
 const DIM = 3;
-const LIMIT = 2;
 const MAX_SCORE = 3;
 
 class Screen {
@@ -41,19 +40,38 @@ class Screen {
 }
 
 class Player {
-	constructor (socket, raw) {
+
+	constructor (user) {
 		this.wins = false;
-		this.socket = socket;
-		this.screen = new Screen(raw);
+		this.screen = new Screen(user.raw);
 		this.score = 0;
+		this.ai = !user.human;
+		this.user = user;
+		this.side = 0;
+	}
+
+	getUser() {
+		return this.user;
 	}
 
 	getSocket() {
-		return this.socket;
+		return this.user.socket;
+	}
+
+	getSide() {
+		return this.side;
+	}
+
+	setSide(side) {
+		this.side = side;
 	}
 
 	getScreen() {
 		return this.screen;
+	}
+
+	setScreen() {
+		this.screen = new Screen(this.user.raw);
 	}
 
 	setWins(w) {
@@ -87,19 +105,27 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid, match) {
+	constructor(mid, limit, match) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
-		this.matrix = [];
+		this.matrix = [[0,0,0],[0,0,0],[0,0,0]];
 		this.last = '';
 		this.mid = mid;
 		this.match = match;
+		this.limit = limit;
+	}
+
+	toJSON() {
+		return {
+			matrix: this.matrix,
+			players: this.players
+		}
 	}
 
 	start() {
-		tournamentSrv.startMatch(this.mid);
 		this.reset();
+		tournamentSrv.startMatch(this.mid);
 	}
 
 	reset() {
@@ -119,25 +145,37 @@ class TicTacToe {
 	}
 
 	addPlayer(player) {
+		player.setSide(this.players.length % 2);
 		this.players.push(player);
-
-		if (this.players.length == LIMIT) {
+		if (this.players.length == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
-					p.getSocket().send(JSON.stringify({ message: TXT.success }));
+					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
-			this.start();
-		} else if(player.getSocket()) {
-			const match = { counter: 2 };
-			const u1 = this.match.user1;
-			const u2 = this.match.user2;
-			match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
-			match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png' };
+			setTimeout(() => { this.start(); }, 2000);
+		} else {
 			for(let p of this.players) {
 				if (p.getSocket())
-					p.getSocket().send(JSON.stringify({ message: TXT.wait, match }));
+					p.getSocket().send(JSON.stringify({ message: TXT.wait, match: this.getMatch() }));
 			}
 		}
+	}
+
+	getMatch() {
+		const match = { counter: 2 };
+		const u1 = this.match.user1;
+		const u2 = this.match.user2;
+		match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
+		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png' };
+		if (this.match.user3) {
+			match.user3 = { name: this.match.user3.name, avatar: this.match.user3.avatar };
+			match.counter++;
+		}
+		if (this.match.user4) {
+			match.user4 = { name: this.match.user4.name, avatar: this.match.user4.avatar };
+			match.counter++;
+		}
+		return match;
 	}
 
 	play(player, down, i) {

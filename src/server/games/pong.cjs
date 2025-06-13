@@ -339,8 +339,8 @@ class Pong {
 				if (p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
-			setTimeout(() => { this.start(); }, 2000);
-		} else if(player.getSocket()) {
+			setTimeout(() => { this.start(); }, 1000);
+		} else {
 			for(let p of this.players) {
 				if (p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.wait, match: this.getMatch() }));

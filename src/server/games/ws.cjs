@@ -5,10 +5,10 @@ const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 
 function newGame(type, mid, limit, match) {
-	return type === 'pong' ? new Pong(mid, limit, match) : new TicTacToe(mid, match);
+	return type === 'pong' ? new Pong(mid, limit, match) : new TicTacToe(mid, 2, match);
 }
-function newPlayer(type, player) {
-	return type === 'pong' ? new PongPlayer(player) : new TicTacToePlayer(player.socket, player.raw);
+function newPlayer(type, user) {
+	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
 }
 
 const MAX_USERS = 4;

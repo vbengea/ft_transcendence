@@ -173,34 +173,36 @@ let hydrateTemplate = async (url) => {
 		case 't_stats':
 			const tournament1 = JSON.parse(localStorage.tournament);
 			const r1 : HTMLInputElement = document.querySelector('#rounds');
-			const content1 = `
-			<div class="mb-4 grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
-				${tournament1.rounds.map(r1 => `<div>${r1.name}</div>`).join('')}
-			</div>
-			<div class="grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center">
-				${tournament1.rounds.map((r, i) => `
-					<div class="${i > 0 ? "mx-2" : ""} grid h-1/${i > 0 ? i * 2 : 1} grid-flow-row grid-rows-${r.matches.length}">
-						${ r.matches.map((m, j) => {
+			if (tournament1) {
+				const content1 = `
+				<div class="mb-4 grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
+					${tournament1.rounds.map(r1 => `<div>${r1.name}</div>`).join('')}
+				</div>
+				<div class="grid grid-flow-col grid-cols-${tournament1.rounds.length} items-center">
+					${tournament1.rounds.map((r, i) => `
+						<div class="${i > 0 ? "mx-2" : ""} grid h-1/${i > 0 ? i * 2 : 1} grid-flow-row grid-rows-${r.matches.length}">
+							${ r.matches.map((m, j) => {
 
-							const rows = `
-							<div class="grid grid-flow-col grid-cols-2">
-								<p class="font-semibold w-60">${m.user1 ? m.user1.name : ''}</p>
-								<p class="text-right">${m.user1Score || 0}</p>
-							</div>
-							<div class="grid grid-flow-col grid-cols-2">
-								<p class="font-semibold w-60">${m.user2 ? m.user2.name : ''}</p>
-								<p class="text-right">${m.user2Score || 0}</p>
-							</div>`
+								const rows = `
+								<div class="grid grid-flow-col grid-cols-2">
+									<p class="font-semibold w-60">${m.user1 ? m.user1.name : ''}</p>
+									<p class="text-right">${m.user1Score || 0}</p>
+								</div>
+								<div class="grid grid-flow-col grid-cols-2">
+									<p class="font-semibold w-60">${m.user2 ? m.user2.name : ''}</p>
+									<p class="text-right">${m.user2Score || 0}</p>
+								</div>`
 
-							let html = `<div class="mb-4 rounded-md bg-gray-200 px-4 py-2 text-gray-900 space-y-2 text-xs md:text-base">${rows}</div>`
+								let html = `<div class="mb-4 rounded-md bg-gray-200 px-4 py-2 text-gray-900 space-y-2 text-xs md:text-base">${rows}</div>`
 
-							return html;
+								return html;
 
-						}).join('')}
-					</div>
-				`).join('')}
-			</div>`
-			r1.innerHTML = content1;
+							}).join('')}
+						</div>
+					`).join('')}
+				</div>`
+				r1.innerHTML = content1;
+			}
 			break;
 		case 'win': case 'loose':
 			if (url === 'win'){
@@ -216,12 +218,17 @@ let hydrateTemplate = async (url) => {
 					} else {
 						const tid = JSON.parse(localStorage.tournament).id;
 						const t = await (await fetch(`/api/tournament/${tid}`)).json();
-						localStorage.tournament = JSON.stringify(t);
-						location.hash = '#/landing/t_stats';
-						setTimeout(() => {
+						if (t) {
+							localStorage.tournament = JSON.stringify(t);
+							location.hash = '#/landing/t_stats';
+							setTimeout(() => {
+								location.hash = `#/`;
+								localStorage.tournament = '';
+							}, 3000);
+						} else {
 							location.hash = `#/`;
 							localStorage.tournament = '';
-						}, 3000);
+						}
 					}
 				}, 3000);
 
