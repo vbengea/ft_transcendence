@@ -1,182 +1,35 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const utils = require('../user-auth/services/user.service')()
+const utils = require('../user-auth/services/user.service')(prisma)
+const DEFAULT_PASSWORD = "1234";
 
 async function fill() {
-	const size = 200;
-
     await prisma.game.create({ data: { description: "Pong", name: "pong" } });
-    await prisma.game.create({
-        data: { description: "Tic tac toe", name: "tictactoe" },
-    });
+    await prisma.game.create({ data: { description: "Tic tac toe", name: "tictactoe" } });
 
-    // Bots .............................................................................
+	// Bots .............................................................................
 
-    const c1 = await prisma.user.create({
-        data: {
-            email: "edgar@gmail.com",
-            name: "Edgar Allan Poe",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("edgar@gmail.com", true),
-            human: true,
-        },
-    });
-    const c2 = await prisma.user.create({
-        data: {
-            email: "tolstoi@gmail.com",
-            name: "Léon Tolstói",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("tolstoi@gmail.com", true),
-            human: true,
-        },
-    });
-    const c3 = await prisma.user.create({
-        data: {
-            email: "unamuno@gmail.com",
-            name: "Miguel de Unamuno",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("unamuno@gmail.com", true),
-            human: true,
-        },
-    });
-    const c4 = await prisma.user.create({
-        data: {
-            email: "alincoln@gmail.com",
-            name: "Abraham Lincoln",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("alincoln@gmail.com", false),
-            human: false,
-        },
-    });
-    const c5 = await prisma.user.create({
-        data: {
-            email: "gwashing@gmail.com",
-            name: "George Washington",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("gwashing@gmail.com", false),
-            human: false,
-        },
-    });
-    const c6 = await prisma.user.create({
-        data: {
-            email: "tjefferson@gmail.com",
-            name: "Thomas Jefferson",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("tjefferson@gmail.com", false),
-            human: false,
-        },
-    });
-    const c7 = await prisma.user.create({
-        data: {
-            email: "ccolon@gmail.com",
-            name: "Cristobal Colón",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("ccolon@gmail.com", false),
-            human: false,
-        },
-    });
-    const c8 = await prisma.user.create({
-        data: {
-            email: "florca@gmail.com",
-            name: "Federico García Lorca",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("florca@gmail.com", false),
-            human: false,
-        },
-    });
-    const c9 = await prisma.user.create({
-        data: {
-            email: "avargas@gmail.com",
-            name: "Alan Vargas",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("avargas@gmail.com", false),
-            human: false,
-        },
-    });
-    const c10 = await prisma.user.create({
-        data: {
-            email: "jausten@gmail.com",
-            name: "Jane Austen",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("jausten@gmail.com", false),
-            human: false,
-        },
-    });
-    const c11 = await prisma.user.create({
-        data: {
-            email: "psmith@gmail.com",
-            name: "Paul Smith",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("psmith@gmail.com", false),
-            human: false,
-        },
-    });
-    const c12 = await prisma.user.create({
-        data: {
-            email: "jsiemens@gmail.com",
-            name: "John Siemens",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("jsiemens@gmail.com", false),
-            human: false,
-        },
-    });
-    const c13 = await prisma.user.create({
-        data: {
-            email: "jsolomon@gmail.com",
-            name: "Jake Solomon",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("jsolomon@gmail.com", false),
-            human: false,
-        },
-    });
-    const c14 = await prisma.user.create({
-        data: {
-            email: "ysoon@gmail.com",
-            name: "Young Soon",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("ysoon@gmail.com", false),
-            human: false,
-        },
-    });
-    const c15 = await prisma.user.create({
-        data: {
-            email: "cswam@gmail.com",
-            name: "Chang Swam",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("cswam@gmail.com", false),
-            human: false,
-        },
-    });
+	await utils.createUser("alincoln@gmail.com", "Abraham Lincoln", false, DEFAULT_PASSWORD);
+	await utils.createUser("gwashing@gmail.com", "George Washington", false, DEFAULT_PASSWORD);
+	await utils.createUser("tjefferson@gmail.com", "Thomas Jefferson", false, DEFAULT_PASSWORD);
+	await utils.createUser("ccolon@gmail.com", "Cristobal Colón", false, DEFAULT_PASSWORD);
 
-    // Humans ...........................................................................
+	await utils.createUser("florca@gmail.com", "Federico García Lorca", false, DEFAULT_PASSWORD);
+	await utils.createUser("avargas@gmail.com", "Alan Vargas", false, DEFAULT_PASSWORD);
+	await utils.createUser("jausten@gmail.com", "Jane Austen", false, DEFAULT_PASSWORD);
+	await utils.createUser("psmith@gmail.com", "Paul Smith", false, DEFAULT_PASSWORD);
 
-	await prisma.user.create({ 
-		data: { 
-			email: "juaflore@gmail.com",
-            name: "Juan Daniel Flores",
-            passwordHash: "$2a$10$04XSlcWwriUAv9jaV5YXXuN0xzs3gLc3/smPT.WytRQSa8kALUWRC",
-			avatar: await utils.generateIcon("juaflore@gmail.com", true),
-			friends: {
-				connect: [
-					{ id: c1.id },
-					{ id: c2.id },
-					{ id: c3.id },
-					{ id: c4.id },
-					{ id: c5.id },
-					{ id: c6.id },
-					{ id: c7.id },
-					{ id: c8.id },
-					{ id: c9.id },
-					{ id: c10.id },
-					{ id: c11.id },
-					{ id: c12.id },
-					{ id: c13.id },
-					{ id: c14.id },
-					{ id: c15.id },
-				]
-			}
-		} 
-	});
+	await utils.createUser("jsiemens@gmail.com", "John Siemens", false, DEFAULT_PASSWORD);
+	await utils.createUser("jsolomon@gmail.com", "Jake Solomon", false, DEFAULT_PASSWORD);
+	await utils.createUser("ysoon@gmail.com", "Young Soon", false, DEFAULT_PASSWORD);
+	await utils.createUser("cswam@gmail.com", "Chang Swam", false, DEFAULT_PASSWORD);
+
+	// Humans ...........................................................................
+
+	await utils.createUser("edgar@gmail.com", "Edgar Allan Poe", true, DEFAULT_PASSWORD);
+	await utils.createUser("tolstoi@gmail.com", "Léon Tolstói", true, DEFAULT_PASSWORD);
+	await utils.createUser("unamuno@gmail.com", "Miguel de Unamuno", true, DEFAULT_PASSWORD);
+	await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD);
 }
 
 fill();

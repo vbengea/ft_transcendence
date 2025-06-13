@@ -49,7 +49,7 @@ function authRoutes(fastify, options, done) {
 		const exists = await userService.userExists(email, name);
 		if (exists) return reply.code(409).send({ error: 'Email or name already taken' });
 
-		const newUser = await userService.createUser(email, name, password);
+		const newUser = await userService.createUser(email, name, true, password);
 		reply.send({ message: 'User registered', user: newUser });
 	});
 

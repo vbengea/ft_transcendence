@@ -5,7 +5,7 @@ const speakeasy = require('speakeasy');
 const jdenticon = require("jdenticon");
 const fetch = require('node-fetch');
 const fs = require("fs");
-const Buffer = require('buffer').Buffer 
+const Buffer = require('buffer').Buffer
 
 function createUserService(prisma) {
 	return {
@@ -21,16 +21,30 @@ function createUserService(prisma) {
 			});
 		},
 
-		async createUser(email, name, plainPassword) {
+		async createUser(email, name, human, plainPassword) {
 			const passwordHash = await bcrypt.hash(plainPassword, 10);
-			
+			let bots = new Set();
+			if (human) {
+				const comp = await this.getComputerPlayers();
+				while (comp.length >= 3 && bots.size < 3) {
+					const i = Math.floor(Math.random() * comp.length);
+					bots.add(comp[i]);
+					comp.splice(i, 1);
+				}
+			}
+
+			bots = Array.from(bots);
+
 			return prisma.user.create({
 				data: {
 					email,
 					name,
 					passwordHash,
-					avatar: await this.generateIcon(email, true),
-					human: true
+					avatar: await this.generateIcon(email, human),
+					human,
+					friends: bots.length ? {
+						connect: bots.map(({ id }) => { return { id }; })
+					} : {}
 				},
 				select: {
 					id: true,
@@ -144,9 +158,9 @@ function createUserService(prisma) {
 			return u ? u.friends : [];
 		},
 
-		async getComputerPlayers(id) {
+		async getComputerPlayers() {
 			const users = await prisma.user.findMany({
-				where: { human: false, id: { NOT: id } },
+				where: { human: false },
 				select: { 
 					id: true, 
 					email: true, 
