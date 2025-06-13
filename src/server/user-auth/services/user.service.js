@@ -146,7 +146,7 @@ function createUserService(prisma) {
 
 		async getComputerPlayers(id) {
 			const users = await prisma.user.findMany({
-				where: { human: false },
+				where: { human: false, id: { NOT: id } },
 				select: { 
 					id: true, 
 					email: true, 
