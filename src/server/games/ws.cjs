@@ -22,7 +22,7 @@ function setUser(i, socket, raw, uid, match) {
 		match[`user${i}`].raw = raw;
 		const player = newPlayer(raw.type, match[`user${i}`]);
 		match[`user${i}`].player = player;
-		match.game.addPlayer(player);
+		match.game.addPlayer(i - 1, player);
 		match[`user${i}`].matchId = match.id;
 		userMap.set(uid, match[`user${i}`]);
 
@@ -35,7 +35,7 @@ function setUser(i, socket, raw, uid, match) {
 				p.initialized = true;
 				const computer = newPlayer(raw.type, p);
 				p.player = computer;
-				match.game.addPlayer(computer);
+				match.game.addPlayer(j - 1, computer);
 			}
 		}
 	}

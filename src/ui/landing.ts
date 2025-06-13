@@ -43,7 +43,7 @@ let hydrateTemplate = async (url) => {
 			friends.push(currentUser);
 			div.innerHTML = friends.map(f => {
 				return `
-				<div id="${f.id}" data-sid="${f.id}" data-name="${f.name}" data-avatar="${f.avatar}" class="player relative cursor-pointer w-full ${f.id === uid ? 'bg-amber-400' : 'bg-white'} flex items-center p-2 rounded-sm shadow-2xs">
+				<div id="${f.id}" data-sid="${f.id}" data-name="${f.name}" data-avatar="${f.avatar}" data-human="${f.human}" class="player relative cursor-pointer w-full ${f.id === uid ? 'bg-amber-400' : 'bg-white'} flex items-center p-2 rounded-sm shadow-2xs">
 					<img data-sid="${f.id}" class="w-10 h-10 rounded-sm" src="${f.avatar}" alt="">
 					<span data-sid="${f.id}" class="absolute bottom-2 left-10 transform translate-y-1/4 w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
 					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
@@ -72,7 +72,12 @@ let hydrateTemplate = async (url) => {
 				const users = [];
 				document.querySelectorAll('div [class*="bg-amber-400"').forEach(n => {
 					const h : any = n;
-					users.push({ id: n.id, name: h.dataset.name, avatar: h.dataset.avatar });
+					users.push({ 
+						id: n.id, 
+						name: h.dataset.name, 
+						avatar: h.dataset.avatar, 
+						human: h.dataset.human == 'true' ? true : false 
+					});
 				});
 				shuffle(users);
 				const tusers = users.slice();
@@ -318,7 +323,7 @@ const playPong = async () => {
 			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-24 bg-white absolute self-center right-0"></div>`;
 	} else {
 		LHS.innerHTML = `<div id="score-left" class="absolute w-1/2 text-white text-right text-9xl pr-12"></div>
-			<div id="paddle-left-1" class="mx-1 my-0 w-3 h-24 bg-red-300 absolute self-center"></div>
+			<div id="paddle-left-1" class="mx-1  my-0 w-3 h-24 bg-red-300 absolute self-center"></div>
 			<div id="paddle-left-3" class="mx-1 my-0 w-3 h-24 bg-green-300 absolute self-center"></div>`;
 		RHS.innerHTML = `<div id="score-right" class="absolute w-1/2 text-white text-left text-9xl pl-12"></div>
 			<div id="paddle-right-2" class="mx-1 my-0 w-3 h-24 bg-blue-300 absolute self-center right-0"></div>

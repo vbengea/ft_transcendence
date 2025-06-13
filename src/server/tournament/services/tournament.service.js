@@ -33,13 +33,35 @@ function createTournamentService(prisma) {
 
 				for (const matchData of roundData.matches) {
 					const len = matchData.users.length;
+
 					if (matchData.users && len) {
+
+						matchData.users.sort((a, b) => {
+							if (a.human && !b.human)
+								return -1;
+							else if (!a.human && b.human)
+								return 1;
+							else if (a.human && b.human && a.id === organizerId)
+								return -1;
+							else if (a.human && b.human && b.id === organizerId)
+								return 1;
+							else
+								return 0;
+						});
+
 						await prisma.match.create({
-							data: {
+							data: len == 2 ? {
 								user1Id: matchData.users[0].id,
 								user2Id: matchData.users[1].id,
-								user3Id: len == 2 ? null : matchData.users[2].id,
-								user4Id: len == 2 ? null : matchData.users[3].id,
+								user3Id: null,
+								user4Id: null,
+								roundId: round.id,
+								winScore: 10
+							} : {
+								user1Id: matchData.users[0].id,
+								user2Id: matchData.users[2].id,
+								user3Id: matchData.users[1].id,
+								user4Id: matchData.users[3].id,
 								roundId: round.id,
 								winScore: 10
 							}

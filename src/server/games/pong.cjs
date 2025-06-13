@@ -250,6 +250,7 @@ class Pong {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
+		this.scores = [0, 0];
 		this.mid = mid;
 		this.limit = limit;
 		this.paddleLeftCounter = 0;
@@ -288,6 +289,8 @@ class Pong {
 		const sin = p1s[sindex];
 		const sos = new Map();
 
+		u1.setScore(this.scores[u1.getSide()]);
+
 		if (so1)
 			sos.set(so1, u1.getSide());
 			
@@ -306,6 +309,8 @@ class Pong {
 				const paddles = s2.getPaddles();
 				const index = p.getPaddleIndex();
 				const pad = paddles[index];
+
+				p.setScore(this.scores[p.getSide()]);
 
 				if (pad)
 					p1s[index].setY(pad.getY() / hRatio);
@@ -326,23 +331,21 @@ class Pong {
 		}
 	}
 
-	addPlayer(player) {
-		player.setSide(this.players.length % 2);
-		if (this.players.length % 2 == 0)
-			player.setSegment(this.paddleLeftCounter++);
-		else
-			player.setSegment(this.paddleRightCounter++);
-		player.setPaddleIndex(this.paddleCounter++);
-		this.players.push(player);
-		if (this.players.length == this.limit) {
+	addPlayer(index, player) {
+		player.setSide(index % 2 === 0 ? 0 : 1);
+		player.setSegment(index === 0 || index === 1 ? 0 : 1);
+		player.setPaddleIndex(index);
+		this.paddleCounter++;
+		this.players[index] = player;
+		if (this.paddleCounter == this.limit) {
 			for(let p of this.players) {
-				if (p.getSocket())
+				if (p && p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
 			setTimeout(() => { this.start(); }, 1000);
 		} else {
 			for(let p of this.players) {
-				if (p.getSocket())
+				if (p && p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.wait, match: this.getMatch() }));
 			}
 		}
@@ -521,7 +524,6 @@ class Pong {
 
 	moveBall() {
 		const p1 = this.getFirstNonComputerPlayer();
-		const p2 = this.players[1];
 		const s = p1.getScreen();
 		const b = s.getBall();
 
@@ -529,16 +531,10 @@ class Pong {
 		b.setY(b.getY() + b.getDy());
 		
 		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen ...........
-			for(let p of this.players) {
-				if (p.getSide() === 1)
-					p.setScore(p.getScore() + 1);
-			}
+			this.scores[1]++;
 			this.reset();
 		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ..........
-			for(let p of this.players) {
-				if (p.getSide() === 0)
-					p.setScore(p.getScore() + 1);
-			}
+			this.scores[0]++;
 			this.reset();
 		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ..........
 			b.setDy(-b.getDy());
@@ -550,11 +546,11 @@ class Pong {
 			}
 		}
 
-		if (p1.getScore() == MAX_SCORE) {																	// Check scores ...................................
-			this.manageResults(0)
+		if (this.scores[0] >= MAX_SCORE) {																	// Check scores ...................................
+			this.manageResults(0);
 
-		} else if (p2.getScore() == MAX_SCORE) {
-			this.manageResults(1)
+		} else if (this.scores[1] >= MAX_SCORE) {
+			this.manageResults(1);
 
 		} else {
 			for(let p of this.players)
@@ -566,7 +562,10 @@ class Pong {
 	}
 
 	manageResults(winnerSide) {
-		tournamentSrv.endMatch(this.mid, this.players[0].getScore(), this.players[1].getScore());  			// TODO: what about user3, user4?
+		if (this.players.length > 2)
+			tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1], this.scores[0], this.scores[1]);
+		else
+			tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1]);
 		for(let p of this.players) {
 			if (p.getSide() === winnerSide) {
 				p.wins = true;

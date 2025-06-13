@@ -114,6 +114,7 @@ class TicTacToe {
 		this.mid = mid;
 		this.match = match;
 		this.limit = limit;
+		this.counter = 0;
 	}
 
 	toJSON() {
@@ -144,10 +145,11 @@ class TicTacToe {
 			s2.send("{ \"game\": " + json + ", \"side\": 1 }");
 	}
 
-	addPlayer(player) {
-		player.setSide(this.players.length % 2);
-		this.players.push(player);
-		if (this.players.length == this.limit) {
+	addPlayer(index, player) {
+		player.setSide(index);
+		this.players[index] = player;
+		this.counter++;
+		if (this.counter == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
