@@ -294,6 +294,7 @@ let router = async (evt) => {
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
 			routeResolved();
+		testUsers();
 	}
 };
 
