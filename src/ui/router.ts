@@ -15,6 +15,19 @@ let templates = {};
 
 const BASE = '/auth';
 
+const handleWheel = (e) => {
+	if (e.ctrlKey || e.metaKey) {
+		e.preventDefault();
+	}
+};
+const handleKeyDown = (e) => {
+	if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-'|| e.key==='=')) {
+		e.preventDefault();
+	}
+};
+window.addEventListener('wheel', handleWheel);
+window.addEventListener('keydown', handleKeyDown);
+
 let template = (name, templateFunction) => {
 	return templates[name] = templateFunction;
 };

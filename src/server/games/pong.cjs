@@ -1,6 +1,6 @@
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
-const MAX_SCORE = 10;
+const MAX_SCORE = 100;
 
 const TXT = {
 	success:  "",
