@@ -65,6 +65,43 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+		<div class="p-6">
+			<h2 class="text-xl font-semibold mb-4">Friends</h2>
+			
+			<div class="mb-6">
+			<div class="flex justify-between items-center mb-2">
+				<h3 class="text-lg font-medium">My Friends</h3>
+				<button id="find-friends-btn" class="text-sm bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700">
+				Find Friends
+				</button>
+			</div>
+			<div id="friends-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+				<div class="flex items-center justify-center h-20 bg-gray-50 rounded-md">
+				<span class="text-gray-400">Loading friends...</span>
+				</div>
+			</div>
+			</div>
+			
+			<div id="friend-requests-container" class="mb-6 hidden">
+			<h3 class="text-lg font-medium mb-2">Friend Requests</h3>
+			<div id="friend-requests" class="space-y-2"></div>
+			</div>
+			
+			<div id="find-friends-container" class="hidden">
+			<h3 class="text-lg font-medium mb-2">Find Friends</h3>
+			<div class="flex mb-4">
+				<input type="text" id="search-user" placeholder="Search by name or email" 
+				class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+				<button id="search-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700">
+				Search
+				</button>
+			</div>
+			<div id="search-results" class="space-y-2"></div>
+			</div>
+		</div>
+	</div>
 	
 	<p class="mt-4 text-center text-sm text-gray-600">
 		For account security settings, please visit the <a href="#/landing/settings" class="text-indigo-600 hover:underline">Settings page</a>.

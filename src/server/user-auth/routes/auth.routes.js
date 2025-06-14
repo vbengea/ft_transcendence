@@ -355,6 +355,91 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.get('/friend-requests', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const requests = await userService.getFriendRequests(request.user.id);
+			reply.send(requests);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to get friend requests' });
+		}
+	});
+
+	fastify.post('/friend-requests', { preHandler: verifyToken }, async (request, reply) => {
+		const { receiverId } = request.body;
+		if (!receiverId) {
+			return reply.code(400).send({ error: 'Missing receiverId' });
+		}
+
+		try {
+			await userService.sendFriendRequest(request.user.id, receiverId);
+			reply.send({ message: 'Friend request sent successfully' });
+		} catch (err) {
+			fastify.log.error(err);
+			if (err.message.includes('already')) {
+				return reply.code(400).send({ error: err.message });
+			}
+			reply.code(500).send({ error: 'Failed to send friend request' });
+		}
+	});
+
+	fastify.post('/friend-requests/:id/accept', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			await userService.acceptFriendRequest(request.params.id, request.user.id);
+			reply.send({ message: 'Friend request accepted' });
+		} catch (err) {
+			fastify.log.error(err);
+			if (err.message.includes('not found') || err.message.includes('not authorized')) {
+				return reply.code(404).send({ error: err.message });
+			}
+			reply.code(500).send({ error: 'Failed to accept friend request' });
+		}
+	});
+
+	fastify.post('/friend-requests/:id/reject', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			await userService.rejectFriendRequest(request.params.id, request.user.id);
+			reply.send({ message: 'Friend request rejected' });
+		} catch (err) {
+			fastify.log.error(err);
+			if (err.message.includes('not found') || err.message.includes('not authorized')) {
+				return reply.code(404).send({ error: err.message });
+			}
+			reply.code(500).send({ error: 'Failed to reject friend request' });
+		}
+	});
+
+	fastify.get('/users/search', { preHandler: verifyToken }, async (request, reply) => {
+		const { q } = request.query;
+		if (!q || q.length < 2) {
+			return reply.code(400).send({ error: 'Search query must be at least 2 characters' });
+		}
+
+		try {
+			const users = await userService.searchUsers(q, request.user.id);
+			reply.send(users);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to search users' });
+		}
+	});
+
+	fastify.delete('/friends/:id', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const friendId = request.params.id;
+
+			await userService.removeFriend(userId, friendId);
+			reply.send({ message: 'Friend removed successfully' });
+		} catch (err) {
+			fastify.log.error(err);
+			if (err.message.includes('not found')) {
+				return reply.code(404).send({ error: err.message });
+			}
+			reply.code(500).send({ error: 'Failed to remove friend' });
+		}
+	});
+
 	done();
 }
 

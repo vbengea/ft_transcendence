@@ -28,6 +28,9 @@ model User {
   matchesAsUser2        Match[]       @relation("User2Matches")
   matchesAsUser3        Match[]       @relation("User3Matches")
   matchesAsUser4        Match[]       @relation("User4Matches")
+
+  sentFriendRequests    FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests  FriendRequest[] @relation("ReceivedFriendRequests")
 }
 
 model Game {
@@ -79,4 +82,17 @@ model Match {
   round                 Round         @relation(fields: [roundId], references: [id])
   roundId               String
   winScore              Int
+}
+
+model FriendRequest {
+  id                    String        @id     @default(cuid())
+  sender                User          @relation("SentFriendRequests", fields: [senderId], references: [id])
+  senderId              String
+  receiver              User          @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  receiverId            String
+  status                String        @default("PENDING")
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@unique([senderId, receiverId])
 }
