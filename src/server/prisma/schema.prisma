@@ -28,8 +28,8 @@ model User {
   matchesAsUser2        Match[]       @relation("User2Matches")
   matchesAsUser3        Match[]       @relation("User3Matches")
   matchesAsUser4        Match[]       @relation("User4Matches")
-  sentMessages     Message[] @relation("sentMessages")
-  receivedMessages Message[] @relation("receivedMessages")
+  sentMessages     		Message[]		@relation("sentMessages")
+  receivedMessages 		Message[]		@relation("receivedMessages")
 }
 
 model Game {
@@ -90,7 +90,8 @@ model Message {
   receiver   			User @relation(name: "receivedMessages", fields: [receiverId], references: [id])
   senderId   			String
   receiverId 			String
-  href					String
+  href					String?
   isLink				Boolean @default(false)
   isRead				Boolean @default(false)
+  creationTime          DateTime @default(now())
 }

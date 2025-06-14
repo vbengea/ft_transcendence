@@ -13,9 +13,20 @@ function initWebSocket() {
 		if (data.redirect || data.message || data.game)
 			handleGame(data);
 	};
+
+	changeMode("count");
 }
 
 // EVENTS .........................................................................................
+
+const changeMode = (mode) => {
+	send(JSON.stringify({ 
+		type: "chat", 
+		subtype: "mode", 
+		mode: "count",
+		user: JSON.parse(localStorage.TRANSCENDER_USER)
+	}));
+};
 
 const paddleHandler = (e) => {
 	const code = e.code;
@@ -42,14 +53,32 @@ const tapHandler = (e) => {
 const resizeScreen = (e) => {
 	send(JSON.stringify(payload("layout")));
 };
+
 const handleWheel = (e) => {
 	if (e.ctrlKey || e.metaKey) {
 		e.preventDefault();
 	}
 };
+
 const handleKeyDown = (e) => {
 	if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-'|| e.key==='=')) {
 		e.preventDefault();
+	}
+};
+
+const clickHandler = (e) => {
+	const target : HTMLElement = e.target;
+	const id = target.id;
+	switch(id) {
+		case "messages_btn": case "messages_path":
+			changeMode("list");
+			break;
+		case "friend_element": case "friend_element":
+			changeMode("friend");
+			break;
+		default:
+			changeMode("count");
+			break;
 	}
 };
 
@@ -60,6 +89,7 @@ addEventListener('keydown', handleKeyDown);
 addEventListener("keydown", paddleHandler);
 addEventListener("mouseup", tapHandler);
 addEventListener("resize", resizeScreen);
+addEventListener("click", clickHandler);
 
 const removeEvents = () => {
 	removeEventListener("keydown", paddleHandler);

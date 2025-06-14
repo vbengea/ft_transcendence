@@ -3,6 +3,7 @@ const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
+const chatSrv = require('../user-auth/services/chat.service')(prisma);
 
 function newGame(type, mid, limit, match) {
 	return type === 'pong' ? new Pong(mid, limit, match) : new TicTacToe(mid, 2, match);
@@ -17,8 +18,10 @@ const matchMap = new Map();
 const socketMap = new Map();
 const userMap = new Map();
 
-// TODO: merge userMap and socketMap with connMap
+// TODO: merge these maps *******
 const connMap = new Map();
+const chatMap = new Map();
+
 
 function setUser(i, socket, raw, uid, match) {
 	if (match[`user${i}Id`] === uid && match[`user${i}`].human) {
@@ -95,7 +98,29 @@ async function play(uid, socket, raw) {
 }
 
 async function chat(uid, socket, raw) {
-	// Handle chat
+	if (raw.subtype === 'mode') {
+		chatMap.set(uid, { 
+			mode: raw.mode, 
+			user: raw.user, 
+			friend: raw.mode === 'friend' ? raw.friend : null 
+		});
+
+	} else if (raw.subtype === 'send') {
+		const sender = userMap.get(uid);
+		const receiver = userMap.get(raw.receiverId);
+
+		if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
+			if (receiver.mode === 'count'){
+				receiver.socket.send(JSON.stringify({ count: 1 }));
+			} else if (receiver.mode === 'list'){
+				receiver.socket.send({ user: sender.user, count: 1 });
+			} else if (receiver.mode === 'friend' && receiver.user.id === sender.user.id) {
+				receiver.socket.send({ user: sender.user, text: raw.text });
+			}
+		}
+		
+		chatSrv.createMessage(sender.user.id, raw.receiverId, raw.text);
+	}
 }
 
 module.exports = async function (fastify) {
