@@ -148,7 +148,8 @@ class TicTacToe {
 	addPlayer(index, player) {
 		player.setSide(index);
 		this.players[index] = player;
-		this.counter++;
+		if (!this.players[index])
+			this.counter++;
 		if (this.counter == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())

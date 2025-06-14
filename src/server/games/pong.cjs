@@ -335,7 +335,8 @@ class Pong {
 		player.setSide(index % 2 === 0 ? 0 : 1);
 		player.setSegment(index === 0 || index === 1 ? 0 : 1);
 		player.setPaddleIndex(index);
-		this.paddleCounter++;
+		if (!this.players[index])
+			this.paddleCounter++;
 		this.players[index] = player;
 		if (this.paddleCounter == this.limit) {
 			for(let p of this.players) {

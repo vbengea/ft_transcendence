@@ -12,8 +12,8 @@ function newPlayer(type, user) {
 }
 
 const MAX_USERS = 4;
-const matchMap = new Map();
 
+const matchMap = new Map();
 const socketMap = new Map();
 const userMap = new Map();
 
@@ -68,14 +68,11 @@ async function play(uid, socket, raw) {
 					limit = match.round.tournament.totalPlayers;
 
 				match.game = newGame(raw.type, match.id, limit, match);
+			}
 
 			/* Update user's socket .................................................. */
-			} else  {
-				if (user) {
-					user.socket = socket;
-					return;
-				}
-			}
+			if (user)
+				user.socket = socket;
 
 			/* Update socket and layout information .................................. */
 			for (let i = 1; i <= MAX_USERS; i++)
