@@ -124,9 +124,9 @@ class TicTacToe {
 		}
 	}
 
-	start() {
+	async start() {
 		this.reset();
-		tournamentSrv.startMatch(this.mid);
+		await tournamentSrv.startMatch(this.mid);
 	}
 
 	reset() {
@@ -148,7 +148,8 @@ class TicTacToe {
 	addPlayer(index, player) {
 		player.setSide(index);
 		this.players[index] = player;
-		this.counter++;
+		if (!this.players[index])
+			this.counter++;
 		if (this.counter == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
@@ -180,7 +181,7 @@ class TicTacToe {
 		return match;
 	}
 
-	play(player, down, i) {
+	async play(player, down, i) {
 		const p1 = player || this.players[0];
 		const p2 = this.players[1];
 		const socket = this.players[i].getSocket();
@@ -221,7 +222,7 @@ class TicTacToe {
 			}
 
 			if (p1.getScore() == MAX_SCORE) {													// Check scores .....................................
-				tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
+				await tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
 				p1.wins = true;
 				p2.wins = false;
 				const s1 = p1.getSocket();
@@ -232,7 +233,7 @@ class TicTacToe {
 					s2.send(JSON.stringify({ redirect: TXT.loose }));
 
 			} else if (p2.getScore() == MAX_SCORE) {
-				tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
+				await tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
 				p1.wins = false;
 				p2.wins = true;
 				const s1 = p1.getSocket();

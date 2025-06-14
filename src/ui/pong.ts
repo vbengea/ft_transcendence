@@ -25,7 +25,8 @@ type Player = {
 type Game = {
 	status: number,
 	render: number,
-	players: Player[]
+	players: Player[],
+	matrix: string[][]
 };
 
 function getLayoutPayloadPong(subtype : string) {
@@ -80,7 +81,7 @@ function getLayoutPayloadPong(subtype : string) {
 	return ret;
 }
 
-function displayPong(raw: string) {
+function displayPong(data: Data) {
 	const BALL : HTMLElement | null = document.querySelector("#ball");
 	const LEFT_1 : HTMLElement | null = document.querySelector(`#paddle-left-1`);
 	const RIGHT_1 : HTMLElement | null = document.querySelector(`#paddle-right-2`);
@@ -88,7 +89,6 @@ function displayPong(raw: string) {
 	const RIGHT_2 : HTMLElement | null = document.querySelector(`#paddle-right-4`);
 	const SCORE_LEFT = document.querySelector(`#score-left`);
 	const SCORE_RIGHT = document.querySelector(`#score-right`);
-	const data = JSON.parse(raw);
 	const game : Game = data.game;
 	const side : number = data.side;
 	

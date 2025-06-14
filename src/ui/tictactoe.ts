@@ -6,11 +6,10 @@ function getLayoutPayloadTicTacToe(subtype : string) {
 	return { type: "tictactoe", subtype, screen: sc };
 }
 
-function displayTicTacToe(raw: string) {
+function displayTicTacToe(data: Data) {
 	const SCORE_LEFT = document.querySelector(`#score-left`);
 	const SCORE_RIGHT = document.querySelector(`#score-right`);
 	const MATRIX = document.querySelector(`#tictactoe`);
-	const data = JSON.parse(raw);
 	const game = data.game;
 
 	if (!game || !game.players)
@@ -30,7 +29,9 @@ function displayTicTacToe(raw: string) {
 	n = 0;
 	for (let i = 0; i < game.matrix.length; i++) {
 		for (let j = 0; j < game.matrix[i].length; j++) {
-			document.querySelector(`#cell_${n + 1}`).innerHTML = game.matrix[i][j] == '0' ? ' ' : game.matrix[i][j];
+			const el : HTMLElement = document.querySelector(`#cell_${n + 1}`);
+			const html = game.matrix[i][j] == '0' ? ' ' : game.matrix[i][j];
+			el.innerHTML = html;
 			n++;
 		}
 	}

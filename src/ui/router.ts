@@ -15,19 +15,6 @@ let templates = {};
 
 const BASE = '/auth';
 
-const handleWheel = (e) => {
-	if (e.ctrlKey || e.metaKey) {
-		e.preventDefault();
-	}
-};
-const handleKeyDown = (e) => {
-	if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-'|| e.key==='=')) {
-		e.preventDefault();
-	}
-};
-window.addEventListener('wheel', handleWheel);
-window.addEventListener('keydown', handleKeyDown);
-
 let template = (name, templateFunction) => {
 	return templates[name] = templateFunction;
 };
@@ -74,25 +61,6 @@ template('template-2fa-verify', async ()  => {
 
 	return myDiv.appendChild(verifyDiv);
 });
-
-function testUsers() {
-	const username : HTMLInputElement = document.querySelector('#email');
-	const password : HTMLInputElement = document.querySelector('#password');
-
-	if (username && password) {
-		password.value = '1234';
-
-		if (navigator.userAgent.includes('OPR')){
-			username.value = 'unamuno@gmail.com';
-		} else if (navigator.userAgent.includes('Firefox')) {
-			username.value = 'tolstoi@gmail.com';
-		} else if (navigator.userAgent.includes('Chrome')) {
-			username.value = 'juaflore@gmail.com';
-		} else if (navigator.userAgent.includes('Safari')) {
-			username.value = 'edgar@gmail.com';
-		}
-	}
-}
 
 template('template-view3', async () => {
 	let myDiv = document.getElementById(appDiv);
@@ -255,6 +223,9 @@ async function authorized() {
 		return false;
 	} else {
 		localStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
+		if (WS === null){
+			initWebSocket();
+		}
 	}
 	return true;
 }
@@ -298,7 +269,7 @@ function shuffle(array) {
   }
 }
 
-let router = async (evt) => {
+async function router(evt) {
 	let url = window.location.hash.slice(1) || "/";
 	if (url.startsWith('/landing/')) {
 		if (await authorized())
@@ -307,8 +278,6 @@ let router = async (evt) => {
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
 			routeResolved();
+		testUsers();
 	}
 };
-
-window.addEventListener('load', router);
-window.addEventListener('hashchange', router);
