@@ -1,6 +1,6 @@
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
-const MAX_SCORE = 100;
+const MAX_SCORE = 10;
 
 const TXT = {
 	success:  "",
@@ -265,8 +265,8 @@ class Pong {
 		}
 	}
 
-	start() {
-		tournamentSrv.startMatch(this.mid);
+	async start() {
+		await tournamentSrv.startMatch(this.mid);
 		this.status = 1;
 		this.reset();
 		this.moveBall();
@@ -561,18 +561,18 @@ class Pong {
 		}
 	}
 
-	manageResults(winnerSide) {
+	async manageResults(winnerSide) {
 		if (this.players.length > 2)
-			tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1], this.scores[0], this.scores[1]);
+			await tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1], this.scores[0], this.scores[1]);
 		else
-			tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1]);
+			await tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1]);
 		for(let p of this.players) {
 			if (p.getSide() === winnerSide) {
 				p.wins = true;
 				const s1 = p.getSocket();
 				if (s1)
 					s1.send(JSON.stringify({ redirect: TXT.win }));
-				tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+				await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
 			} else {
 				p.wins = false;
 				const s2 = p.getSocket();

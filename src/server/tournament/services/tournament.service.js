@@ -123,7 +123,8 @@ function createTournamentService(prisma) {
 					}, { 
 						user4Id: userId 
 					}],
-					startTime: null
+					user1Score: 0,
+					user2Score: 0
 				},
 				include: {
 					user1: {
