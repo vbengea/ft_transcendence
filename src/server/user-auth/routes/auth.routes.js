@@ -133,6 +133,11 @@ function authRoutes(fastify, options, done) {
 		reply.send({ id: request.user.id, name: request.user.name });
 	});
 
+	fastify.get('/you/:id', { preHandler: verifyToken }, async (request, reply) => {
+		const user = await userService.getUserById(request.params.id);
+		reply.send(user);
+	});
+
 	fastify.get('/2fa/setup', { preHandler: verifyToken }, async (request, reply) => {
 		const user = await userService.getUserById(request.user.id);
 		if (user && user.two_fa_enabled) {

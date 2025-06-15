@@ -1,4 +1,5 @@
-let hydrateTemplate = async (url) => {
+let hydrateTemplate = async (url, params) => {
+	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
 			document.querySelector("#play").addEventListener('click', (e) => {
@@ -38,7 +39,7 @@ let hydrateTemplate = async (url) => {
 			}
 			const response = await fetch('/auth/friends');
 			const friends = await response.json();
-			const currentUser = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+			const currentUser = userData;
 			const uid = currentUser.id;
 			friends.push(currentUser);
 			div.innerHTML = friends.map(f => {
@@ -246,8 +247,8 @@ let hydrateTemplate = async (url) => {
 			break;
 		case 'matches':
 			const it = document.querySelector("#submit");
-			const user = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
-			const matchesRaw = await fetch('/api/matches');
+			const user = userData;
+			const matchesRaw = await fetch(`/api/matches/${user.id}`);
 			const matches = await matchesRaw.json();
 			const mt : HTMLInputElement = document.querySelector('#matches');
 			it.addEventListener('click', () => {
@@ -273,7 +274,7 @@ let hydrateTemplate = async (url) => {
 			break;
 
 		case 'profile':
-			await hydrateProfile();
+			await hydrateProfile(params[0] || userData.id);
 			break;
 
 		default:
@@ -345,6 +346,7 @@ let landing = async (url) => {
 			playPong();
 		} else if (url === 'tictactoe') {
 			playTicTacToe();
+
 		} else {
 			app.innerHTML = await (await fetch(`./pages/template.html`)).text();
 
@@ -366,12 +368,25 @@ let landing = async (url) => {
 				menu.classList.remove('hidden');
 			});
 
+			let params = [];
+			if (url.includes('/')){
+				const paths = url.split('/');
+				let i = 0;
+				for (let p of paths){
+					if (i === 0)
+						url = p;
+					else
+						params.push(p);
+					i++;
+				}
+			}
+
 			const content = document.querySelector('#content');
 			const response = await fetch(`./pages/${url}.html`);
 
 			if (response.ok) {
 				content.innerHTML = await response.text();
-				hydrateTemplate(url);
+				hydrateTemplate(url, params);
 			} else {
 				content.innerHTML = '<div class="mt-12 text-center text-2xl text-red-400">Content not found</div>';
 			}

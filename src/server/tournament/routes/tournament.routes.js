@@ -82,9 +82,9 @@ function tournamentRoutes(fastify, options, done) {
 		}
 	});
 
-	fastify.get('/matches', { preHandler: fastify.authenticate }, async (request, reply) => {
+	fastify.get('/matches/:userId', { preHandler: fastify.authenticate }, async (request, reply) => {
 		try {
-			const matches = await tournamentService.getMatchesByUserId(request.user.id);
+			const matches = await tournamentService.getMatchesByUserId(request.params.userId);
 			reply.send(matches);
 		} catch (err) {
 			fastify.log.error(err);

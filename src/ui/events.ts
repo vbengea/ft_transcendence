@@ -86,7 +86,7 @@ const processChatUserList = () => {
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">Block</li>
 								<li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Pong</li>
 								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Tictactoe</li>
-								<li data-friend_option="profile" class="px-4 py-2">View profile</li>
+								<li data-friend_option="profile" data-friend_id="${u.id}" class="px-4 py-2">View profile</li>
 							</ul>
 						</div>
 
@@ -324,7 +324,7 @@ const clickHandler = (e) => {
 				createTournament(tournament, async () => location.hash = `#/landing/${game}`);
 
 			} else if(target.dataset.friend_option === "profile") {
-
+				location.hash = `#/landing/profile/${target.dataset.friend_id}`;
 			}
 
 			break;

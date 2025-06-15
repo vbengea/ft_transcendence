@@ -1,8 +1,10 @@
 
 
-const hydrateProfile = async () => {
+const hydrateProfile = async (userId) => {
 	try {
-		const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+		const userCurr = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+		const userData = await (await fetch(`/auth/you/${userId}`)).json();
+		const isCurr = userCurr.id === userData.id;
 
 		const avatarElement = document.getElementById('profile-avatar');
 
@@ -27,80 +29,88 @@ const hydrateProfile = async () => {
 		avatarContainer.appendChild(avatarOverlay);
 		avatarContainer.appendChild(fileInput);
 
-		avatarOverlay.addEventListener('click', () => {
-			fileInput.click();
-		});
+		await loadFriends(userData.id);
 
-		fileInput.addEventListener('change', async (e) => {
-			const file = (e.target as HTMLInputElement).files?.[0];
-			if (!file) {
-				return;
-			}
+		if (!isCurr) {
+			document.querySelectorAll('#profile-wrapper button').forEach(b => b.remove());
+			document.querySelector('#profile_footer').remove();
+		}
 
-			if (!file.type.startsWith('image/')) {
-				alert('Please select an image file');
-				return;
-			}
+		if (isCurr) {
+			avatarOverlay.addEventListener('click', () => {
+				fileInput.click();
+			});
 
-			if (file.size > 2 * 1024 * 1024) {
-				alert('Image size should be less than 2MB');
-				return;
-			}
-
-			const formData = new FormData();
-			formData.append('avatar', file);
-
-			try {
-				avatarElement.style.opacity = '0.5';
-
-				const response = await fetch('auth/avatar', {
-					method: 'POST',
-					credentials: 'include',
-					body: formData
-				});
-
-				if (response.ok) {
-					const result = await response.json();
-
-					avatarElement.setAttribute('src', result.avatar + '?t=' + new Date().getTime());
-
-					const userData = JSON.parse(sessionStorage.TRANSCENDER_USER);
-					userData.user.avatar = result.avatar;
-					sessionStorage.TRANSCENDER_USER = JSON.stringify(userData);
-
-					const menuAvatar = document.querySelector('#user_inner_3');
-					if (menuAvatar) {
-						menuAvatar.setAttribute('src', result.avatar + '?=' + new Date().getTime());
-					}
-				} else {
-					const error = await response.json();
-					alert(`Error: ${error.message || 'Failed to update avatar'}`);
+			fileInput.addEventListener('change', async (e) => {
+				const file = (e.target as HTMLInputElement).files?.[0];
+				if (!file) {
+					return;
 				}
-			} catch (err) {
-				console.error('Error uploading avatar:', err);
-				alert('An error ocurred while uploading the avatar');
-			} finally {
-				avatarElement.style.opacity = '1';
-			}
-		});
 
-		await loadFriends();
-		await loadFriendsRequests();
+				if (!file.type.startsWith('image/')) {
+					alert('Please select an image file');
+					return;
+				}
 
-		document.getElementById('find-friends-btn').addEventListener('click', () => {
-			const findFriendsContainer = document.getElementById('find-friends-container');
-			findFriendsContainer.classList.toggle('hidden');
-		});
+				if (file.size > 2 * 1024 * 1024) {
+					alert('Image size should be less than 2MB');
+					return;
+				}
 
-		document.getElementById('search-user-btn').addEventListener('click', searchUsers);
+				const formData = new FormData();
+				formData.append('avatar', file);
 
-		document.getElementById('search-user').addEventListener('keypress', (e) => {
-			if (e.key === 'Enter') {
-				searchUsers();
-			}
-		});
+				try {
+					avatarElement.style.opacity = '0.5';
 
-		const statsResponse = await fetch('/api/matches', {
+					const response = await fetch('auth/avatar', {
+						method: 'POST',
+						credentials: 'include',
+						body: formData
+					});
+
+					if (response.ok) {
+						const result = await response.json();
+
+						avatarElement.setAttribute('src', result.avatar + '?t=' + new Date().getTime());
+
+						const userData = JSON.parse(sessionStorage.TRANSCENDER_USER);
+						userData.user.avatar = result.avatar;
+						sessionStorage.TRANSCENDER_USER = JSON.stringify(userData);
+
+						const menuAvatar = document.querySelector('#user_inner_3');
+						if (menuAvatar) {
+							menuAvatar.setAttribute('src', result.avatar + '?=' + new Date().getTime());
+						}
+					} else {
+						const error = await response.json();
+						alert(`Error: ${error.message || 'Failed to update avatar'}`);
+					}
+				} catch (err) {
+					console.error('Error uploading avatar:', err);
+					alert('An error ocurred while uploading the avatar');
+				} finally {
+					avatarElement.style.opacity = '1';
+				}
+			});
+
+			await loadFriendsRequests(userData.id);
+
+			document.getElementById('find-friends-btn').addEventListener('click', () => {
+				const findFriendsContainer = document.getElementById('find-friends-container');
+				findFriendsContainer.classList.toggle('hidden');
+			});
+
+			document.getElementById('search-user-btn').addEventListener('click', searchUsers);
+
+			document.getElementById('search-user').addEventListener('keypress', (e) => {
+				if (e.key === 'Enter') {
+					searchUsers();
+				}
+			});
+		}
+
+		const statsResponse = await fetch(`/api/matches/${userData.id}`, {
 			credentials: 'include'
 		});
 
@@ -154,9 +164,9 @@ const hydrateProfile = async () => {
 	}
 }
 
-async function loadFriends() {
+async function loadFriends(userId) {
 	try {
-		const response = await fetch('/auth/friends', {
+		const response = await fetch(`/auth/friends`, {
 			credentials: 'include'
 		});
 
@@ -190,7 +200,7 @@ async function loadFriends() {
 					button.addEventListener('click', async () => {
 						const friendId = button.getAttribute('data-id');
 						if (confirm('Are you sure you want to remove this friend?')) {
-							await removeFriend(friendId);
+							await removeFriend(userId, friendId);
 						}
 					});
 				});
@@ -203,7 +213,7 @@ async function loadFriends() {
 	}
 }
 
-async function removeFriend(friendId) {
+async function removeFriend(userId, friendId) {
 	try {
 		const respose = await fetch(`/auth/friends/${friendId}`, {
 			method: 'DELETE',
@@ -211,7 +221,7 @@ async function removeFriend(friendId) {
 		});
 
 		if (respose.ok) {
-			await loadFriends();
+			await loadFriends(userId);
 		} else {
 			const error = await respose.json();
 			alert(`Error: ${error.error || 'Failed to remove friend'}`);
@@ -222,7 +232,7 @@ async function removeFriend(friendId) {
 	}
 }
 
-async function loadFriendsRequests() {
+async function loadFriendsRequests(userId) {
 	try {
 		const response = await fetch('/auth/friend-requests', {
 			credentials: 'include'
@@ -258,14 +268,14 @@ async function loadFriendsRequests() {
 				document.querySelectorAll('.accept-request').forEach(button => {
 					button.addEventListener('click', async () => {
 						const requestId = button.getAttribute('data-id');
-						await handleFriendRequest(requestId, 'accept');
+						await handleFriendRequest(userId, requestId, 'accept');
 					});
 				});
 
 				document.querySelectorAll('.reject-request').forEach(button => {
 					button.addEventListener('click', async () => {
 						const requestId = button.getAttribute('data-id');
-						await handleFriendRequest(requestId, 'reject');
+						await handleFriendRequest(userId, requestId, 'reject');
 					});
 				});
 			} else {
@@ -279,7 +289,7 @@ async function loadFriendsRequests() {
 	}
 }
 
-async function handleFriendRequest(requestId, action) {
+async function handleFriendRequest(userId, requestId, action) {
 	try {
 		const response = await fetch(`/auth/friend-requests/${requestId}/${action}`, {
 			method: 'POST',
@@ -287,8 +297,8 @@ async function handleFriendRequest(requestId, action) {
 		});
 
 		if(response.ok) {
-			await loadFriends();
-			await loadFriendsRequests();
+			await loadFriends(userId);
+			await loadFriendsRequests(userId);
 		} else {
 			const error = await response.json();
 			alert(`Error: ${error.error || `Failed to ${action} friend request`}`);
@@ -368,7 +378,7 @@ async function sendFriendRequest(userId) {
 				'Content-Type': 'application/json'
 			},
 			credentials: 'include',
-			body: JSON.stringify({ receiverId: userId})
+			body: JSON.stringify({ receiverId: userId })
 		});
 
 		if (!response.ok) {
