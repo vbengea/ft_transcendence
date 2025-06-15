@@ -205,10 +205,11 @@ function createUserService(prisma) {
 			if (human) {
 				fs.writeFileSync(file, jdenticon.toPng(email, 200));
 			} else {
-				const blob = await (await fetch(`https://robohash.org/${email}`)).blob();
-				let buffer = await blob.arrayBuffer();
-				buffer = Buffer.from(buffer);
-				fs.createWriteStream(file).write(buffer);
+				fs.writeFileSync(file, jdenticon.toPng(email, 200));
+				// const blob = await (await fetch(`https://robohash.org/${email}`)).blob();
+				// let buffer = await blob.arrayBuffer();
+				// buffer = Buffer.from(buffer);
+				// fs.createWriteStream(file).write(buffer);
 			}
 			return path;
 		},

@@ -84,7 +84,8 @@ const processChatUserList = () => {
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">Block</li>
-								<li data-friend_option="invite" class="px-4 py-2">Invite to play</li>
+								<li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Pong</li>
+								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Tictactoe</li>
 								<li data-friend_option="profile" class="px-4 py-2">View profile</li>
 							</ul>
 						</div>
@@ -275,6 +276,8 @@ const clickHandler = (e) => {
 		id = "friend_option";
 	else if (target.dataset.chat)
 		id = "chat";
+	else if (target.dataset.link)
+		id = "link";
 
 	if(menu && !bypass.includes((e.target as HTMLElement).id)){
 		menu.classList.add('hidden');
@@ -305,12 +308,24 @@ const clickHandler = (e) => {
 			if (target.dataset.friend_option === "block"){
 				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
 				changeMode("list");
-			} else if(target.dataset.friend_option === "invite") {
-
+			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "tictactoe") {
+				const { friend_id, friend_name, friend_avatar } = target.dataset;
+				const game = target.dataset.friend_option;
+				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: false }
+				const users = [me, you];
+				const rounds = [{ name: 'Finals', matches: [{ users }] }];
+				const tournament = { name: 'Single player', users, rounds, gameType: 'pong' };
+				const text = `<button type="button" data-link="#/landing/${game}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+				WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId: target.dataset.friend_id, game }));
+				createTournament(tournament, async () => location.hash = `#/landing/${game}`);
 			} else if(target.dataset.friend_option === "profile") {
 
 			}
 
+			break;
+		case "link":
+			location.hash = target.dataset.link;
 			break;
 		case "chat":
 			break;
