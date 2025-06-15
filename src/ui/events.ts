@@ -154,14 +154,16 @@ const processUserMessages = () => {
 
 		el.innerHTML = html;
 
-		const sc = document.querySelector("#scroller");
-		const tx: HTMLInputElement = document.querySelector("#text");
-		if (sc) {
-			sc.scrollTo(0, el.scrollHeight + 100);
-			if (tx) {
-				tx.focus();
+		setTimeout(() => {
+			const sc = document.querySelector("#scroller");
+			const tx: HTMLInputElement = document.querySelector("#text");
+			if (sc) {
+				sc.scrollTo(0, el.scrollHeight + 100);
+				if (tx) {
+					tx.focus();
+				}
 			}
-		}
+		}, 10);
 	};
 }
 

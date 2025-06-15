@@ -118,9 +118,8 @@ async function chat(uid, socket, raw) {
 			} else if (receiver.mode === 'friend') {
 				receiver.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 			}
-			sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 		}
-
+		sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 		chatSrv.createMessage(uid, raw.receiverId, raw.text);
 	}
 }
