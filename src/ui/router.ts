@@ -222,7 +222,7 @@ async function authorized() {
 		location.hash = '#/login';
 		return false;
 	} else {
-		localStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
+		sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
 		if (WS === null){
 			initWebSocket();
 		}
@@ -234,7 +234,7 @@ async function resolveRoute(route) {
 	try {
 		if (route == '/logout') {
 			fetch(`${BASE}/logout`, { method: "DELETE" });
-			localStorage.TRANSCENDER_USER = '';
+			sessionStorage.TRANSCENDER_USER = '';
 			location.hash = '#/login';
 			return () => {};
 		} else if (route == '/login' || route == '/register' || route == '/2fa/verify') {

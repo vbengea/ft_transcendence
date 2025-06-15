@@ -56,7 +56,7 @@ function initWebSocket() {
 // EVENTS .........................................................................................
 
 const processChatUserList = () => {
-	const user = JSON.parse(localStorage.TRANSCENDER_USER).user;
+	const user = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 
 	const el = document.querySelector('#chat');
 	if (el) {
@@ -96,7 +96,7 @@ const processChatUserList = () => {
 };
 
 const processUserMessages = () => {
-	const user = JSON.parse(localStorage.TRANSCENDER_USER).user;
+	const user = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 
 	const el = document.querySelector('#chat');
 	if (el) {
@@ -196,7 +196,7 @@ const changeMode = async (mode, friendId?) => {
 		subtype: "mode", 
 		mode,
 		friendId,
-		user: JSON.parse(localStorage.TRANSCENDER_USER).user
+		user: JSON.parse(sessionStorage.TRANSCENDER_USER).user
 	}));
 };
 

@@ -38,7 +38,7 @@ let hydrateTemplate = async (url) => {
 			}
 			const response = await fetch('/auth/friends');
 			const friends = await response.json();
-			const currentUser = JSON.parse(localStorage.TRANSCENDER_USER).user;
+			const currentUser = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 			const uid = currentUser.id;
 			friends.push(currentUser);
 			div.innerHTML = friends.map(f => {
@@ -246,7 +246,7 @@ let hydrateTemplate = async (url) => {
 			break;
 		case 'matches':
 			const it = document.querySelector("#submit");
-			const user = JSON.parse(localStorage.TRANSCENDER_USER).user;
+			const user = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 			const matchesRaw = await fetch('/api/matches');
 			const matches = await matchesRaw.json();
 			const mt : HTMLInputElement = document.querySelector('#matches');
@@ -354,7 +354,7 @@ let landing = async (url) => {
 
 			changeMode("count");
 			
-			img.src = JSON.parse(localStorage.TRANSCENDER_USER).user.avatar;
+			img.src = JSON.parse(sessionStorage.TRANSCENDER_USER).user.avatar;
 
 			user.addEventListener('click', (e) => {
 				e.preventDefault();

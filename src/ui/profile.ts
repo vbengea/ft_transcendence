@@ -2,7 +2,7 @@
 
 const hydrateProfile = async () => {
 	try {
-		const userData = JSON.parse(localStorage.TRANSCENDER_USER).user;
+		const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 
 		const avatarElement = document.getElementById('profile-avatar');
 
@@ -64,9 +64,9 @@ const hydrateProfile = async () => {
 
 					avatarElement.setAttribute('src', result.avatar + '?t=' + new Date().getTime());
 
-					const userData = JSON.parse(localStorage.TRANSCENDER_USER);
+					const userData = JSON.parse(sessionStorage.TRANSCENDER_USER);
 					userData.user.avatar = result.avatar;
-					localStorage.TRANSCENDER_USER = JSON.stringify(userData);
+					sessionStorage.TRANSCENDER_USER = JSON.stringify(userData);
 
 					const menuAvatar = document.querySelector('#user_inner_3');
 					if (menuAvatar) {
