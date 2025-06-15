@@ -34,6 +34,7 @@ const hydrateProfile = async (userId) => {
 		if (!isCurr) {
 			document.querySelectorAll('#profile-wrapper button').forEach(b => b.remove());
 			document.querySelector('#profile_footer').remove();
+			document.querySelector('#friends-title').innerHTML = '';
 		}
 
 		if (isCurr) {
