@@ -21,16 +21,20 @@ model User {
   human                 Boolean       @default(true)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-  friends               User[]      @relation("UserFriends")
-  friendOf              User[]      @relation("UserFriends")
+  friends               User[]        @relation("UserFriends")
+  friendOf              User[]        @relation("UserFriends")
+
+  blockedUserId 		String?
+  blockedUser   		User?  		  @relation("BlockedUsers", fields: [blockedUserId], references: [id])
+  blockedUsers  		User[] 		  @relation("BlockedUsers")
+
   organizedTournaments  Tournament[]
   matchesAsUser1        Match[]       @relation("User1Matches")
   matchesAsUser2        Match[]       @relation("User2Matches")
   matchesAsUser3        Match[]       @relation("User3Matches")
   matchesAsUser4        Match[]       @relation("User4Matches")
-  sentMessages     		Message[]		@relation("sentMessages")
-  receivedMessages 		Message[]		@relation("receivedMessages")
-
+  sentMessages     		Message[]	  @relation("sentMessages")
+  receivedMessages 		Message[]	  @relation("receivedMessages")
   sentFriendRequests    FriendRequest[] @relation("SentFriendRequests")
   receivedFriendRequests  FriendRequest[] @relation("ReceivedFriendRequests")
 }
@@ -108,6 +112,5 @@ model FriendRequest {
   status                String        @default("PENDING")
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-
   @@unique([senderId, receiverId])
 }

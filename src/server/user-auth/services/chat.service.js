@@ -21,6 +21,8 @@ function createChatService(prisma) {
 				}
 			});
 
+			const blocked = (await this.getBlockedUsers(uid)).map(r => r.id);
+
 			const users = await prisma.user.findMany({
 				where : {
 					human: true
@@ -30,15 +32,36 @@ function createChatService(prisma) {
 				}
 			});
 
-			if (messages.length){
-				for (let u of users) {
-					for (let m of messages) {
-						if (u.id === m.senderId) {
-							u.count = m._count._all;
-						}
+			for (let u of users) {
+				u.count = 0;
+				for (let m of messages) {
+					if (u.id === m.senderId) {
+						u.count = m._count._all;
+						break;
+					}
+				}
+
+				u.blocked = false;
+				for (let blockedId of blocked) {
+					if (u.id === blockedId) {
+						u.blocked = true;
+						break;
 					}
 				}
 			}
+
+			users.sort((a, b) => {
+				if (a.blocked)
+					return 1;
+				else if(b.blocked)
+					return -1;
+				else if (a.count)
+					return 1;
+				else if (b.count)
+					return 1;
+				else
+					return a.name - b.name;
+			});
 
 			return users;
 		},
@@ -84,6 +107,32 @@ function createChatService(prisma) {
 					text
 				}
 			});
+		},
+
+		async getBlockedUsers(id) {
+			const user = await prisma.user.findUnique({
+				where: { id },
+				include: {
+					blockedUsers: {
+						select: {
+							id: true
+						}
+					}
+				}
+			});
+
+			return user.blockedUsers;
+		},
+
+		async blockUser(userId, blockedUserId) {
+			return await prisma.user.update({
+				where: { id: userId },
+				data: {
+					blockedUsers: {
+						connect: [{ id: blockedUserId }]
+					}
+				}
+			})
 		}
 	}
 

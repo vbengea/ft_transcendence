@@ -6,7 +6,8 @@ type Message = {
 	avatar: string, 
 	email: string, 
 	count: number, 
-	text?: string, 
+	text?: string,
+	blocked?: boolean,
 	sender?: { id: string, avatar: string, name: string } 
 };
 
@@ -63,27 +64,28 @@ const processChatUserList = () => {
 		if (chatUserList.length) {
 
 			el.innerHTML = chatUserList.filter(r => r.id !== user.id).map(u => `
-				<li class="cursor-pointer pt-3 p-5 sm:pt-4" data-friend_element="${u.id}">
+				<li class="cursor-pointer pt-3 p-5 sm:pt-4 ${u.blocked ? 'bg-red-300' : ''}" data-friend_element="${u.id}">
 					<div class="flex items-center space-x-4" data-friend_element="${u.id}">
 						<div class="flex-shrink-0" data-friend_element="${u.id}">
 							<img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image" data-friend_element="${u.id}">
 						</div>
 						<div class="flex-1 min-w-0" data-friend_element="${u.id}">
 							<p class="text-sm font-medium text-gray-900 truncate" data-friend_element="${u.id}">${u.name}</p>
-							<p class="text-sm text-gray-500 truncate dark:text-gray-400" data-friend_element="${u.id}">${u.email}</p>
+							<p class="text-sm ${u.blocked ? 'text-gray-700' : 'text-gray-500'} truncate" data-friend_element="${u.id}">${u.email}</p>
 						</div>
-						<span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-white bg-red-400 rounded-full" data-friend_element="${u.id}">${u.count || ''}</span>
 
-						<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="cursor-pointer inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-white" type="button">
+						<span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-white ${u.count ? 'bg-red-400' : ''} rounded-full" data-friend_element="${u.id}">${u.count || ''}</span>
+
+						<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="cursor-pointer inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-transparent" type="button">
 							<svg data-friend_menu="${u.id}" class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
 								<path data-friend_menu="${u.id}" d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
 							</svg>
 						</button>
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
-								<li data-friend_option="1" class="px-4 py-2">Block</li>
-								<li data-friend_option="2" class="px-4 py-2">Invite to play</li>
-								<li data-friend_option="3" class="px-4 py-2">View profile</li>
+								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">Block</li>
+								<li data-friend_option="invite" class="px-4 py-2">Invite to play</li>
+								<li data-friend_option="profile" class="px-4 py-2">View profile</li>
 							</ul>
 						</div>
 
@@ -300,11 +302,12 @@ const clickHandler = (e) => {
 			}
 			break;
 		case "friend_option":
-			if (target.dataset.friend_option === "1"){
+			if (target.dataset.friend_option === "block"){
+				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
+				changeMode("list");
+			} else if(target.dataset.friend_option === "invite") {
 
-			} else if(target.dataset.friend_option === "2") {
-
-			} else if(target.dataset.friend_option === "3") {
+			} else if(target.dataset.friend_option === "profile") {
 
 			}
 

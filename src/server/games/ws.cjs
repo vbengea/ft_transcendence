@@ -109,6 +109,15 @@ async function chat(uid, socket, raw) {
 	} else if (raw.subtype === 'send') {
 		const sender = chatMap.get(uid);
 		const receiver = chatMap.get(raw.receiverId);
+		const blocked = await chatSrv.getBlockedUsers(raw.receiverId);
+
+		sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
+
+		for (let b of blocked){
+			if (b.id === uid){
+				return;
+			}
+		}
 
 		if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
 			if (receiver.mode === 'count'){
@@ -119,8 +128,11 @@ async function chat(uid, socket, raw) {
 				receiver.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 			}
 		}
-		sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
+
 		chatSrv.createMessage(uid, raw.receiverId, raw.text);
+		
+	} else if (raw.subtype === 'block'){
+		await chatSrv.blockUser(uid, raw.receiverId);
 	}
 }
 
