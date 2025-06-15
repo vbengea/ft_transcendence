@@ -315,10 +315,11 @@ const clickHandler = (e) => {
 				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: false }
 				const users = [me, you];
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
-				const tournament = { name: 'Single player', users, rounds, gameType: 'pong' };
+				const tournament = { name: 'Single player', users, rounds, gameType: game };
 				const text = `<button type="button" data-link="#/landing/${game}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
 				WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId: target.dataset.friend_id, game }));
 				createTournament(tournament, async () => location.hash = `#/landing/${game}`);
+
 			} else if(target.dataset.friend_option === "profile") {
 
 			}
