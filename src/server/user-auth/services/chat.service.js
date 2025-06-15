@@ -10,7 +10,7 @@ function createChatService(prisma) {
 		},
 
 		async getNewMessagesCountPerUser(uid) {
-			return prisma.message.groupBy({
+			const messages = await prisma.message.groupBy({
 				by: ['senderId'],
 				where: {
 					receiverId: uid,
@@ -20,29 +20,69 @@ function createChatService(prisma) {
 					_all: true,
 				}
 			});
+
+			const users = await prisma.user.findMany({
+				where : {
+					human: true
+				},
+				orderBy: {
+					name: 'asc'
+				}
+			});
+
+			if (messages.length){
+				for (let u of users) {
+					for (let m of messages) {
+						if (u.id === m.senderId) {
+							u.count = m._count._all;
+						}
+					}
+				}
+			}
+
+			return users;
 		},
 
 		async getNewMessagesPerUser(uid, friendId) {
-			return prisma.message.findMany({
-				by: ['senderId'],
+			const messages = await prisma.message.findMany({
 				where: {
-					OR:[
+					OR: [
 						{ AND: [{ receiverId: uid, senderId: friendId}] },
 						{ AND: [{ receiverId: friendId, senderId: uid}] }
 					]
+				},
+				include: {
+					sender: true
 				},
 				take: 10,
 				orderBy: [{
 					creationTime: 'asc'
 				}]
 			});
+
+			const ids = messages.map(r => r.id);
+
+			if (messages.length) {
+				await prisma.message.updateMany({
+					where: {
+						id: { in: ids }
+					},
+					data: {
+						isRead: true
+					}
+				});
+			}
+
+			return messages;
 		},
 
 		async createMessage(senderId, receiverId, text) {
 			return prisma.message.create({
-				senderId,
-				receiverId,
-				text
+				data: {
+					senderId,
+					receiverId,
+					text
+				}
 			});
 		}
 	}

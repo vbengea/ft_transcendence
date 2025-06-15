@@ -30,6 +30,7 @@ function chatRoutes(fastify, options, done) {
 			reply.send(raw);
 		} catch (err) {
 			fastify.log.error(err);
+			console.log(err)
 			reply.code(500).send({ error: 'Failed to fetch message count per user' });
 		}
 	});

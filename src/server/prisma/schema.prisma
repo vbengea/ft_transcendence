@@ -87,7 +87,7 @@ model Match {
 }
 
 model Message {
-  id         			Int @id
+  id         			String        @id     @default(cuid())
   text       			String
   sender     			User @relation(name: "sentMessages", fields: [senderId], references: [id])
   receiver   			User @relation(name: "receivedMessages", fields: [receiverId], references: [id])
@@ -98,6 +98,7 @@ model Message {
   isRead				Boolean @default(false)
   creationTime          DateTime @default(now())
 }
+
 model FriendRequest {
   id                    String        @id     @default(cuid())
   sender                User          @relation("SentFriendRequests", fields: [senderId], references: [id])

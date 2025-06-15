@@ -102,24 +102,26 @@ async function chat(uid, socket, raw) {
 		chatMap.set(uid, { 
 			mode: raw.mode, 
 			user: raw.user, 
-			friend: raw.mode === 'friend' ? raw.friend : null 
+			friend: raw.mode === 'friend' ? raw.friendId : null,
+			socket
 		});
 
 	} else if (raw.subtype === 'send') {
-		const sender = userMap.get(uid);
-		const receiver = userMap.get(raw.receiverId);
+		const sender = chatMap.get(uid);
+		const receiver = chatMap.get(raw.receiverId);
 
 		if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
 			if (receiver.mode === 'count'){
-				receiver.socket.send(JSON.stringify({ count: 1 }));
+				receiver.socket.send(JSON.stringify({ type: 'chat', count: 1 }));
 			} else if (receiver.mode === 'list'){
-				receiver.socket.send({ user: sender.user, count: 1 });
-			} else if (receiver.mode === 'friend' && receiver.user.id === sender.user.id) {
-				receiver.socket.send({ user: sender.user, text: raw.text });
+				receiver.socket.send(JSON.stringify({ type: 'chat', sender: sender.user, count: 1 }));
+			} else if (receiver.mode === 'friend') {
+				receiver.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 			}
+			sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
 		}
-		
-		chatSrv.createMessage(sender.user.id, raw.receiverId, raw.text);
+
+		chatSrv.createMessage(uid, raw.receiverId, raw.text);
 	}
 }
 

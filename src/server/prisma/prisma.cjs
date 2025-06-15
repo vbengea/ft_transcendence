@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const utils = require('../user-auth/services/user.service')(prisma)
+const chatSrv = require('../user-auth/services/chat.service')(prisma)
 const DEFAULT_PASSWORD = "1234";
 
 async function fill() {
@@ -39,6 +40,9 @@ async function fill() {
 			}
 		}
 	})
+
+	chatSrv.createMessage(juan.id, leon.id, 'Hello Leon');
+	chatSrv.createMessage(leon.id, juan.id, 'Hi there!');
 }
 
 fill();
