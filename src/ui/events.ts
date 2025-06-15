@@ -210,8 +210,10 @@ const changeMode = async (mode, friendId?) => {
 const sendMessage = () => {
 	const el : HTMLInputElement = document.querySelector('#text');
 	const text = el.value.slice(0, CHAR_LIMIT);
-	el.value = '';
-	send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text }));
+	if (text.length) {
+		el.value = '';
+		send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text }));
+	}
 }
 
 const paddleHandler = (e) => {
@@ -308,6 +310,7 @@ const clickHandler = (e) => {
 			if (target.dataset.friend_option === "block"){
 				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
 				changeMode("list");
+
 			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
 				const game = target.dataset.friend_option;
