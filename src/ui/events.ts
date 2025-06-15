@@ -74,15 +74,16 @@ const processChatUserList = () => {
 						</div>
 						<span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-white bg-red-400 rounded-full" data-friend_element="${u.id}">${u.count || ''}</span>
 
-						<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-white" type="button">
+						<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="cursor-pointer inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-white" type="button">
 							<svg data-friend_menu="${u.id}" class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
 								<path data-friend_menu="${u.id}" d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
 							</svg>
 						</button>
-						<div id="${u.id}" data-friend_option="0" class="absolute z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-40">
+						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="1" class="px-4 py-2">Block</li>
 								<li data-friend_option="2" class="px-4 py-2">Invite to play</li>
+								<li data-friend_option="3" class="px-4 py-2">View profile</li>
 							</ul>
 						</div>
 
@@ -139,7 +140,7 @@ const processUserMessages = () => {
 			<form data-chat="1" class="border-t-gray-300">
 				<div class="flex items-center py-2 pr-0 bg-white" data-chat="1">
 					<input autofocus type="text" id="text" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white border border-gray-300 placeholder="Your message..." data-chat="1" />
-					<button type="button" class="inline-flex justify-center p-2 mr-3 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+					<button id="sendwrap" type="button" class="inline-flex justify-center p-2 mr-3 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
 						<svg id="sendbtn" class="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
 							<path id="sendpath" d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
 						</svg>
@@ -270,12 +271,14 @@ const clickHandler = (e) => {
 	else if (target.dataset.chat)
 		id = "chat";
 
-	if(menu && !bypass.includes((e.target as HTMLElement).id))
+	if(menu && !bypass.includes((e.target as HTMLElement).id)){
 		menu.classList.add('hidden');
+	}
 
-	const dots_ = document.querySelector('[data-friend_option="0"]');
-	if (dots_)
-		dots_.classList.add("hidden")
+	const dots_ = Array.from(document.querySelectorAll('[data-friend_option="0"]'));
+	if (dots_.length)
+		for (let d of dots_)
+			d.classList.add("hidden")
 
 	switch(id) {
 		case "messages_btn": case "messages_svg": case "messages_path": case "message_count":
@@ -290,14 +293,22 @@ const clickHandler = (e) => {
 		case "friend_menu":
 			const dots = document.querySelector(`#${target.dataset.friend_menu}`);
 			if (dots){
-				dots.classList.remove("hidden");
+				dots.classList.toggle("hidden");
 			}
 			break;
 		case "friend_option":
+			if (target.dataset.friend_option === "1"){
+
+			} else if(target.dataset.friend_option === "2") {
+
+			} else if(target.dataset.friend_option === "3") {
+
+			}
+
 			break;
 		case "chat":
 			break;
-		case "sendbtn": case "sendpath":
+		case "sendwrap": case "sendbtn": case "sendpath":
 			sendMessage();
 			break;
 		default:
