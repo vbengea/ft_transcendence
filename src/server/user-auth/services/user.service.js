@@ -202,15 +202,8 @@ function createUserService(prisma) {
 		async generateIcon(email, human) {
 			const path = `images/avatar/${email}.png`;
 			const file = `/app/public/${path}`;
-			if (human) {
+			if (human)
 				fs.writeFileSync(file, jdenticon.toPng(email, 200));
-			} else {
-				fs.writeFileSync(file, jdenticon.toPng(email, 200));
-				// const blob = await (await fetch(`https://robohash.org/${email}`)).blob();
-				// let buffer = await blob.arrayBuffer();
-				// buffer = Buffer.from(buffer);
-				// fs.createWriteStream(file).write(buffer);
-			}
 			return path;
 		},
 

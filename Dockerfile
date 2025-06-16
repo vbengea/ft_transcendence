@@ -12,12 +12,13 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir public public/images public/pages public/images/avatar
+RUN mkdir public
 
 RUN cp ./src/ui/images -r public/
 RUN cp ./src/ui/pages -r public/
-RUN cp ./src/ui/index.html public/
+RUN cp ./src/ui/pages/index.html public/
 RUN cp ./src/ui/images/favicon.ico public/
+RUN cp ./src/ui/styles/main.css public/
 
 RUN node --run css && node --run js && node --run migrate
 

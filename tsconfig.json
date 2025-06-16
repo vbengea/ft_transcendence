@@ -3,7 +3,7 @@
     "module": "amd",
     "target": "es5",
     "sourceMap": true,
-    "outFile": "public/main.js",
+    "outFile": "/app/public/main.js",
 	"moduleResolution": "node",
     "lib": [
       "dom",
@@ -13,5 +13,5 @@
       "es6"
     ]
   },
-  "include": ["./src/ui/*.ts"],
+  "include": ["./src/ui/ts/*.ts"],
 }
