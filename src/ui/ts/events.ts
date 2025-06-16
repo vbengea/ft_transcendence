@@ -236,8 +236,10 @@ const tapHandler = (e) => {
 };
 
 const resizeScreen = (e) => {
-	if (payload)
-		send(JSON.stringify(payload("layout")));
+	if (payload) {
+		const tournamentId = location.hash.slice(1).split('/')[3];
+		send(JSON.stringify(payload("layout", tournamentId)));
+	}
 };
 
 const handleWheel = (e) => {
@@ -361,21 +363,16 @@ const removeEvents = () => {
 
 let keys = {};
 function gameLoop() {
-	if (location.hash === '#/landing/pong') {
+	if (location.hash.includes('#/landing/pong')) {
 		if (keys['KeyZ']) {
-			send(JSON.stringify({ 
-				type: "pong", 
-				subtype: "play", 
-				isDown: true
-			}))	
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0 }));
+		} else if (keys['KeyK']) {
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 1 }));
 		}
-
 		if (keys['KeyA']) {
-			send(JSON.stringify({ 
-				type: "pong", 
-				subtype: "play", 
-				isDown: false
-			}))	
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 0 }));
+		} else if (keys['KeyM']) {
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 1 }));
 		}
 		setTimeout(gameLoop, 15);
 	} else {

@@ -172,7 +172,7 @@ let hydrateTemplate = async (url, params) => {
 						const t = await (await fetch(`/api/tournament/${match.round.tournamentId}`)).json();
 						localStorage.tournament = JSON.stringify(t);
 						location.hash = '#/landing/t_stats';
-						setTimeout(() => location.hash = `#/landing/${match.round.tournament.game.name}`, 3000);
+						setTimeout(() => location.hash = `#/landing/${match.round.tournament.game.name}/${match.round.tournament.id}`, 3000);
 
 					} else {
 						const tid = localStorage.tournament ? JSON.parse(localStorage.tournament).id : null;
@@ -244,31 +244,37 @@ const createTournament = async (tournament) => {
 		gameName: gameName,
 	};
 
-	await fetch('/api/tournament', {
+	const t = await (await fetch('/api/tournament', {
 		method: 'POST',
 		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(tournamentData)
-	});
+	})).json();
 
 	for(let u of tournament.users){
 		if (u.human && u.id !== uid)
-			tournamentChat(tournament.gameType, u.id);
+			tournamentChat(tournament.gameType, u.id, t.tournamentId);
 	}
 
-	location.hash = `#/landing/${tournament.gameType}`;
+	location.hash = `#/landing/${tournament.gameType}/${t.tournamentId}`;
 };
 
-const tournamentChat = (game, receiverId) => {
-	const text = `<button type="button" data-link="#/landing/${game}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+const tournamentChat = (game, receiverId, tournamentId) => {
+	const text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
 	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
 }
 
-const playPong = async () => {
+const playPong = async (params) => {
 	let mode = 'single';
 	const app = document.querySelector('#app');
+	const tournamentId = params[0];
+
+	if (!tournamentId){
+		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		return;
+	}
 
 	app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
 
@@ -293,24 +299,41 @@ const playPong = async () => {
 			<div id="paddle-right-2" class="mx-1 my-0 w-3 h-1/8 bg-blue-300 absolute self-center right-0"></div>
 			<div id="paddle-right-4" class="mx-1 my-0 w-3 h-1/8 bg-yellow-300 absolute self-center right-0"></div>`;
 	}
-	play(getLayoutPayloadPong, displayPong, 'pong');
+	play(getLayoutPayloadPong, displayPong, 'pong', tournamentId);
 };
 
-const playTicTacToe = async () => {
+const playTicTacToe = async (params) => {
+	const tournamentId = params[0];
 	const app = document.querySelector('#app');
 	app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
-	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe');
+	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
 };
 
 let landing = async (url) => {
 	const app = document.querySelector('#app');
+	const params = [];
 	try {
-		if (url === 'pong') {
-			playPong();
-		} else if (url === 'tictactoe') {
-			playTicTacToe();
+		if (url.includes('/')){
+			const paths = url.split('/');
+			let i = 0;
+			for (let p of paths){
+				if (i === 0)
+					url = p;
+				else
+					params.push(p);
+				i++;
+			}
+		}
+
+		if (url === 'pong' && params.length === 1) {
+			playPong(params);
+		} else if (url === 'tictactoe' && params.length === 1) {
+			playTicTacToe(params);
 
 		} else {
+			if (url === 'pong' || url === 'tictactoe')
+				url = 'nogame';
+
 			app.innerHTML = await (await fetch(`./pages/template.html`)).text();
 
 			const user = document.querySelector("#user");
@@ -330,19 +353,6 @@ let landing = async (url) => {
 				e.preventDefault();
 				menu.classList.remove('hidden');
 			});
-
-			let params = [];
-			if (url.includes('/')){
-				const paths = url.split('/');
-				let i = 0;
-				for (let p of paths){
-					if (i === 0)
-						url = p;
-					else
-						params.push(p);
-					i++;
-				}
-			}
 
 			const content = document.querySelector('#content');
 			const response = await fetch(`./pages/${url}.html`);

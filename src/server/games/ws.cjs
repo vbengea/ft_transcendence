@@ -24,7 +24,7 @@ const chatMap = new Map();
 
 
 function setUser(i, socket, raw, uid, match) {
-	if (match[`user${i}Id`] === uid && match[`user${i}`].human) {
+	if (match[`user${i}`] && !match[`user${i}`].player && match[`user${i}Id`] === uid && match[`user${i}`].human) {
 		match[`user${i}`].socket = socket;
 		match[`user${i}`].raw = raw;
 		const player = newPlayer(raw.type, match[`user${i}`]);
@@ -52,7 +52,7 @@ async function play(uid, socket, raw) {
 	const user = userMap.get(uid);
 
 	if (raw.subtype === 'connect') {
-		const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid);
+		const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid, raw.tournamentId);
 		let match = matches[0];
 
 		if (match) {
@@ -78,7 +78,7 @@ async function play(uid, socket, raw) {
 				user.socket = socket;
 				match.game.send();
 			}
-
+				
 			for (let i = 1; i <= MAX_USERS; i++)
 				setUser(i, socket, raw,  uid, match);
 
@@ -90,7 +90,7 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket);
 		if (user && match)
-			match.game.play(user.player, raw.isDown, user.player.side); 
+			match.game.play(user.player, raw.isDown, raw.side); 
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);
 		if (user && match)

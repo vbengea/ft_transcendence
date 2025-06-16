@@ -111,7 +111,7 @@ function createTournamentService(prisma) {
 			});
 		},
 
-		async getCurrentTournamentMatchByUserId(userId) {
+		async getCurrentTournamentMatchByUserId(userId, tournamentId) {
 			return prisma.match.findMany({
 				where: { 
 					OR: [{ 
@@ -124,7 +124,10 @@ function createTournamentService(prisma) {
 						user4Id: userId 
 					}],
 					user1Score: 0,
-					user2Score: 0
+					user2Score: 0,
+					round: {
+						tournament: { id: tournamentId }
+					}
 				},
 				include: {
 					user1: {

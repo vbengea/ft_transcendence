@@ -332,7 +332,6 @@ class Pong {
 
 	addPlayer(index, player) {
 		if (this.paddleCounter == this.limit){
-			this.players[index].getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			return;
 		}
 		player.setSide(index % 2 === 0 ? 0 : 1);
@@ -389,12 +388,13 @@ class Pong {
 		b.setDy(this.randomSign());
 	}
 
-	play(p, down) {
-		const s = p.getScreen();
-		const index = p.getPaddleIndex();
+	play(_player, down, i) {
+		const pl = this.players[i];
+		const s = pl.getScreen();
+		const index = pl.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
 		const y = paddle.getY() + (down ? 15 : -15);
-		this.cap(p, y);
+		this.cap(pl, y);
 	}
 
 	giveup(side) {

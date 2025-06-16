@@ -1,9 +1,9 @@
-function getLayoutPayloadTicTacToe(subtype : string) {
+function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string) {
 	const sc = {
 		w: get(document.body, "width"),
 		h: get(document.body, "height")
 	};
-	return { type: "tictactoe", subtype, screen: sc };
+	return { type: "tictactoe", subtype, screen: sc, tournamentId };
 }
 
 function displayTicTacToe(data: Data) {

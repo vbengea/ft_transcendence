@@ -29,7 +29,7 @@ type Game = {
 	matrix: string[][]
 };
 
-function getLayoutPayloadPong(subtype : string) {
+function getLayoutPayloadPong(subtype : string, tournamentId : string) {
 	const BALL : HTMLElement | null = document.querySelector("#ball");
 	const LEFT_1 : HTMLElement | null = document.querySelector(`#paddle-left-1`);
 	const RIGHT_1 : HTMLElement | null = document.querySelector(`#paddle-right-2`);
@@ -76,7 +76,7 @@ function getLayoutPayloadPong(subtype : string) {
 		h: get(BALL, "height"),
 	};
 
-	const ret : Payload = { type: "pong", subtype, paddles, screen: sc, ball };
+	const ret : Payload = { type: "pong", subtype, paddles, screen: sc, ball, tournamentId };
 
 	gameLoop();
 
