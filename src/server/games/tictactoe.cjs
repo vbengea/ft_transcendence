@@ -162,7 +162,7 @@ class TicTacToe {
 				if (p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
-			setTimeout(() => { this.start(); }, 2000);
+			setTimeout(() => { this.start(); }, 1000);
 		} else {
 			for(let p of this.players) {
 				if (p.getSocket())
@@ -265,7 +265,7 @@ class TicTacToe {
 
 				this.last = this.matrix[row][col];
 
-				if (socket && !player.getUser().human) {																	// Computer play ....................................
+				if (player === p1 && !p2.getUser().human) {										// Computer play ....................................
 					setTimeout(() => {
 						while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
 							down = Math.floor(Math.random() * 9) + 1
@@ -273,7 +273,7 @@ class TicTacToe {
 							row = Math.floor(down / DIM);
 							col = down % DIM;
 						}
-						this.play(undefined, down + 1, 1);
+						this.play(p2, down + 1, 1);
 					}, 1000);
 				}
 			}

@@ -34,7 +34,6 @@ function setUser(i, socket, raw, uid, match) {
 		userMap.set(uid, match[`user${i}`]);
 
 		/* If the rest of the users are bots ................................... */
-		console.log(match)
 		for (let j = 1; j <= MAX_USERS; j++){
 			const p = match[`user${j}`];
 			if (p && i != j && !p.human && !p.initialized) {
