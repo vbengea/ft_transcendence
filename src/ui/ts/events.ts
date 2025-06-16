@@ -217,14 +217,11 @@ const sendMessage = () => {
 }
 
 const paddleHandler = (e) => {
-	const code = e.code;
-	if (UP_KEYS.includes(code) || DOWN_KEYS.includes(code)) {
-		send(JSON.stringify({ 
-			type: "pong", 
-			subtype: "play", 
-			isDown: DOWN_KEYS.includes(code) 
-		}))			
-	}
+	keys[e.code] = true;
+};
+
+const paddleUpHandler = (e) => {
+	delete keys[e.code];
 };
 
 const tapHandler = (e) => {
@@ -347,6 +344,7 @@ addEventListener('hashchange', router);
 addEventListener('wheel', handleWheel);
 addEventListener('keydown', handleKeyDown);
 addEventListener("keydown", paddleHandler);
+addEventListener("keyup", paddleUpHandler);
 addEventListener("mouseup", tapHandler);
 addEventListener("resize", resizeScreen);
 addEventListener("click", clickHandler);
@@ -356,6 +354,30 @@ const removeEvents = () => {
 	removeEventListener("keydown", paddleHandler);
 	removeEventListener("mouseup", tapHandler);
 	removeEventListener("resize", resizeScreen);
+}
+
+let keys = {};
+function gameLoop() {
+	if (location.hash === '#/landing/pong') {
+		if (keys['KeyZ']) {
+			send(JSON.stringify({ 
+				type: "pong", 
+				subtype: "play", 
+				isDown: true
+			}))	
+		}
+
+		if (keys['KeyA']) {
+			send(JSON.stringify({ 
+				type: "pong", 
+				subtype: "play", 
+				isDown: false
+			}))	
+		}
+		setTimeout(gameLoop, 15);
+	} else {
+		keys = {};
+	}
 }
 
 function testUsers() {

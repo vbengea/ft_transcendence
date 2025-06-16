@@ -246,7 +246,7 @@ class Player {
 
 class Pong {
 
-	constructor(mid, limit, match) {
+	constructor(mid, limit, match, matchMap) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -257,6 +257,7 @@ class Pong {
 		this.paddleRightCounter = 0;
 		this.paddleCounter = 0;
 		this.match = match;
+		this.matchMap = matchMap;
 	}
 
 	toJSON() {
@@ -274,6 +275,10 @@ class Pong {
 
 	send() {
 		const u1 = this.players[0];
+		if (!u1) {
+			console.log('No send')
+			return;
+		}
 		const s1 = u1.getScreen();
 		const b1 = s1.getBall();
 		const p1s = s1.getPaddles();
@@ -387,7 +392,7 @@ class Pong {
 		const s = p.getScreen();
 		const index = p.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
-		const y = paddle.getY() + (down ? paddle.getHeight() : -paddle.getHeight());
+		const y = paddle.getY() + (down ? 15 : -15);
 		this.cap(p, y);
 	}
 
@@ -420,7 +425,6 @@ class Pong {
 	}
 
 	computer(player, ball) {
-		const gap = 30;
 		const p = player;
 		const s = p.getScreen();
 		const b = ball;																						// ball moving from 1p ............................
@@ -577,6 +581,7 @@ class Pong {
 					s2.send(JSON.stringify({ redirect: TXT.loose }));
 			}
 		}
+		this.matchMap.delete(this.match.id);
 	}
 
 	checkPaddleCollisions(screen) {

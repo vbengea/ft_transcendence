@@ -78,6 +78,8 @@ function getLayoutPayloadPong(subtype : string) {
 
 	const ret : Payload = { type: "pong", subtype, paddles, screen: sc, ball };
 
+	gameLoop();
+
 	return ret;
 }
 

@@ -6,7 +6,7 @@ const tournamentSrv = require('../tournament/services/tournament.service')(prism
 const chatSrv = require('../user-auth/services/chat.service')(prisma);
 
 function newGame(type, mid, limit, match) {
-	return type === 'pong' ? new Pong(mid, limit, match) : new TicTacToe(mid, 2, match);
+	return type === 'pong' ? new Pong(mid, limit, match, matchMap) : new TicTacToe(mid, 2, match, matchMap);
 }
 function newPlayer(type, user) {
 	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
@@ -36,7 +36,7 @@ function setUser(i, socket, raw, uid, match) {
 		/* If the rest of the users are bots ................................... */
 		for (let j = 1; j <= MAX_USERS; j++){
 			const p = match[`user${j}`];
-			if (p && i != j && !p.human && !p.initialized) {
+			if (p && i != j && !p.human) {
 				const r = Object.assign(raw, { });
 				p.raw = r;
 				p.initialized = true;
@@ -70,18 +70,17 @@ async function play(uid, socket, raw) {
 				if (match.round.tournament.totalRounds == 1)
 					limit = match.round.tournament.totalPlayers;
 
-				match.game = newGame(raw.type, match.id, limit, match);
+				match.game = newGame(raw.type, match.id, limit, match, matchMap);
 			}
 
 			/* Update user's socket .................................................. */
 			if (user) {
 				user.socket = socket;
 				match.game.send();
-			} else {
-				/* Update socket and layout information .................................. */
-				for (let i = 1; i <= MAX_USERS; i++)
-					setUser(i, socket, raw,  uid, match);
 			}
+
+			for (let i = 1; i <= MAX_USERS; i++)
+				setUser(i, socket, raw,  uid, match);
 
 		} else {
 			socket.send(JSON.stringify({ redirect: '#/landing/nogame'}));

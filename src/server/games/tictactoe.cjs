@@ -105,7 +105,7 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid, limit, match) {
+	constructor(mid, limit, match, matchMap) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -115,6 +115,7 @@ class TicTacToe {
 		this.match = match;
 		this.limit = limit;
 		this.counter = 0;
+		this.matchMap = matchMap;
 	}
 
 	toJSON() {
@@ -238,6 +239,7 @@ class TicTacToe {
 				const s2 = p2.getSocket();
 				if (s2)
 					s2.send(JSON.stringify({ redirect: TXT.loose }));
+				this.matchMap.delete(this.match.id);
 
 			} else if (p2.getScore() == MAX_SCORE) {
 				await tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
@@ -249,6 +251,7 @@ class TicTacToe {
 				const s2 = p2.getSocket();
 				if (s2)
 					s2.send(JSON.stringify({ redirect: TXT.win }));
+				this.matchMap.delete(this.match.id);
 
 			} else {
 				let n = 0;
