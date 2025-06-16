@@ -93,7 +93,7 @@ async function play(uid, socket, raw) {
 			if (match.user3)
 				match.game.mplay(user.player, raw.isDown);
 			else
-				match.game.play(raw.isDown, raw.side);
+				match.game.play(raw.isDown, raw.type === 'pong' ? raw.side : user.player.getSide());
 		}
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);

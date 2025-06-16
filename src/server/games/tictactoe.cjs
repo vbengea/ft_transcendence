@@ -219,10 +219,11 @@ class TicTacToe {
 		this.matchMap.delete(this.match.id);
 	}
 
-	async play(player, down, i) {
+	async play(down, i) {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
-		const socket = this.players[i].getSocket();
+		const player = this.players[i];
+		const socket = player ? player.getSocket() : null;
 
 		down -= 1;
 		let row = Math.floor(down / DIM);
