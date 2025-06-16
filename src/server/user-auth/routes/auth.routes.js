@@ -293,6 +293,15 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.get('/computer', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const friends = await userService.getComputerPlayers();
+			reply.send(friends);
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
 	fastify.post('/avatar', { preHandler: verifyToken }, async (request, reply) => {
 		try {
 			const userId = request.user.id;
