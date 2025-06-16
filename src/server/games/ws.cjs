@@ -90,7 +90,7 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket);
 		if (user && match)
-			match.game.play(user.player, raw.isDown, raw.side); 
+			match.game.play(user.player, raw.isDown, raw.side === 0 ? user.player.side : 1); 
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);
 		if (user && match)

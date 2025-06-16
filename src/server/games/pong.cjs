@@ -295,7 +295,7 @@ class Pong {
 			
 		let i = 0;
 		for(let p of this.players){
-			if (p.getUser().id !== u1.getUser().id) {
+			if (p && p.getUser().id !== u1.getUser().id) {
 				const s2 = p.getScreen();
 				const b2 = s2.getBall();
 
