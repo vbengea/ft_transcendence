@@ -286,7 +286,17 @@ function authRoutes(fastify, options, done) {
 	fastify.get('/friends/:uid', { preHandler: verifyToken }, async (request, reply) => {
 		try {
 			const userId = request.params.uid;
-			const friends = await userService.getFriends(userId);
+			const friends = await userService.getFriends(userId, false);
+			reply.send(friends);
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
+	fastify.get('/human_friends', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const friends = await userService.getFriends(userId, true);
 			reply.send(friends);
 		} catch (err) {
 			console.log(err);

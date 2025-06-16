@@ -36,7 +36,7 @@ let hydrateTemplate = async (url, params) => {
 				inp.style.display = 'none';
 				lab.innerHTML = mode === 'single' ? 'Pick 2' : 'Pick 4';
 			}
-			const response = await fetch(mode === 'single' ? `/auth/computer` : `/auth/friends/${userData.id}`);
+			const response = await fetch(mode === 'single' ? `/auth/computer` : (mode === 'multi' ? `/auth/friends/${userData.id}` : `/auth/human_friends`));
 			const friends = await response.json();
 			const currentUser = userData;
 			const uid = currentUser.id;

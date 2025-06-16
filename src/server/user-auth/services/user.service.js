@@ -194,7 +194,7 @@ function createUserService(prisma) {
 			});
 		},
 
-		async getFriends(id) {
+		async getFriends(id, human) {
 			const u = await prisma.user.findUnique({
 				where: { id },
 				include: { 
@@ -233,7 +233,13 @@ function createUserService(prisma) {
 				uniqueFriends.set(friend.id, friend);
 			});
 
-			return Array.from(uniqueFriends.values());
+			let finalUsers = Array.from(uniqueFriends.values());
+
+			if (human) {
+				finalUsers = finalUsers.filter(u => u.human);
+			}
+
+			return finalUsers;
 		},
 
 		async getComputerPlayers() {
