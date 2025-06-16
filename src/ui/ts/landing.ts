@@ -2,14 +2,17 @@ let hydrateTemplate = async (url, params) => {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
+			const multi = document.querySelector("#multiplayer");
 			document.querySelector("#single").addEventListener('click', (e) => {
 				sessionStorage.mode = 'single';
 				location.hash = '#/landing/players';
 			});
-			document.querySelector("#multiplayer").addEventListener('click', (e) => {
-				sessionStorage.mode = 'multi';
-				location.hash = '#/landing/players';
-			});
+			if (multi) {
+				multi.addEventListener('click', (e) => {
+					sessionStorage.mode = 'multi';
+					location.hash = '#/landing/players';
+				});
+			}
 			document.querySelector("#tournament").addEventListener('click', (e) => {
 				sessionStorage.mode = 'tournament';
 				location.hash = '#/landing/players';
@@ -305,6 +308,10 @@ const playPong = async (params) => {
 const playTicTacToe = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
+	if (!tournamentId){
+		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		return;
+	}
 	app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
 };

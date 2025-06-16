@@ -90,10 +90,6 @@ class Player {
 		this.score = score;
 	}
 
-	incrementScore() {
-		this.score++;
-	}
-
 	toJSON() {
 		return {
 			wins: this.wins,
@@ -138,6 +134,10 @@ class TicTacToe {
 	}
 
 	send() {
+		if (this.players[0])
+			this.players[0].setScore(this.scores[0]);
+		if (this.players[1])
+			this.players[1].setScore(this.scores[1]);
 		const json = JSON.stringify(this);
 		if (this.players[0]) {
 			const s = this.players[0].getSocket();
@@ -253,17 +253,17 @@ class TicTacToe {
 				p = this.verifyDiagonal();
 
 			if (p === 'x') {
-				p1.incrementScore();
+				this.scores[0]++;
 				this.reset();
 			} else if (p == 'o') {
-				p2.incrementScore();
+				this.scores[1]++;
 				this.reset();
 			}
 
-			if (p1.getScore() >= MAX_SCORE) {													// Check scores .....................................
+			if (this.scores[0] >= MAX_SCORE) {													// Check scores .....................................
 				this.manageResults(0);
 
-			} else if (p2.getScore() == MAX_SCORE) {
+			} else if (this.scores[1] == MAX_SCORE) {
 				this.manageResults(1);
 
 			} else {
