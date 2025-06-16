@@ -34,6 +34,7 @@ function setUser(i, socket, raw, uid, match) {
 		userMap.set(uid, match[`user${i}`]);
 
 		/* If the rest of the users are bots ................................... */
+		console.log(match)
 		for (let j = 1; j <= MAX_USERS; j++){
 			const p = match[`user${j}`];
 			if (p && i != j && !p.human && !p.initialized) {
@@ -91,7 +92,7 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket);
 		if (user && match)
-			match.game.play(user.player, raw.isDown, 0); 
+			match.game.play(user.player, raw.isDown, user.player.side); 
 	} else if (raw.subtype === 'layout') {
 		if (user) {
 			user.raw = raw;

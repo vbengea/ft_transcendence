@@ -137,12 +137,16 @@ class TicTacToe {
 
 	send() {
 		const json = JSON.stringify(this);
-		const s1 = this.players[0].getSocket();
-		const s2 = this.players[1].getSocket();
-		if (s1)
-			s1.send("{ \"game\": " + json + ", \"side\": 0 }");
-		if (s2)
-			s2.send("{ \"game\": " + json + ", \"side\": 1 }");
+		if (this.players[0]) {
+			const s = this.players[0].getSocket();
+			if (s)
+				s.send("{ \"game\": " + json + ", \"side\": 0 }");
+		}
+		if (this.players[1]) {
+			const s = this.players[1].getSocket();
+			if (s)
+				s.send("{ \"game\": " + json + ", \"side\": 1 }");
+		}
 	}
 
 	addPlayer(index, player) {
@@ -185,9 +189,7 @@ class TicTacToe {
 	}
 
 	async play(player, down, i) {
-		console.log(player, down, i)
-
-		const p1 = player || this.players[0];
+		const p1 = this.players[0];
 		const p2 = this.players[1];
 		const socket = this.players[i].getSocket();
 
@@ -260,6 +262,7 @@ class TicTacToe {
 					this.reset();
 				else
 					this.send();
+
 				this.last = this.matrix[row][col];
 
 				if (socket && !player.getUser().human) {																	// Computer play ....................................
