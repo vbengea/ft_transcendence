@@ -254,11 +254,25 @@ function createUserService(prisma) {
 			});
 
 			if (existingRequest) {
-				if (existingRequest.status === 'REJECTED') {
-					return prisma.friendRequest.update({
-						where: { id: existingRequest.id },
-						data: { status: 'PENDING' }
-					});
+				if (existingRequest.status === 'REJECTED' || existingRequest.status === 'REMOVED') {
+					if (existingRequest.senderId !== senderId) {
+						await prisma.friendRequest.delete({
+							where: { id: existingRequest.id }
+						});
+
+						return prisma.friendRequest.create({
+							data: {
+								senderId,
+								receiverId,
+								status: 'PENDING'
+							}
+						});
+					} else {
+						return prisma.friendRequest.update({
+							where: { id: existingRequest.id },
+							data: { status: 'PENDING' }
+						});
+					}
 				}
 
 				if (existingRequest.status === 'PENDING') {
@@ -393,8 +407,16 @@ function createUserService(prisma) {
 
 			const areFriends = await prisma.user.findFirst({
 				where: {
-					id: userId,
-					friends: { some: { id: friendId } }
+					OR: [
+						{
+							id: userId,
+							friends: { some: { id: friendId } }
+						},
+						{
+							id: userId,
+							friendOf: { some: { id: friendId } }
+						}
+					]
 				}
 			});
 
