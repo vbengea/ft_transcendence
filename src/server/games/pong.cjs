@@ -388,7 +388,15 @@ class Pong {
 		b.setDy(this.randomSign());
 	}
 
-	play(_player, down, i) {
+	mplay(pl, down) {
+		const s = pl.getScreen();
+		const index = pl.getPaddleIndex();
+		const paddle = s.getPaddles()[index];
+		const y = paddle.getY() + (down ? 15 : -15);
+		this.cap(pl, y);
+	}
+
+	play(down, i) {
 		const pl = this.players[i];
 		const s = pl.getScreen();
 		const index = pl.getPaddleIndex();

@@ -366,12 +366,12 @@ function gameLoop() {
 	if (location.hash.includes('#/landing/pong')) {
 		if (keys['KeyZ']) {
 			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0 }));
-		} else if (keys['KeyK']) {
+		} else if (keys['KeyM']) {
 			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 1 }));
 		}
 		if (keys['KeyA']) {
 			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 0 }));
-		} else if (keys['KeyM']) {
+		} else if (keys['KeyK']) {
 			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 1 }));
 		}
 		setTimeout(gameLoop, 15);
