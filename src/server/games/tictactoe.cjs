@@ -161,13 +161,13 @@ class TicTacToe {
 		this.counter++;
 		if (this.counter == this.limit) {
 			for(let p of this.players) {
-				if (p.getSocket())
+				if (p && p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
 			}
 			setTimeout(() => { this.start(); }, 1000);
 		} else {
 			for(let p of this.players) {
-				if (p.getSocket())
+				if (p && p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.wait, match: this.getMatch() }));
 			}
 		}
