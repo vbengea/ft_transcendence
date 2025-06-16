@@ -146,10 +146,13 @@ class TicTacToe {
 	}
 
 	addPlayer(index, player) {
+		if (this.counter == this.limit){
+			this.players[index].getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
+			return;
+		}
 		player.setSide(index);
-		this.players[index] = player;
-		if (!this.players[index])
-			this.counter++;
+		this.players[index] = player;		
+		this.counter++;
 		if (this.counter == this.limit) {
 			for(let p of this.players) {
 				if (p.getSocket())
@@ -182,6 +185,8 @@ class TicTacToe {
 	}
 
 	async play(player, down, i) {
+		console.log(player, down, i)
+
 		const p1 = player || this.players[0];
 		const p2 = this.players[1];
 		const socket = this.players[i].getSocket();
@@ -257,7 +262,7 @@ class TicTacToe {
 					this.send();
 				this.last = this.matrix[row][col];
 
-				if (socket) {																	// Computer play ....................................
+				if (socket && !player.getUser().human) {																	// Computer play ....................................
 					setTimeout(() => {
 						while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
 							down = Math.floor(Math.random() * 9) + 1

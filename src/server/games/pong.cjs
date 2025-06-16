@@ -332,11 +332,14 @@ class Pong {
 	}
 
 	addPlayer(index, player) {
+		if (this.paddleCounter == this.limit){
+			this.players[index].getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
+			return;
+		}
 		player.setSide(index % 2 === 0 ? 0 : 1);
 		player.setSegment(index === 0 || index === 1 ? 0 : 1);
 		player.setPaddleIndex(index);
-		if (!this.players[index])
-			this.paddleCounter++;
+		this.paddleCounter++;
 		this.players[index] = player;
 		if (this.paddleCounter == this.limit) {
 			for(let p of this.players) {

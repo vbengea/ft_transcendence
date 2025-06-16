@@ -57,7 +57,7 @@ async function play(uid, socket, raw) {
 
 		if (match) {
 			// Use previous match because there is already related data .............. */
-			if (matchMap.has(match.id))
+			if (matchMap.get(match.id))
 				match = matchMap.get(match.id)
 			else
 				matchMap.set(match.id, match);
@@ -74,12 +74,15 @@ async function play(uid, socket, raw) {
 			}
 
 			/* Update user's socket .................................................. */
-			if (user)
+			if (user) {
 				user.socket = socket;
+				match.game.send();
+			} else {
+				/* Update socket and layout information .................................. */
+				for (let i = 1; i <= MAX_USERS; i++)
+					setUser(i, socket, raw,  uid, match);
+			}
 
-			/* Update socket and layout information .................................. */
-			for (let i = 1; i <= MAX_USERS; i++)
-				setUser(i, socket, raw,  uid, match);
 		} else {
 			socket.send(JSON.stringify({ redirect: '#/landing/nogame'}));
 			return;
@@ -153,13 +156,6 @@ module.exports = async function (fastify) {
 
 	socket.on('close', message => {
 		const uid = request.user.id;
-		let user = userMap.get(uid);
-		if (user) {
-			const match = matchMap.get(user.matchId);
-			if (match)
-				matchMap.delete(user.matchId);
-			userMap.delete(uid);
-		}
 		socketMap.delete(socket);
 		connMap.delete(uid);
 	})
