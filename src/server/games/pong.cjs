@@ -272,15 +272,8 @@ class Pong {
 		this.moveBall();
 	}
 
-	getFirstNonComputerPlayer() {
-		for(let p of this.players){
-			if (p.getUser().human)
-				return p;
-		}
-	}
-
 	send() {
-		const u1 = this.getFirstNonComputerPlayer();
+		const u1 = this.players[0];
 		const s1 = u1.getScreen();
 		const b1 = s1.getBall();
 		const p1s = s1.getPaddles();
@@ -381,7 +374,7 @@ class Pong {
 	}
 
 	reset() {
-		const p = this.getFirstNonComputerPlayer();
+		const p = this.players[0];
 		const s = p.getScreen();
 		const b = s.getBall();
 		b.setX(s.getWidth() / 2.0 - b.getWidth() / 2.0);
@@ -527,7 +520,7 @@ class Pong {
 	}
 
 	moveBall() {
-		const p1 = this.getFirstNonComputerPlayer();
+		const p1 = this.players[0];
 		const s = p1.getScreen();
 		const b = s.getBall();
 
