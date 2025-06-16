@@ -2,10 +2,6 @@ let hydrateTemplate = async (url, params) => {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	switch(url) {
 		case 'pongsel': case 'tictactoesel':
-			document.querySelector("#play").addEventListener('click', (e) => {
-				sessionStorage.mode = 'single';
-				location.hash = url == 'pongsel' ? '#/landing/pong' : '#/landing/tictactoe';
-			});
 			document.querySelector("#single").addEventListener('click', (e) => {
 				sessionStorage.mode = 'single';
 				location.hash = '#/landing/players';
@@ -37,7 +33,7 @@ let hydrateTemplate = async (url, params) => {
 				inp.style.display = 'none';
 				lab.innerHTML = mode === 'single' ? 'Pick 2' : 'Pick 4';
 			}
-			const response = await fetch(`/auth/friends/${userData.id}`);
+			const response = await fetch(mode === 'single' ? `/auth/computer` : `/auth/friends/${userData.id}`);
 			const friends = await response.json();
 			const currentUser = userData;
 			const uid = currentUser.id;
@@ -124,57 +120,14 @@ let hydrateTemplate = async (url, params) => {
 
 					localStorage.tournament = JSON.stringify(tournament);
 
-					if (isComputer) {
-						createTournament(tournament, async () => location.hash = `#/landing/${gameType}`)
-					} else {
-						sessionStorage.mode = 'tournament';
-						location.hash = '#/landing/stats';
-					}
+					createTournament(tournament);
+
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
 				} else {
 					document.querySelector('#error').innerHTML = 'Please select a base 2 number of participants.';
 				}
 			});
-			break;
-		case 'stats':
-			const tournament = JSON.parse(localStorage.tournament);
-			const r : HTMLInputElement = document.querySelector('#rounds');
-			const button = sessionStorage.mode === 'tournament' ? `<button id="submit" type="submit" class="text-white bg-blue-700 mt-5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create tournament</button>` : '';
-			localStorage.tournament = '';
-			sessionStorage.mode = '';
-			const content = `
-			<div class="mb-4 grid grid-flow-col grid-cols-${tournament.rounds.length} items-center border-0 border-b-2 border-gray-200 text-center text-lg font-bold uppercase">
-				${tournament.rounds.map(r => `<div>${r.name}</div>`).join('')}
-			</div>
-			<div class="grid grid-flow-col grid-cols-${tournament.rounds.length} items-center">
-				${tournament.rounds.map((r, i) => `
-					<div class="${i > 0 ? "mx-2" : ""} grid h-1/${i > 0 ? i * 2 : 1} grid-flow-row grid-rows-${r.matches.length}">
-						${ r.matches.map((m, j) => {
-
-							const rows = `
-							<div class="grid grid-flow-col grid-cols-2">
-								<p class="font-semibold w-60">${m.users[0] ? m.users[0].name : ''}</p>
-								<p class="text-right">${m.user1Score || 0}</p>
-							</div>
-							<div class="grid grid-flow-col grid-cols-2">
-								<p class="font-semibold w-60">${m.users[1] ? m.users[1].name : ''}</p>
-								<p class="text-right">${m.user2Score || 0}</p>
-							</div>`
-
-							let html = `<div class="mb-4 rounded-md bg-gray-200 px-4 py-2 text-gray-900 space-y-2 text-xs md:text-base">${rows}</div>`
-
-							return html;
-
-						}).join('')}
-					</div>
-				`).join('')}
-			</div>
-			${button}`
-			r.innerHTML = content;
-
-			const final = document.querySelector("#submit");
-			final.addEventListener('click', () => { createTournament(tournament, () => location.hash = '/' ) });
 			break;
 		case 't_stats':
 			const tournament1 = JSON.parse(localStorage.tournament);
@@ -282,7 +235,8 @@ let hydrateTemplate = async (url, params) => {
 	}
 }
 
-const createTournament = async (tournament, callback) => {
+const createTournament = async (tournament) => {
+	const uid = JSON.parse(sessionStorage.TRANSCENDER_USER).user.id;
 	const gameName = tournament.gameType;
 
 	const tournamentData = {
@@ -298,10 +252,19 @@ const createTournament = async (tournament, callback) => {
 		},
 		body: JSON.stringify(tournamentData)
 	});
-	if (callback) {
-		callback();
+
+	for(let u of tournament.users){
+		if (u.human && u.id !== uid)
+			tournamentChat(tournament.gameType, u.id);
 	}
+
+	location.hash = `#/landing/${tournament.gameType}`;
 };
+
+const tournamentChat = (game, receiverId) => {
+	const text = `<button type="button" data-link="#/landing/${game}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
+}
 
 const playPong = async () => {
 	let mode = 'single';
