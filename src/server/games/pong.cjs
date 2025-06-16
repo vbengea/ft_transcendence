@@ -276,7 +276,6 @@ class Pong {
 	send() {
 		const u1 = this.players[0];
 		if (!u1) {
-			console.log('No send')
 			return;
 		}
 		const s1 = u1.getScreen();
