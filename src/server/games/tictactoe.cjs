@@ -189,6 +189,35 @@ class TicTacToe {
 		return match;
 	}
 
+	giveup(side) {
+		if (side === 0) {
+			this.scores[1] = 10;
+			this.manageResults(1);
+		} else if (side === 1) {
+			this.scores[0] = 10;
+			this.manageResults(0);
+		}
+	}
+
+	async manageResults(winnerSide) {
+		await tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1]);
+		for(let p of this.players) {
+			if (p.getSide() === winnerSide) {
+				p.wins = true;
+				const s1 = p.getSocket();
+				if (s1)
+					s1.send(JSON.stringify({ redirect: TXT.win }));
+				await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+			} else {
+				p.wins = false;
+				const s2 = p.getSocket();
+				if (s2)
+					s2.send(JSON.stringify({ redirect: TXT.loose }));
+			}
+		}
+		this.matchMap.delete(this.match.id);
+	}
+
 	async play(player, down, i) {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
@@ -229,29 +258,11 @@ class TicTacToe {
 				this.reset();
 			}
 
-			if (p1.getScore() == MAX_SCORE) {													// Check scores .....................................
-				await tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-				p1.wins = true;
-				p2.wins = false;
-				const s1 = p1.getSocket();
-				if (s1)
-					s1.send(JSON.stringify({ redirect: TXT.win }));
-				const s2 = p2.getSocket();
-				if (s2)
-					s2.send(JSON.stringify({ redirect: TXT.loose }));
-				this.matchMap.delete(this.match.id);
+			if (p1.getScore() >= MAX_SCORE) {													// Check scores .....................................
+				this.manageResults(0);
 
 			} else if (p2.getScore() == MAX_SCORE) {
-				await tournamentSrv.endMatch(this.mid, p1.getScore(), p2.getScore());
-				p1.wins = false;
-				p2.wins = true;
-				const s1 = p1.getSocket();
-				if (s1)
-					s1.send(JSON.stringify({ redirect: TXT.loose }));
-				const s2 = p2.getSocket();
-				if (s2)
-					s2.send(JSON.stringify({ redirect: TXT.win }));
-				this.matchMap.delete(this.match.id);
+				this.manageResults(1);
 
 			} else {
 				let n = 0;

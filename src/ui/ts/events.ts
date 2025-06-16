@@ -331,6 +331,9 @@ const clickHandler = (e) => {
 		case "sendwrap": case "sendbtn": case "sendpath":
 			sendMessage();
 			break;
+		case "giveup":
+			WS.send(JSON.stringify({ type: location.hash.slice(1).split('/')[2], subtype: "giveup" }))
+			break;
 		default:
 			if (chat)
 				chat.classList.add("hidden");

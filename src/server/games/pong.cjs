@@ -258,6 +258,8 @@ class Pong {
 		this.paddleCounter = 0;
 		this.match = match;
 		this.matchMap = matchMap;
+		this.isGiveUp = false;
+		this.giveUpSide = -1;
 	}
 
 	toJSON() {
@@ -395,6 +397,11 @@ class Pong {
 		this.cap(p, y);
 	}
 
+	giveup(side) {
+		this.isGiveUp = true;
+		this.giveUpSide = side;
+	}
+
 	cap(p, y) {
 		const s = p.getScreen();
 		const index = p.getPaddleIndex();
@@ -523,6 +530,17 @@ class Pong {
 	}
 
 	moveBall() {
+		if (this.isGiveUp) {
+			if (this.giveUpSide === 0) {
+				this.scores[1] = 10;
+				this.manageResults(1);
+			} else if (this.giveUpSide === 1) {
+				this.scores[0] = 10;
+				this.manageResults(0);
+			}
+			return;
+		}
+
 		const p1 = this.players[0];
 		const s = p1.getScreen();
 		const b = s.getBall();

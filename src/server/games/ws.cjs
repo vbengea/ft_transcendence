@@ -91,6 +91,10 @@ async function play(uid, socket, raw) {
 		const match = socketMap.get(socket);
 		if (user && match)
 			match.game.play(user.player, raw.isDown, user.player.side); 
+	} else if (raw.subtype === 'giveup') {
+		const match = socketMap.get(socket);
+		if (user && match)
+			match.game.giveup(user.player.side); 
 	} else if (raw.subtype === 'layout') {
 		if (user) {
 			user.raw = raw;
