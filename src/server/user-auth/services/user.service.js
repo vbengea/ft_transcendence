@@ -58,6 +58,57 @@ function createUserService(prisma) {
 		},
 
 		async deleteUser(userId) {
+			await prisma.friendRequest.deleteMany({
+				where: {
+					OR: [
+						{ senderId: userId },
+						{ receiverId: userId }
+					]
+				}
+			});
+
+			await prisma.message.deleteMany({
+				where: {
+					OR: [
+						{ senderId: userId },
+						{ receiverId: userId }
+					]
+				}
+			});
+
+			await prisma.match.updateMany({
+				where: { user1Id: userId },
+				data: { user1Id: null }
+			});
+
+			await prisma.match.updateMany({
+				where: { user2Id: userId },
+				data: { user2Id: null }
+			});
+
+			await prisma.match.updateMany({
+				where: { user3Id: userId },
+				data: { user3Id: null }
+			});
+
+			await prisma.match.updateMany({
+				where: { user4Id: userId },
+				data: { user4Id: null }
+			});
+
+			await prisma.tournament.deleteMany({
+				where: { organizerId: userId }
+			});
+
+			await prisma.user.update({
+				where: { id: userId },
+				data: {
+					friends: { set: [] },
+					friendOf: { set: [] },
+					blockedUsers: { set: [] }
+				}
+			});
+			
 			return prisma.user.delete({
 				where: { id: userId }
 			});
