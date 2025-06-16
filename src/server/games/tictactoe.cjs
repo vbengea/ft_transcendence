@@ -109,6 +109,7 @@ class TicTacToe {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
+		this.scores = [0, 0];
 		this.matrix = [[0,0,0],[0,0,0],[0,0,0]];
 		this.last = '';
 		this.mid = mid;
