@@ -289,7 +289,7 @@ class TicTacToe {
 							row = Math.floor(down / DIM);
 							col = down % DIM;
 						}
-						this.play(p2, down + 1, 1);
+						this.play(down + 1, 1);
 					}, 1000);
 				}
 			}
