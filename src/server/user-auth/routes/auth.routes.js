@@ -283,9 +283,9 @@ function authRoutes(fastify, options, done) {
 		});
 	});
 
-	fastify.get('/friends', { preHandler: verifyToken }, async (request, reply) => {
+	fastify.get('/friends/:uid', { preHandler: verifyToken }, async (request, reply) => {
 		try {
-			const userId = request.user.id;
+			const userId = request.params.uid;
 			const friends = await userService.getFriends(userId);
 			reply.send(friends);
 		} catch (err) {

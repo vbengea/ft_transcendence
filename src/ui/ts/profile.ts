@@ -167,7 +167,7 @@ const hydrateProfile = async (userId) => {
 
 async function loadFriends(userId) {
 	try {
-		const response = await fetch(`/auth/friends`, {
+		const response = await fetch(`/auth/friends/${userId}`, {
 			credentials: 'include'
 		});
 
