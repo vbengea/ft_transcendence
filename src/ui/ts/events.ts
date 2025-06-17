@@ -79,8 +79,6 @@ const tournamentChat = (game, receiverId, tournamentId) => {
 	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
 }
 
-// EVENTS .........................................................................................
-
 const processChatUserList = () => {
 	const user = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 
@@ -326,15 +324,13 @@ const clickHandler = (e) => {
 			break;
 		case "friend_menu":
 			const dots = document.querySelector(`#${target.dataset.friend_menu}`);
-			if (dots){
+			if (dots)
 				dots.classList.toggle("hidden");
-			}
 			break;
 		case "friend_option":
 			if (target.dataset.friend_option === "block"){
 				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
 				changeMode("list");
-
 			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
 				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
@@ -344,11 +340,9 @@ const clickHandler = (e) => {
 				const game = target.dataset.friend_option;
 				const tournament = { name: 'Single player', users, rounds, gameType: game };
 				createTournament(tournament);
-
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;
 			}
-
 			break;
 		case "link":
 			location.hash = target.dataset.link;
@@ -407,8 +401,6 @@ const waitForConnection = function (callback, interval) {
     if (WS.readyState === 1) {
         callback();
     } else {
-        var that = this;
-        // optional: implement backoff for interval here
         setTimeout(function () {
             waitForConnection(callback, interval);
         }, interval);

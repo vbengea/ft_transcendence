@@ -104,8 +104,9 @@ async function play(uid, socket, raw) {
 		}
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);
-		if (user && match)
+		if (user && match){
 			match.game.giveup(user.player.side); 
+		}
 	} else if (raw.subtype === 'layout') {
 		if (user) {
 			user.raw = raw;

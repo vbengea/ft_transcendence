@@ -409,6 +409,15 @@ class Pong {
 	giveup(side) {
 		this.isGiveUp = true;
 		this.giveUpSide = side;
+		if (!this.players[0] || !this.players[1]) {
+			if (this.giveUpSide === 0) {
+				this.scores[1] = 10;
+				this.manageResults(1);
+			} else if (this.giveUpSide === 1) {
+				this.scores[0] = 10;
+				this.manageResults(0);
+			}
+		}
 	}
 
 	cap(p, y) {
