@@ -35,12 +35,6 @@ export const hydrateProfile = async (userId) => {
 			document.querySelectorAll('#profile-wrapper button').forEach(b => b.remove());
 			document.querySelector('#profile_footer').remove();
 			document.querySelector('#friends-title').innerHTML = '';
-
-			document.querySelectorAll('[data-friend-id]').forEach(indicator => {
-				if (!indicator.getAttribute('data-friend-id')) {
-					indicator.remove();
-				}
-			});
 		}
 
 		if (isCurr) {
@@ -192,6 +186,9 @@ async function loadFriends(userId) {
 			const friends = await response.json();
 			const friendsList = document.getElementById('friends-list');
 
+			const userCurr = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+			const isCurr = userCurr.id === userId;
+
 			if (friends.length === 0) {
 				friendsList.innerHTML = `
 					<div class="col-span-2 flex items-center justify-center h-20 bg-gray-50 rounded-md">
@@ -199,26 +196,28 @@ async function loadFriends(userId) {
 					</div>
 				`;
 			} else {
-				const onlineStatuses = await fetchOnlineStatus(friends);
+				const onlineStatuses = isCurr ? await fetchOnlineStatus(friends) : {};
 
 				friendsList.innerHTML = friends.map(friend => {
-					const isOnline = onlineStatuses[friend.id] === true;
-					const statusClass = isOnline ? 'bg-green-400' : 'bg-gray-400';
+					const statusIndicator = isCurr ? 
+						`<span data-friend-id="${friend.id}" class="absolute bottom-0 right-0 transform translate-y-1/4 w-2.5 h-2.5 ${onlineStatuses[friend.id] ? 'bg-green-400' : 'bg-gray-400'} border-2 border-white rounded-full" title="${onlineStatuses[friend.id] ? 'Online' : 'Offline'}"></span>` : 
+						'';
+						
 					return `
 						<div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-							<div class="flex items-center">
+						<div class="flex items-center">
 							<div class="relative">
-								<img src="${friend.avatar}" alt="${friend.name}" class="w-10 h-10 rounded-full mr-3">
-								<span data-friend-id="${friend.id}" class="absolute bottom-0 right-0 transform translate-y-1/4 w-2.5 h-2.5 ${statusClass} border-2 border-white rounded-full" title="${isOnline ? 'Online' : 'Offline'}"></span>
+							<img src="${friend.avatar}" alt="${friend.name}" class="w-10 h-10 rounded-full mr-3">
+							${statusIndicator}
 							</div>
 							<div class="flex-1">
-								<div class="font-medium">${friend.name}</div>
-								<div class="text-xs text-gray-500">${friend.email}</div>
+							<div class="font-medium">${friend.name}</div>
+							<div class="text-xs text-gray-500">${friend.email}</div>
 							</div>
-							</div>
-							<button class="remove-friend px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700" data-id="${friend.id}">
+						</div>
+						<button class="remove-friend px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700" data-id="${friend.id}">
 							Remove
-							</button>
+						</button>
 						</div>
 					`;
 				}).join('');
