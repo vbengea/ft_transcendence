@@ -94,7 +94,12 @@ class Player {
 		return {
 			wins: this.wins,
 			score: this.score,
-			screen: this.screen
+			screen: this.screen,
+			user: {
+				id: this.user.id,
+				name: this.user.name,
+				avatar: this.user.avatar
+			}
 		};
 	}
 }

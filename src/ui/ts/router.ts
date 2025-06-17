@@ -1,4 +1,4 @@
-import { initWebSocket, WS } from './events';
+import { initWebSocket, WS, closeWS } from './events';
 import { landing } from './landing';
 import { Templates } from './hydrates/templates';
 
@@ -230,6 +230,7 @@ async function resolveRoute(route) {
 			fetch(`${BASE}/logout`, { method: "DELETE" });
 			sessionStorage.TRANSCENDER_USER = '';
 			location.hash = '#/login';
+			closeWS();
 			return () => {};
 		} else if (route == '/login' || route == '/register' || route == '/2fa/verify') {
 			return routes[route];

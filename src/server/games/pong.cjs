@@ -239,7 +239,12 @@ class Player {
 		return {
 			wins: this.wins,
 			score: this.score,
-			screen: this.screen
+			screen: this.screen,
+			user: {
+				id: this.user.id,
+				name: this.user.name,
+				avatar: this.user.avatar
+			}
 		};
 	}
 }
@@ -677,9 +682,9 @@ class Pong {
 
 	changeBallDirection(ball) {
 		if (ball.getDx() < 0) {
-			ball.setDx(ball.getDx() - 1);
+			ball.setDx(ball.getDx() - 0.6);
 		} else {
-			ball.setDx(ball.getDx() + 1);
+			ball.setDx(ball.getDx() + 0.6);
 		}
 		ball.setDx(-ball.getDx());
 	}
@@ -688,23 +693,23 @@ class Pong {
 		let hit_pos = paddle.getY() + paddle.getHeight() - ball.getY();
 
 		if (hit_pos >= 0 && hit_pos < 7) {
-			ball.setDy(2.5);
-		} else if (hit_pos >= 7 && hit_pos < 14) {
-			ball.setDy(2);
-		} else if (hit_pos >= 14 && hit_pos < 21) {
 			ball.setDy(1.5);
+		} else if (hit_pos >= 7 && hit_pos < 14) {
+			ball.setDy(1.1);
+		} else if (hit_pos >= 14 && hit_pos < 21) {
+			ball.setDy(0.9);
 		} else if (hit_pos >= 21 && hit_pos < 28) {
-			ball.setDy(1);
+			ball.setDy(0.6);
 		} else if (hit_pos >= 28 && hit_pos < 32) {
 			ball.setDy(0);
 		} else if (hit_pos >= 32 && hit_pos < 39) {
-			ball.setDy(-1);
+			ball.setDy(-0.6);
 		} else if (hit_pos >= 39 && hit_pos < 46) {
-			ball.setDy(-1.5);
+			ball.setDy(-0.9);
 		} else if (hit_pos >= 46 && hit_pos < 53) {
-			ball.setDy(-2);
+			ball.setDy(-1.1);
 		} else if (hit_pos >= 53 && hit_pos <= 60) {
-			ball.setDy(-2.5);
+			ball.setDy(-1.5);
 		}
 	}
 

@@ -11,6 +11,11 @@ let receiverId : String;
 
 const CHAR_LIMIT = 255;
 
+export function closeWS() {
+	WS.close();
+	WS = null;
+}
+
 export function initWebSocket() {
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
@@ -223,13 +228,19 @@ export const changeMode = async (mode, friendId?) => {
 		processUserMessages();
 	}
 
-	send(JSON.stringify({ 
-		type: "chat", 
-		subtype: "mode", 
-		mode,
-		friendId,
-		user: JSON.parse(sessionStorage.TRANSCENDER_USER).user
-	}));
+	try {
+		if (sessionStorage.TRANSCENDER_USER) {
+			send(JSON.stringify({ 
+				type: "chat", 
+				subtype: "mode", 
+				mode,
+				friendId,
+				user: JSON.parse(sessionStorage.TRANSCENDER_USER).user
+			}));
+		}
+	} catch( err ){
+		
+	}
 };
 
 const sendMessage = () => {
@@ -281,6 +292,7 @@ const handleKeyDown = (e) => {
 };
 
 const keyHandler = (e) => {
+	e.preventDefault();
 	if (e.code == 'Enter' && e.target.id === 'text') {
 		sendMessage();
 	}

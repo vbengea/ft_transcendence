@@ -70,15 +70,14 @@ export function displayPong(data: Data) {
 	if (SCORE_LEFT == null || SCORE_RIGHT == null || BALL == null || LEFT_1 == null || RIGHT_1 == null || !game)
 		return;
 
-	let i = 0;
+	let n = 0;
+	let avatarsLeft = '', namesLeft = '';
+	let avatarsRight = '', namesRight = '';
+	let scoreRight = '', scoreLeft = '';
+
 	for (let player of game.players) {
 		if (player) {
-			if (i % 2 == 0)
-				SCORE_LEFT.innerHTML = player.score.toString();
-			else
-				SCORE_RIGHT.innerHTML = player.score.toString();
-
-			if (side == i) {
+			if (side == n) {
 				LEFT_1.style.top = `${player.screen.paddles[0].y}px`;
 				RIGHT_1.style.top = `${player.screen.paddles[1].y}px`;
 				if (LEFT_2)
@@ -88,7 +87,45 @@ export function displayPong(data: Data) {
 				BALL.style.left = `${player.screen.ball.x}px`;
 				BALL.style.top = `${player.screen.ball.y}px`;
 			}
+
+			const u = player.user;
+			let c = 'white';
+			if (game.players.length > 2){
+				if (n === 0)
+					c = 'red-300';
+				else if (n == 1)
+					c = 'blue-300';
+				else if (n == 2)
+					c = 'green-300';
+				else if (n == 3)
+					c = 'yellow-300';
+			}
+			console.log(c)
+			if (n % 2 == 0) {
+				avatarsLeft += ` &nbsp; <img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image"> &nbsp; `;
+				namesLeft += `<div class="text-sm text-${c} text-center">${u.name}</div>`;
+				scoreLeft = player.score.toString();
+			} else {
+				avatarsRight += ` &nbsp; <img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image"> &nbsp; `;
+				namesRight += `<div class="text-sm text-${c} text-center">${u.name}</div>`;
+				scoreRight = player.score.toString();
+			}
 		}
-		i++;
+		n++;
 	}
+
+	SCORE_LEFT.innerHTML = `
+		<div class="flex justify-center flex-shrink-0">${avatarsLeft}</div>
+		<div class="flex-1 min-w-0">
+			<p class="text-sm font-medium truncate text-center">${namesLeft}</p>
+			<p class="text-white truncate text-center text-7xl">${scoreLeft}</p>
+		</div>`
+
+	SCORE_RIGHT.innerHTML = `
+		<div class="flex justify-center flex-shrink-0">${avatarsRight}</div>
+		<div class="flex-1 min-w-0">
+			<p class="text-sm font-medium truncate text-center">${namesRight}</p>
+			<p class="text-white truncate text-center text-7xl">${scoreRight}</p>
+		</div>`
+
 }

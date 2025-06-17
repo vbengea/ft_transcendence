@@ -23,10 +23,26 @@ export function displayTicTacToe(data: Data) {
 	let n = 0;
 	for (let player of game.players) {
 		if (player) {
-			if (n % 2 == 0)
-				SCORE_LEFT.innerHTML = player.score.toString();
-			else
-				SCORE_RIGHT.innerHTML = player.score.toString();
+			const u = player.user;
+			if (n % 2 == 0) {
+				SCORE_LEFT.innerHTML = `
+					<div class="flex justify-center flex-shrink-0">
+						<img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image">
+					</div>
+					<div class="flex-1 min-w-0">
+						<p class="text-sm font-medium text-gray-900 truncate text-center">${u.name}</p>
+						<p class="text-red-500 truncate text-center text-7xl">${player.score.toString()}</p>
+					</div>`
+			} else {
+				SCORE_RIGHT.innerHTML = `
+					<div class="flex justify-center flex-shrink-0">
+						<img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image">
+					</div>
+					<div class="flex-1 min-w-0">
+						<p class="text-sm font-medium text-gray-900 truncate text-center">${u.name}</p>
+						<p class="text-red-500 truncate text-center text-7xl">${player.score.toString()}</p>
+					</div>`
+			}
 		}
 		n++;
 	}

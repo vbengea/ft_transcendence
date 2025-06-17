@@ -34,11 +34,6 @@ async function fill() {
 
 	const connect = [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }];
 
-	for( let i = 1 ; i <= 20; i++ ) {
-		const u = await utils.createUser(`user${i}@gmail.com`, `User ${i}`, true, DEFAULT_PASSWORD);
-		connect.push({ id: u.id });
-	}
-
 	await prisma.user.update({ 
 		where: { id: juan.id }, 
 		data: { 
