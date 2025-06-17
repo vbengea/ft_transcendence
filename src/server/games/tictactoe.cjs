@@ -101,7 +101,7 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid, limit, match, matchMap) {
+	constructor(mid, limit, match, maps) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -111,8 +111,8 @@ class TicTacToe {
 		this.mid = mid;
 		this.match = match;
 		this.limit = limit;
-		this.counter = 0;
-		this.matchMap = matchMap;
+		this.matchMap = maps.matchMap;
+		this.maps = maps;
 	}
 
 	toJSON() {
@@ -134,32 +134,31 @@ class TicTacToe {
 	}
 
 	send() {
-		if (this.players[0])
+		if (this.players[0]) {
 			this.players[0].setScore(this.scores[0]);
-		if (this.players[1])
+		}
+		if (this.players[1]) {
 			this.players[1].setScore(this.scores[1]);
+		}
 		const json = JSON.stringify(this);
 		if (this.players[0]) {
 			const s = this.players[0].getSocket();
-			if (s)
+			if (s) {
 				s.send("{ \"game\": " + json + ", \"side\": 0 }");
+			}
 		}
 		if (this.players[1]) {
 			const s = this.players[1].getSocket();
-			if (s)
+			if (s) {
 				s.send("{ \"game\": " + json + ", \"side\": 1 }");
+			}
 		}
 	}
 
 	addPlayer(index, player) {
-		if (this.counter == this.limit){
-			this.players[index].getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
-			return;
-		}
 		player.setSide(index);
-		this.players[index] = player;		
-		this.counter++;
-		if (this.counter == this.limit) {
+		this.players[index] = player;
+		if (this.players[0] && this.players[1]) {
 			for(let p of this.players) {
 				if (p && p.getSocket())
 					p.getSocket().send(JSON.stringify({ message: TXT.success, match: this.getMatch() }));
@@ -215,85 +214,88 @@ class TicTacToe {
 				if (s2)
 					s2.send(JSON.stringify({ redirect: TXT.loose }));
 			}
+			this.maps.socketMap.delete(p.getSocket());
+			this.maps.userMap.delete(p.getUser().id);
 		}
-		this.matchMap.delete(this.match.id);
+		this.maps.matchMap.delete(this.match.id);
 	}
 
 	async play(down, i) {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
-		const player = this.players[i];
-		const socket = player ? player.getSocket() : null;
+		if (p1 && p2) {
+			const player = this.players[i];
+			const socket = player ? player.getSocket() : null;
 
-		down -= 1;
-		let row = Math.floor(down / DIM);
-		let col = down % DIM;
-		this.status = 1;
+			down -= 1;
+			let row = Math.floor(down / DIM);
+			let col = down % DIM;
+			this.status = 1;
 
-		if (this.matrix[row][col] === 0) {
-			if (socket === p1.getSocket() && this.last !== 'x') {
-				this.matrix[row][col] = 'x';
-			} else if (socket === p2.getSocket() && this.last !== 'o'){
-				this.matrix[row][col] = 'o';
-			} else {
-				return ;																		// Player intending to play again ...................
-			}
+			if (this.matrix[row][col] === 0) {
+				if (socket === p1.getSocket() && this.last !== 'x') {
+					this.matrix[row][col] = 'x';
+				} else if (socket === p2.getSocket() && this.last !== 'o'){
+					this.matrix[row][col] = 'o';
+				} else {
+					return ;																		// Player intending to play again ...................
+				}
 
-			// SCORES																			// Determine the winner .............................
-			let p = '';
-			for (let i = 0; i < DIM; i++) {
-				p = this.verifyVertical(i);
-				if (p)
-					break;
-				p = this.verifyHorizontal(i);
-				if (p)
-					break;
-			}
-			if (!p)
-				p = this.verifyDiagonal();
+				// SCORES																			// Determine the winner .............................
+				let p = '';
+				for (let i = 0; i < DIM; i++) {
+					p = this.verifyVertical(i);
+					if (p)
+						break;
+					p = this.verifyHorizontal(i);
+					if (p)
+						break;
+				}
+				if (!p)
+					p = this.verifyDiagonal();
 
-			if (p === 'x') {
-				this.scores[0]++;
-				this.reset();
-			} else if (p == 'o') {
-				this.scores[1]++;
-				this.reset();
-			}
+				if (p === 'x') {
+					this.scores[0]++;
+					this.reset();
+				} else if (p == 'o') {
+					this.scores[1]++;
+					this.reset();
+				}
 
-			if (this.scores[0] >= MAX_SCORE) {													// Check scores .....................................
-				this.manageResults(0);
+				if (this.scores[0] >= MAX_SCORE) {													// Check scores .....................................
+					this.manageResults(0);
 
-			} else if (this.scores[1] == MAX_SCORE) {
-				this.manageResults(1);
+				} else if (this.scores[1] == MAX_SCORE) {
+					this.manageResults(1);
 
-			} else {
-				let n = 0;
-				for (let i = 0; i < this.matrix.length; i++) {
-					for (let j = 0; j < this.matrix[i].length; j++) {
-						if (this.matrix[i][j] !== 0)
-							n++;
+				} else {
+					let n = 0;
+					for (let i = 0; i < this.matrix.length; i++) {
+						for (let j = 0; j < this.matrix[i].length; j++) {
+							if (this.matrix[i][j] !== 0)
+								n++;
+						}
+					}
+					if (n === DIM * DIM)
+						this.reset();
+					else
+						this.send();
+
+					this.last = this.matrix[row][col];
+
+					if (player === p1 && !p2.getUser().human) {										// Computer play ....................................
+						setTimeout(() => {
+							while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
+								down = Math.floor(Math.random() * 9) + 1
+								down -= 1;
+								row = Math.floor(down / DIM);
+								col = down % DIM;
+							}
+							this.play(down + 1, 1);
+						}, 1000);
 					}
 				}
-				if (n === DIM * DIM)
-					this.reset();
-				else
-					this.send();
-
-				this.last = this.matrix[row][col];
-
-				if (player === p1 && !p2.getUser().human) {										// Computer play ....................................
-					setTimeout(() => {
-						while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
-							down = Math.floor(Math.random() * 9) + 1
-							down -= 1;
-							row = Math.floor(down / DIM);
-							col = down % DIM;
-						}
-						this.play(down + 1, 1);
-					}, 1000);
-				}
 			}
-
 		}
 	}
 

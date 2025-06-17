@@ -22,10 +22,12 @@ export function displayTicTacToe(data: Data) {
 
 	let n = 0;
 	for (let player of game.players) {
-		if (n % 2 == 0)
-			SCORE_LEFT.innerHTML = player.score.toString();
-		else
-			SCORE_RIGHT.innerHTML = player.score.toString();
+		if (player) {
+			if (n % 2 == 0)
+				SCORE_LEFT.innerHTML = player.score.toString();
+			else
+				SCORE_RIGHT.innerHTML = player.score.toString();
+		}
 		n++;
 	}
 
