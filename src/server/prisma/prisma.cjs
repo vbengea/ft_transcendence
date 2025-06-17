@@ -32,11 +32,18 @@ async function fill() {
 	const miguel = await utils.createUser("unamuno@gmail.com", "Miguel de Unamuno", true, DEFAULT_PASSWORD);
 	const juan = await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD);
 
+	const connect = [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }];
+
+	for( let i = 1 ; i <= 20; i++ ) {
+		const u = await utils.createUser(`user${i}@gmail.com`, `User ${i}`, true, DEFAULT_PASSWORD);
+		connect.push({ id: u.id });
+	}
+
 	await prisma.user.update({ 
 		where: { id: juan.id }, 
 		data: { 
 			friends: { 
-				connect: [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }] 
+				connect
 			}
 		}
 	})

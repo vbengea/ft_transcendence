@@ -51,16 +51,7 @@ function createChatService(prisma) {
 			}
 
 			users.sort((a, b) => {
-				if (a.blocked)
-					return 1;
-				else if(b.blocked)
-					return -1;
-				else if (a.count)
-					return 1;
-				else if (b.count)
-					return 1;
-				else
-					return a.name - b.name;
+				return b.count - a.count;
 			});
 
 			return users;
