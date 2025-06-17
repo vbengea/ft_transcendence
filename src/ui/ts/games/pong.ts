@@ -1,35 +1,8 @@
+import { Payload, Data, Game } from '../types';
+import { gameLoop } from '../events';
+import { get } from './main';
 
-type Player = {
-	"wins": boolean,
-	"score": number,
-	"screen":{
-		"width": number,
-		"height": number,
-		"ball":{
-			"width": number,
-			"height": number,
-			"x": number,
-			"y": number,
-			"dx": number,
-			"dy": number
-		},
-		"paddles":{
-			"x": number,
-			"y": number,
-			"width": number,
-			"height": number
-		} []
-	}
-};
-
-type Game = {
-	status: number,
-	render: number,
-	players: Player[],
-	matrix: string[][]
-};
-
-function getLayoutPayloadPong(subtype : string, tournamentId : string) {
+export function getLayoutPayloadPong(subtype : string, tournamentId : string) {
 	const BALL : HTMLElement | null = document.querySelector("#ball");
 	const LEFT_1 : HTMLElement | null = document.querySelector(`#paddle-left-1`);
 	const RIGHT_1 : HTMLElement | null = document.querySelector(`#paddle-right-2`);
@@ -83,7 +56,7 @@ function getLayoutPayloadPong(subtype : string, tournamentId : string) {
 	return ret;
 }
 
-function displayPong(data: Data) {
+export function displayPong(data: Data) {
 	const BALL : HTMLElement | null = document.querySelector("#ball");
 	const LEFT_1 : HTMLElement | null = document.querySelector(`#paddle-left-1`);
 	const RIGHT_1 : HTMLElement | null = document.querySelector(`#paddle-right-2`);
@@ -99,20 +72,22 @@ function displayPong(data: Data) {
 
 	let i = 0;
 	for (let player of game.players) {
-		if (i % 2 == 0)
-			SCORE_LEFT.innerHTML = player.score.toString();
-		else
-			SCORE_RIGHT.innerHTML = player.score.toString();
+		if (player) {
+			if (i % 2 == 0)
+				SCORE_LEFT.innerHTML = player.score.toString();
+			else
+				SCORE_RIGHT.innerHTML = player.score.toString();
 
-		if (side == i) {
-			LEFT_1.style.top = `${player.screen.paddles[0].y}px`;
-			RIGHT_1.style.top = `${player.screen.paddles[1].y}px`;
-			if (LEFT_2)
-				LEFT_2.style.top = `${player.screen.paddles[2].y}px`;
-			if (RIGHT_2)
-				RIGHT_2.style.top = `${player.screen.paddles[3].y}px`;
-			BALL.style.left = `${player.screen.ball.x}px`;
-			BALL.style.top = `${player.screen.ball.y}px`;
+			if (side == i) {
+				LEFT_1.style.top = `${player.screen.paddles[0].y}px`;
+				RIGHT_1.style.top = `${player.screen.paddles[1].y}px`;
+				if (LEFT_2)
+					LEFT_2.style.top = `${player.screen.paddles[2].y}px`;
+				if (RIGHT_2)
+					RIGHT_2.style.top = `${player.screen.paddles[3].y}px`;
+				BALL.style.left = `${player.screen.ball.x}px`;
+				BALL.style.top = `${player.screen.ball.y}px`;
+			}
 		}
 		i++;
 	}

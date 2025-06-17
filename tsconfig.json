@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "module": "amd",
+    "module": "es6",
     "target": "es5",
     "sourceMap": true,
-    "outFile": "/app/public/main.js",
 	"moduleResolution": "node",
     "lib": [
       "dom",
@@ -13,5 +12,5 @@
       "es6"
     ]
   },
-  "include": ["./src/ui/ts/*.ts"],
+  "rootDir": "src",
 }

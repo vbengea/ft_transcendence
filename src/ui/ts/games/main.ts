@@ -1,46 +1,21 @@
-const UP_KEYS = ["KeyA", "Keya"];
-const DOWN_KEYS = ["KeyZ", "Keyz"];
+import { DisplayFn, PayloadFn, Data } from '../types';
+import { send } from '../events';
 
-function get(obj : Element | null, prop : string) {
+export function get(obj : Element | null, prop : string) {
 	if (obj != null)
     	return (obj.getBoundingClientRect() as any)[prop];
 }
 
-type Payload = { 
-	type: string, 
-	subtype: string,
-	tournamentId : string,
-	paddles?:{
-		x: number,
-		y: number,
-		w: number,
-		h: number
-	}[],
-	screen: { 
-		w: number, 
-		h: number, 
-		lineHeight?: number 
-	}, 
-	ball?: {
-		w: number, 
-		h: number 
-	}
-};
-
-type DisplayFn = (a : Data) => void;
-type PayloadFn = (a : string, tournamentId : string) => Payload
-type Data = { game: Game, side: number, redirect: string, message: string, match: { counter: number } };
-
 let display : DisplayFn = null;
 let payload : PayloadFn = null
 
-function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : string, tournamentId: string) {
+export function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : string, tournamentId: string) {
 	display = displayfn;
 	payload = payloadfn;
 	send(JSON.stringify(payload("connect", tournamentId)));
 }
 
-async function handleGame(data: Data){
+export async function handleGame(data: Data){
 	const SPLASH = document.querySelector(`#splash`);
 	if (data.redirect) {
 		location.hash = data.redirect;

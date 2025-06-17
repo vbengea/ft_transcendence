@@ -4,7 +4,7 @@
   "main": "./src/server/index.cjs",
   "types": "./src/ui/main.d.ts",
   "scripts": {
-    "js": "npx tsc",
+    "js": "npx webpack",
     "css": "npx @tailwindcss/cli -o ./public/main.css",
     "migrate": "npx prisma format --schema=./src/server/prisma/schema.prisma && npx prisma migrate dev --name init --schema=./src/server/prisma/schema.prisma && npx prisma generate --schema=./src/server/prisma/schema.prisma",
     "start": "node ./src/server/index.cjs"
@@ -35,10 +35,15 @@
     "speakeasy": "^2.0.0"
   },
   "devDependencies": {
+    "@babylonjs/core": "^8.12.1",
+    "@babylonjs/inspector": "^8.12.1",
     "@prisma/client": "6.8.2",
     "@tailwindcss/cli": "^4.1.7",
     "prisma": "^6.8.2",
     "tailwindcss": "^4.1.7",
-    "typescript": "^5.8.3"
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   }
 }

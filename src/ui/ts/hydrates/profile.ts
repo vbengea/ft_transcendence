@@ -1,6 +1,6 @@
 
 
-const hydrateProfile = async (userId) => {
+export const hydrateProfile = async (userId) => {
 	try {
 		const userCurr = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 		const userData = await (await fetch(`/auth/you/${userId}`)).json();

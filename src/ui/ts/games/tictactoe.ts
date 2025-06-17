@@ -1,4 +1,7 @@
-function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string) {
+import { Data } from '../types';
+import { get } from './main';
+
+export function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string) {
 	const sc = {
 		w: get(document.body, "width"),
 		h: get(document.body, "height")
@@ -6,7 +9,7 @@ function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string) {
 	return { type: "tictactoe", subtype, screen: sc, tournamentId };
 }
 
-function displayTicTacToe(data: Data) {
+export function displayTicTacToe(data: Data) {
 	const SCORE_LEFT = document.querySelector(`#score-left`);
 	const SCORE_RIGHT = document.querySelector(`#score-right`);
 	const MATRIX = document.querySelector(`#tictactoe`);

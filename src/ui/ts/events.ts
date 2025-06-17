@@ -1,15 +1,9 @@
-var WS = null;
+import { Message } from './types';
+import { handleGame } from './games/main';
+import { getLayoutPayloadPong } from './games/pong';
+import { getLayoutPayloadTicTacToe } from './games/tictactoe';
 
-type Message = { 
-	id: string, 
-	name: string, 
-	avatar: string, 
-	email: string, 
-	count: number, 
-	text?: string,
-	blocked?: boolean,
-	sender?: { id: string, avatar: string, name: string } 
-};
+export let WS = null;
 
 let chatUserList : Message[] = [];
 let chatUserMessages : Message[] = [];
@@ -17,7 +11,7 @@ let receiverId : String;
 
 const CHAR_LIMIT = 255;
 
-function initWebSocket() {
+export function initWebSocket() {
 	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
 	WS.onerror = (event) => {
@@ -52,6 +46,37 @@ function initWebSocket() {
 			}
 		}
 	};
+}
+
+export const createTournament = async (tournament) => {
+	const uid = JSON.parse(sessionStorage.TRANSCENDER_USER).user.id;
+	const gameName = tournament.gameType;
+
+	const tournamentData = {
+		...tournament,
+		gameName: gameName,
+	};
+
+	const t = await (await fetch('/api/tournament', {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(tournamentData)
+	})).json();
+
+	for(let u of tournament.users){
+		if (u.human && u.id !== uid)
+			tournamentChat(tournament.gameType, u.id, t.tournamentId);
+	}
+
+	location.hash = `#/landing/${tournament.gameType}/${t.tournamentId}`;
+};
+
+const tournamentChat = (game, receiverId, tournamentId) => {
+	const text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
 }
 
 // EVENTS .........................................................................................
@@ -171,7 +196,7 @@ const scrollToBottom = () => {
 	}
 };
 
-const changeMode = async (mode, friendId?) => {
+export const changeMode = async (mode, friendId?) => {
 	chatUserMessages = [];
 	chatUserList = [];
 
@@ -236,10 +261,11 @@ const tapHandler = (e) => {
 };
 
 const resizeScreen = (e) => {
-	if (payload) {
-		const tournamentId = location.hash.slice(1).split('/')[3];
-		send(JSON.stringify(payload("layout", tournamentId)));
-	}
+	const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
+	if (game === 'pong')
+		send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId)));
+	else if (game === 'tictactoe')
+		send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId)));
 };
 
 const handleWheel = (e) => {
@@ -344,8 +370,6 @@ const clickHandler = (e) => {
 	}
 };
 
-addEventListener('load', router);
-addEventListener('hashchange', router);
 addEventListener('wheel', handleWheel);
 addEventListener('keydown', handleKeyDown);
 addEventListener("keydown", paddleHandler);
@@ -362,7 +386,7 @@ const removeEvents = () => {
 }
 
 let keys = {};
-function gameLoop() {
+export function gameLoop() {
 	if (location.hash.includes('#/landing/pong')) {
 		if (keys['KeyZ']) {
 			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0 }));
@@ -380,35 +404,6 @@ function gameLoop() {
 	}
 }
 
-function testUsers() {
-	const username : HTMLInputElement = document.querySelector('#email');
-	const password : HTMLInputElement = document.querySelector('#password');
-
-	if (username && password) {
-		password.value = '1234';
-		if (navigator.userAgent.includes('OPR')){
-			username.value = 'unamuno@gmail.com';
-		} else if (navigator.userAgent.includes('Firefox')) {
-			username.value = 'tolstoi@gmail.com';
-		} else if (navigator.userAgent.includes('Chrome')) {
-			username.value = 'juaflore@gmail.com';
-		} else if (navigator.userAgent.includes('Safari')) {
-			username.value = 'edgar@gmail.com';
-		}
-	}
-}
-
-const send = function (message, callback = null) {
-	if (!WS)
-		return;
-    this.waitForConnection(function () {
-        WS.send(message);
-        if (callback) {
-          callback();
-        }
-    }, 1000);
-};
-
 const waitForConnection = function (callback, interval) {
     if (WS.readyState === 1) {
         callback();
@@ -416,7 +411,19 @@ const waitForConnection = function (callback, interval) {
         var that = this;
         // optional: implement backoff for interval here
         setTimeout(function () {
-            that.waitForConnection(callback, interval);
+            waitForConnection(callback, interval);
         }, interval);
     }
 };
+
+export const send = function (message, callback = null) {
+	if (!WS)
+		return;
+    waitForConnection(function () {
+        WS.send(message);
+        if (callback) {
+          callback();
+        }
+    }, 1000);
+};
+

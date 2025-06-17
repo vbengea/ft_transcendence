@@ -1,13 +1,7 @@
-interface Window {
-	google?: {
-		accounts: {
-			id: {
-				initialize: (config: { client_id: string, callback: (response: { credential: string }) => void }) => void;
-				prompt: () => void;
-			}
-		}
-	}
-}
+import { initWebSocket, WS } from './events';
+import { landing } from './landing';
+import { Templates } from './hydrates/templates';
+
 const appDiv = "app";
 
 let routes = {};
@@ -71,7 +65,7 @@ template('template-view3', async () => {
 		const configResponse = await fetch(`${BASE}/config`);
 		const config = await configResponse.json();
 
-		if (!window.google) {
+		if (!(window as any).google) {
 			const script = document.createElement('script');
 			script.src = 'https://accounts.google.com/gsi/client';
 			script.async = true;
@@ -83,11 +77,11 @@ template('template-view3', async () => {
 		}
 		
 		function initGoogleSignIn(clientId) {
-			window.google.accounts.id.initialize({
+			(window as any).google.accounts.id.initialize({
 				client_id: clientId,
 				callback: handleGoogleSignIn
 			});
-			window.google.accounts.id.prompt();
+			(window as any).google.accounts.id.prompt();
 		}
 		
 		async function handleGoogleSignIn(response) {
@@ -259,14 +253,22 @@ async function resolveRoute(route) {
 	}
 }
 
-function shuffle(array) {
-  let currentIndex = array.length;
-  while (currentIndex != 0) {
-    let randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
+function testUsers() {
+	const username : HTMLInputElement = document.querySelector('#email');
+	const password : HTMLInputElement = document.querySelector('#password');
+
+	if (username && password) {
+		password.value = '1234';
+		if (navigator.userAgent.includes('OPR')){
+			username.value = 'unamuno@gmail.com';
+		} else if (navigator.userAgent.includes('Firefox')) {
+			username.value = 'tolstoi@gmail.com';
+		} else if (navigator.userAgent.includes('Chrome')) {
+			username.value = 'juaflore@gmail.com';
+		} else if (navigator.userAgent.includes('Safari')) {
+			username.value = 'edgar@gmail.com';
+		}
+	}
 }
 
 async function router(evt) {
@@ -281,3 +283,6 @@ async function router(evt) {
 		testUsers();
 	}
 };
+
+addEventListener('load', router);
+addEventListener('hashchange', router);

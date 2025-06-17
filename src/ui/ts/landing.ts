@@ -1,3 +1,20 @@
+import { createTournament, changeMode } from './events';
+import { getLayoutPayloadPong, displayPong } from './games/pong';
+import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
+import { play } from './games/main';
+import { hydrateProfile } from './hydrates/profile';
+import { hydrateSettings } from './hydrates/settings';
+
+function shuffle(array) {
+  let currentIndex = array.length;
+  while (currentIndex != 0) {
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+}
+
 let hydrateTemplate = async (url, params) => {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	switch(url) {
@@ -238,37 +255,6 @@ let hydrateTemplate = async (url, params) => {
 	}
 }
 
-const createTournament = async (tournament) => {
-	const uid = JSON.parse(sessionStorage.TRANSCENDER_USER).user.id;
-	const gameName = tournament.gameType;
-
-	const tournamentData = {
-		...tournament,
-		gameName: gameName,
-	};
-
-	const t = await (await fetch('/api/tournament', {
-		method: 'POST',
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(tournamentData)
-	})).json();
-
-	for(let u of tournament.users){
-		if (u.human && u.id !== uid)
-			tournamentChat(tournament.gameType, u.id, t.tournamentId);
-	}
-
-	location.hash = `#/landing/${tournament.gameType}/${t.tournamentId}`;
-};
-
-const tournamentChat = (game, receiverId, tournamentId) => {
-	const text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
-	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
-}
-
 const playPong = async (params) => {
 	let mode = 'single';
 	const app = document.querySelector('#app');
@@ -305,6 +291,12 @@ const playPong = async (params) => {
 	play(getLayoutPayloadPong, displayPong, 'pong', tournamentId);
 };
 
+const playBong = async (params) => {
+	const tournamentId = params[0];
+	// const canvas : HTMLCanvasElement = document.getElementById("renderCanvas");
+	// var engine = new BABYLON.Engine(canvas, true);
+};
+
 const playTicTacToe = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
@@ -316,7 +308,7 @@ const playTicTacToe = async (params) => {
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
 };
 
-let landing = async (url) => {
+export const landing = async (url) => {
 	const app = document.querySelector('#app');
 	const params = [];
 	try {

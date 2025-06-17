@@ -3,12 +3,7 @@
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
 const jdenticon = require("jdenticon");
-const fetch = require('node-fetch');
 const fs = require("fs");
-const { isNumericLiteral } = require('typescript');
-const { connect } = require('http2');
-const { disconnect } = require('process');
-const Buffer = require('buffer').Buffer
 
 function createUserService(prisma) {
 	return {

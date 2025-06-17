@@ -1,5 +1,4 @@
-
-namespace Templates {
+export namespace Templates {
 	export const twofa_setup = `<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 		<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 			<h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Set Up Two-Factor Authentication</h2>
@@ -173,4 +172,4 @@ namespace Templates {
 					</div>
 			</div>
 	</div>`;
-}
+};

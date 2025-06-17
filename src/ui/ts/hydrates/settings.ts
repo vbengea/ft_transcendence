@@ -1,4 +1,4 @@
-const hydrateSettings = async () => {
+export const hydrateSettings = async () => {
 	try {
 
 		const setupTabs = () => {
