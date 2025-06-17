@@ -56,14 +56,14 @@ function createTournamentService(prisma) {
 								user3Id: null,
 								user4Id: null,
 								roundId: round.id,
-								winScore: 10
+								winScore: gameName === 'pong' ? 10 : 3
 							} : {
 								user1Id: matchData.users[0].id,
 								user2Id: matchData.users[2].id,
 								user3Id: matchData.users[1].id,
 								user4Id: matchData.users[3].id,
 								roundId: round.id,
-								winScore: 10
+								winScore: gameName === 'pong' ? 10 : 3
 							}
 						});
 					} 
