@@ -38,16 +38,26 @@ function setUser(i, socket, raw, uid, match) {
 		match[`user${i}`].matchId = match.id;
 		userMap.set(uid, match[`user${i}`]);
 
-		/* If the rest of the users are bots ......................................... */
-		for (let j = 1; j <= MAX_USERS; j++){
-			const p = match[`user${j}`];
-			if (p && i != j && !p.human) {
-				const r = Object.assign(raw, { });
-				p.raw = r;
-				p.initialized = true;
-				const computer = newPlayer(raw.type, p);
-				p.player = computer;
-				match.game.addPlayer(j - 1, computer);
+		if (match.user2Id === 'anonymous@gmail.com') {
+			const p = match.user2;
+			const r = Object.assign(raw, { });
+			p.raw = r;
+			p.initialized = true;
+			const anonymous = newPlayer(raw.type, p);
+			p.player = anonymous;
+			match.game.addPlayer(1, anonymous);
+		} else {
+			/* If the rest of the users are bots ......................................... */
+			for (let j = 1; j <= MAX_USERS; j++){
+				const p = match[`user${j}`];
+				if (p && i != j && !p.human) {
+					const r = Object.assign(raw, { });
+					p.raw = r;
+					p.initialized = true;
+					const computer = newPlayer(raw.type, p);
+					p.player = computer;
+					match.game.addPlayer(j - 1, computer);
+				}
 			}
 		}
 	}

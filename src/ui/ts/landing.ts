@@ -64,7 +64,6 @@ let hydrateTemplate = async (url, params) => {
 
 			const onlineStatuses = await fetchOnlineStatus(friends);
 
-
 			div.innerHTML = friends.map(f => {
 				const isOnline = onlineStatuses[f.id] === true;
 				const statusClass = isOnline ? 'bg-green-400' : 'bg-gray-400';

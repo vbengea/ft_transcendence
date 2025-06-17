@@ -355,7 +355,7 @@ const clickHandler = (e) => {
 				const users = [me, you];
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
 				const game = target.dataset.friend_option;
-				const tournament = { name: 'Single player', users, rounds, gameType: game };
+				const tournament = { name: friend_id === 'anonymous@gmail.com' ? 'Guest play' : 'Single player', users, rounds, gameType: game };
 				createTournament(tournament);
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;

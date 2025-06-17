@@ -19,7 +19,7 @@ function createUserService(prisma) {
 			});
 		},
 
-		async createUser(email, name, human, plainPassword) {
+		async createUser(email, name, human, plainPassword, anonymous = false) {
 			const passwordHash = await bcrypt.hash(plainPassword, 10);
 			let bots = new Set();
 			if (human) {
@@ -33,17 +33,24 @@ function createUserService(prisma) {
 
 			bots = Array.from(bots);
 
+			const data = {
+				email,
+				name,
+				passwordHash,
+				avatar: await this.generateIcon(email, human, anonymous),
+				human,
+				anonymous,
+				friends: bots.length ? {
+					connect: bots.map(({ id }) => { return { id }; })
+				} : {}
+			};
+
+			if (anonymous){
+				data.id = email;
+			}
+
 			return prisma.user.create({
-				data: {
-					email,
-					name,
-					passwordHash,
-					avatar: await this.generateIcon(email, human),
-					human,
-					friends: bots.length ? {
-						connect: bots.map(({ id }) => { return { id }; })
-					} : {}
-				},
+				data,
 				select: {
 					id: true,
 					email: true,
@@ -132,7 +139,8 @@ function createUserService(prisma) {
 					OR: [
 						{ email },
 						{ name }
-					]
+					],
+					AND: { anonymous: false }
 				}
 			});
 			return count > 0;
@@ -209,7 +217,7 @@ function createUserService(prisma) {
 		async getFriends(id, human) {
 			const u = await prisma.user.findUnique({
 				where: { id },
-				include: { 
+				include: {
 					friends: { 
 						select: { 
 							id: true, 
@@ -268,10 +276,10 @@ function createUserService(prisma) {
 			return users;
 		},
 
-		async generateIcon(email, human) {
+		async generateIcon(email, human, anonymous) {
 			const path = `images/avatar/${email}.png`;
 			const file = `/app/public/${path}`;
-			if (human)
+			if (human && !anonymous)
 				fs.writeFileSync(file, jdenticon.toPng(email, 200));
 			return path;
 		},
@@ -416,6 +424,7 @@ function createUserService(prisma) {
 					AND: [
 						{ id: { not: currentUserId } },
 						{ human: true },
+						{ anynimous: false },
 						{
 							OR: [
 								{ name: { contains: query } },

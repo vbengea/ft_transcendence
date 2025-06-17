@@ -19,6 +19,7 @@ model User {
   two_fa_secret         String?
   two_fa_enabled        Boolean       @default(false)
   human                 Boolean       @default(true)
+  anonymous				Boolean		  @default(false)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
   friends               User[]        @relation("UserFriends")

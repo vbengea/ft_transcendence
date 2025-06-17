@@ -8,6 +8,10 @@ async function fill() {
     await prisma.game.create({ data: { description: "Pong", name: "pong" } });
     await prisma.game.create({ data: { description: "Tic tac toe", name: "tictactoe" } });
 
+	// Anonymous ........................................................................
+
+	await utils.createUser("anonymous@gmail.com", "Anonymous ", true, DEFAULT_PASSWORD, true);
+
 	// Bots .............................................................................
 
 	await utils.createUser("alincoln@gmail.com", "Abraham Lincoln", false, DEFAULT_PASSWORD);
