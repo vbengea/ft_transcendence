@@ -49,6 +49,8 @@ export function initWebSocket() {
 				chatUserMessages.push(data);
 				processUserMessages();
 			}
+		} else if (data.type === 'logout'){
+			location.hash = '#/logout';
 		}
 	};
 }

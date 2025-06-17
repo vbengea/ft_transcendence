@@ -12,6 +12,7 @@ const socketMap = new Map();
 const userMap = new Map();
 const chatMap = new Map();
 const onlineUsers = new Map();
+const connMap = new Map();
 const maps = {
 	matchMap,
 	socketMap,
@@ -159,8 +160,13 @@ async function chat(uid, socket, raw) {
 module.exports = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
 	const userId = request.user.id;
-
+	const conn = connMap.get(userId);
 	onlineUsers.set(userId, true);
+
+	if (conn && conn != socket)
+		conn.send(JSON.stringify({ type: 'logout' }));
+
+	connMap.set(userId, socket);
 
 	socket.on('message', async (message) => {
 		const raw = JSON.parse(message.toString());
