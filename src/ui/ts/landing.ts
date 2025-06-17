@@ -1,9 +1,12 @@
 import { createTournament, changeMode } from './events';
 import { getLayoutPayloadPong, displayPong } from './games/pong';
 import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
+import { getLayoutPayloadBong, displayBong } from './games/bong';
 import { play } from './games/main';
 import { hydrateProfile } from './hydrates/profile';
 import { hydrateSettings } from './hydrates/settings';
+
+
 
 function shuffle(array) {
   let currentIndex = array.length;
@@ -291,12 +294,6 @@ const playPong = async (params) => {
 	play(getLayoutPayloadPong, displayPong, 'pong', tournamentId);
 };
 
-const playBong = async (params) => {
-	const tournamentId = params[0];
-	// const canvas : HTMLCanvasElement = document.getElementById("renderCanvas");
-	// var engine = new BABYLON.Engine(canvas, true);
-};
-
 const playTicTacToe = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
@@ -308,9 +305,21 @@ const playTicTacToe = async (params) => {
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
 };
 
+const playBong = async (params) => {
+	const tournamentId = params[0];
+	const app = document.querySelector('#app');
+	if (!tournamentId){
+		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		return;
+	}
+	app.innerHTML = await (await fetch(`./pages/bong.html`)).text();
+	play(getLayoutPayloadBong, displayBong, 'pong', tournamentId);
+};
+
 export const landing = async (url) => {
 	const app = document.querySelector('#app');
 	const params = [];
+
 	try {
 		if (url.includes('/')){
 			const paths = url.split('/');
@@ -326,11 +335,15 @@ export const landing = async (url) => {
 
 		if (url === 'pong' && params.length === 1) {
 			playPong(params);
+
 		} else if (url === 'tictactoe' && params.length === 1) {
 			playTicTacToe(params);
 
+		} else if (url === 'bong') {
+			playBong(params);
+
 		} else {
-			if (url === 'pong' || url === 'tictactoe')
+			if (url === 'pong' || url === 'tictactoe' || url === 'bong')
 				url = 'nogame';
 
 			app.innerHTML = await (await fetch(`./pages/template.html`)).text();

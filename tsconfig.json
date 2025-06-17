@@ -1,16 +1,21 @@
 {
-  "compilerOptions": {
-    "module": "es6",
-    "target": "es5",
-    "sourceMap": true,
-	"moduleResolution": "node",
-    "lib": [
-      "dom",
-      "es2015",
-	  "es2016",
-      "es5",
-      "es6"
-    ]
-  },
-  "rootDir": "src",
+	"compilerOptions": {
+		"module": "es6",
+		"target": "es5",
+		"sourceMap": true,
+		"moduleResolution": "node",
+		"lib": [
+			"dom",
+			"es2015",
+			"es2016",
+			"es5",
+			"es6"
+		],
+		"types": ["@babylonjs/core", "@babylonjs/loaders"]
+	},
+	"include": [
+		"types/**/*",
+		"src/**/*"
+	],
+	"rootDir": "src"
 }
