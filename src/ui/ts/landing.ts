@@ -198,24 +198,23 @@ let hydrateTemplate = async (url, params) => {
 				
 				setTimeout(async () => {
 					if (match) {					
-						const t = await (await fetch(`/api/tournament/${match.round.tournamentId}`)).json();
+						const t = await (await fetch(`/api/tournament/${params[0]}`)).json();
 						localStorage.tournament = JSON.stringify(t);
 						location.hash = '#/landing/stats';
 						setTimeout(() => location.hash = `#/landing/${match.round.tournament.game.name}/${match.round.tournament.id}`, 3000);
 
 					} else {
-						const tid = localStorage.tournament ? JSON.parse(localStorage.tournament).id : null;
+						const tid = params[0];
 						const t = tid ? await (await fetch(`/api/tournament/${tid}`)).json() : null;
-						if (t) {
+						if (t && t.totalRounds > 1) {
 							localStorage.tournament = JSON.stringify(t);
 							location.hash = '#/landing/stats';
 							setTimeout(() => {
-								location.hash = `#/`;
+								location.hash = '#/landing/matches';
 								localStorage.tournament = '';
 							}, 3000);
 						} else {
-							location.hash = `#/`;
-							localStorage.tournament = '';
+							location.hash = '#/landing/matches';
 						}
 					}
 				}, 3000);
