@@ -246,7 +246,7 @@ class Player {
 
 class Pong {
 
-	constructor(mid, limit, match, matchMap) {
+	constructor(mid, limit, match, maps) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -257,7 +257,8 @@ class Pong {
 		this.paddleRightCounter = 0;
 		this.paddleCounter = 0;
 		this.match = match;
-		this.matchMap = matchMap;
+		this.matchMap = maps.matchMap;
+		this.maps = maps;
 		this.isGiveUp = false;
 		this.giveUpSide = -1;
 	}
@@ -605,8 +606,10 @@ class Pong {
 				if (s2)
 					s2.send(JSON.stringify({ redirect: TXT.loose }));
 			}
+			this.maps.socketMap.delete(p.getSocket());
+			this.maps.userMap.delete(p.getUser().id);
 		}
-		this.matchMap.delete(this.match.id);
+		this.maps.matchMap.delete(this.match.id);
 	}
 
 	checkPaddleCollisions(screen) {

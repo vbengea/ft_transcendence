@@ -5,23 +5,25 @@ const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 const chatSrv = require('../user-auth/services/chat.service')(prisma);
 
-function newGame(type, mid, limit, match) {
-	return type === 'pong' ? new Pong(mid, limit, match, matchMap) : new TicTacToe(mid, 2, match, matchMap);
-}
-function newPlayer(type, user) {
-	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
-}
-
 const MAX_USERS = 4;
 
 const matchMap = new Map();
 const socketMap = new Map();
 const userMap = new Map();
-
-// TODO: merge these maps *******
-const connMap = new Map();
 const chatMap = new Map();
+const maps = {
+	matchMap,
+	socketMap,
+	userMap
+}
 
+function newGame(type, mid, limit, match) {
+	return type === 'pong' ? new Pong(mid, limit, match, maps) : new TicTacToe(mid, 2, match, maps);
+}
+
+function newPlayer(type, user) {
+	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
+}
 
 function setUser(i, socket, raw, uid, match) {
 	if (match[`user${i}`] && !match[`user${i}`].player && match[`user${i}Id`] === uid && match[`user${i}`].human) {
@@ -33,7 +35,7 @@ function setUser(i, socket, raw, uid, match) {
 		match[`user${i}`].matchId = match.id;
 		userMap.set(uid, match[`user${i}`]);
 
-		/* If the rest of the users are bots ................................... */
+		/* If the rest of the users are bots ......................................... */
 		for (let j = 1; j <= MAX_USERS; j++){
 			const p = match[`user${j}`];
 			if (p && i != j && !p.human) {
@@ -54,6 +56,7 @@ async function play(uid, socket, raw) {
 	if (raw.subtype === 'connect') {
 		const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid, raw.tournamentId);
 		let match = matches[0];
+		let omatch = match;
 
 		if (match) {
 			// Use previous match because there is already related data .............. */
@@ -69,9 +72,13 @@ async function play(uid, socket, raw) {
 				let limit = 2;
 				if (match.round.tournament.totalRounds == 1)
 					limit = match.round.tournament.totalPlayers;
-
-				match.game = newGame(raw.type, match.id, limit, match, matchMap);
+				match.game = newGame(raw.type, match.id, limit, match);
 			}
+
+			match.user1 = match.user1 || omatch.user1;
+			match.user2 = match.user2 || omatch.user2;
+			match.user1Id = match.user1Id || omatch.user1Id;
+			match.user2Id = match.user2Id || omatch.user2Id;
 
 			/* Update user's socket .................................................. */
 			if (user) {
@@ -149,8 +156,6 @@ async function chat(uid, socket, raw) {
 module.exports = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
 
-	connMap.set(request.user.id, { socket });
-
 	socket.on('message', async (message) => {
 		const raw = JSON.parse(message.toString());
 		const uid = request.user.id;
@@ -162,9 +167,7 @@ module.exports = async function (fastify) {
 	})
 
 	socket.on('close', message => {
-		const uid = request.user.id;
 		socketMap.delete(socket);
-		connMap.delete(uid);
 	})
 
   })
