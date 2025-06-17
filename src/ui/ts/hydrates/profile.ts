@@ -127,22 +127,33 @@ export const hydrateProfile = async (userId) => {
 			let tictactoeWins = 0;
 
 			matches.forEach(match => {
-				// TODO - Find the correct game at this point. 
-
 				const isUser1 = match.user1Id === userData.id;
 				const userScore = isUser1 ? match.user1Score : match.user2Score;
 				const opponentScore = isUser1 ? match.user2Score : match.user1Score;
 
-				if (userScore > opponentScore) {
-					wins++;
-					// if (match.gameType === 'pong') pongWins++;
-					// if (match.gameType === 'tictactoe') tictactoeWins++;
-				} else if (userScore < opponentScore) {
-					losses++;
+				if (match.winScore === 10) {
+					pongGames++;
+					if (userScore > opponentScore) {
+						wins++;
+						pongWins++;
+					} else if (userScore < opponentScore) {
+						losses++;
+					}
+				} else if (match.winScore === 3) {
+					tictactoeGames++;
+					if (userScore > opponentScore) {
+						tictactoeWins++;
+						wins++;
+					} else if (userScore < opponentScore) {
+						losses++;
+					}
+				} else {
+					if (userScore > opponentScore) {
+						wins++;
+					} else if (userScore < opponentScore) {
+						losses++;
+					}
 				}
-				// const gameType = sessionStorage.getItem('selectedGame');
-				// if (gameType === 'pong') pongGames++;
-				// if (gameType === 'tictactoe') tictactoeGames++;
 			});
 
 			document.getElementById('total-games').textContent = totalGames.toString();
