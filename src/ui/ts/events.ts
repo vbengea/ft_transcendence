@@ -223,13 +223,19 @@ export const changeMode = async (mode, friendId?) => {
 		processUserMessages();
 	}
 
-	send(JSON.stringify({ 
-		type: "chat", 
-		subtype: "mode", 
-		mode,
-		friendId,
-		user: JSON.parse(sessionStorage.TRANSCENDER_USER).user
-	}));
+	try {
+		if (sessionStorage.TRANSCENDER_USER) {
+			send(JSON.stringify({ 
+				type: "chat", 
+				subtype: "mode", 
+				mode,
+				friendId,
+				user: JSON.parse(sessionStorage.TRANSCENDER_USER).user
+			}));
+		}
+	} catch( err ){
+		
+	}
 };
 
 const sendMessage = () => {
