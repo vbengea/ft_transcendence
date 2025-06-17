@@ -87,7 +87,6 @@ const processChatUserList = () => {
 	const el = document.querySelector('#chat');
 	if (el) {
 		if (chatUserList.length) {
-
 			el.innerHTML = chatUserList.filter(r => r.id !== user.id).map(u => `
 				<li class="cursor-pointer pt-3 p-5 sm:pt-4 ${u.blocked ? 'bg-red-300' : ''}" data-friend_element="${u.id}">
 					<div class="flex items-center space-x-4" data-friend_element="${u.id}">
