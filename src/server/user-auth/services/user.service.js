@@ -91,9 +91,26 @@ function createUserService(prisma) {
 				data: { user4Id: null }
 			});
 
-			await prisma.tournament.deleteMany({
-				where: { organizerId: userId }
+			const userTournaments = await prisma.tournament.findMany({
+				where: { organizerId: userId },
+				include: { rounds: true }
 			});
+
+			for (const tournament of userTournaments) {
+				for (const round of tournament.rounds) {
+					await prisma.match.deleteMany({
+						where: { roundId: round.id }
+					});
+				}
+
+				await prisma.round.deleteMany({
+					where: { tournamentId: tournament.id }
+				});
+
+				await prisma.tournament.delete({
+					where: { id: tournament.id }
+				});
+			}
 
 			await prisma.user.update({
 				where: { id: userId },
