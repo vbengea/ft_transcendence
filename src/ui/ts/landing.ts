@@ -221,7 +221,7 @@ let hydrateTemplate = async (url, params) => {
 				}, 3000);
 
 			} else {
-				setTimeout(() => location.hash = '#/landing/matches', 3000);
+				setTimeout(() => location.hash = '#/landing/stats', 3000);
 			}
 			break;
 		case 'nogame':
