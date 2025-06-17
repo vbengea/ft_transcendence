@@ -11,10 +11,12 @@ const matchMap = new Map();
 const socketMap = new Map();
 const userMap = new Map();
 const chatMap = new Map();
+const onlineUsers = new Map();
 const maps = {
 	matchMap,
 	socketMap,
-	userMap
+	userMap,
+	onlineUsers
 }
 
 function newGame(type, mid, limit, match) {
@@ -156,6 +158,9 @@ async function chat(uid, socket, raw) {
 
 module.exports = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
+	const userId = request.user.id;
+
+	onlineUsers.set(userId, true);
 
 	socket.on('message', async (message) => {
 		const raw = JSON.parse(message.toString());
@@ -169,7 +174,24 @@ module.exports = async function (fastify) {
 
 	socket.on('close', message => {
 		socketMap.delete(socket);
+		onlineUsers.delete(userId);
 	})
 
   })
+
+  fastify.get('/api/online-status', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+	try {
+		const userIds = request.query.ids ? request.query.ids.split(',') : [];
+		const statuses = {};
+
+		userIds.forEach(id => {
+			statuses[id] = onlineUsers.has(id);
+		});
+
+		return reply.send(statuses);
+	} catch (err) {
+		fastify.log.error(err);
+		return reply.code(500).send({ error: 'Failed to fetch online statuses' });
+	}
+  });
 };

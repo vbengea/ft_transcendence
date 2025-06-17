@@ -5,7 +5,7 @@ import { getLayoutPayloadBong, displayBong } from './games/bong';
 import { play } from './games/main';
 import { hydrateProfile } from './hydrates/profile';
 import { hydrateSettings } from './hydrates/settings';
-
+import { fetchOnlineStatus } from './utils';
 
 
 function shuffle(array) {
@@ -61,11 +61,17 @@ let hydrateTemplate = async (url, params) => {
 			const currentUser = userData;
 			const uid = currentUser.id;
 			friends.push(currentUser);
+
+			const onlineStatuses = await fetchOnlineStatus(friends);
+
+
 			div.innerHTML = friends.map(f => {
+				const isOnline = onlineStatuses[f.id] === true;
+				const statusClass = isOnline ? 'bg-green-400' : 'bg-gray-400';
 				return `
 				<div id="${f.id}" data-sid="${f.id}" data-name="${f.name}" data-avatar="${f.avatar}" data-human="${f.human}" class="player relative cursor-pointer w-full ${f.id === uid ? 'bg-amber-400' : 'bg-white'} flex items-center p-2 rounded-sm shadow-2xs">
 					<img data-sid="${f.id}" class="w-10 h-10 rounded-sm" src="${f.avatar}" alt="">
-					<span data-sid="${f.id}" class="absolute bottom-2 left-10 transform translate-y-1/4 w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+					<span data-sid="${f.id}" class="absolute bottom-2 left-10 transform translate-y-1/4 w-3.5 h-3.5 ${statusClass} border-2 border-white dark:border-gray-800 rounded-full"></span>
 					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
 				</div>`
 			}).join('');
