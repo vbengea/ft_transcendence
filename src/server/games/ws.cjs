@@ -167,14 +167,14 @@ async function chat(uid, socket, raw) {
 	}
 }
 
-module.exports = async function (fastify) {
+const fn = async function (fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
 	const userId = request.user.id;
 	const conn = connMap.get(userId);
 	onlineUsers.set(userId, true);
 
 	if (conn && conn != socket)
-		conn.send(JSON.stringify({ type: 'logout' }));
+		return;
 
 	connMap.set(userId, socket);
 
@@ -191,6 +191,7 @@ module.exports = async function (fastify) {
 	socket.on('close', message => {
 		socketMap.delete(socket);
 		onlineUsers.delete(userId);
+		connMap.delete(userId);
 	})
 
   })
@@ -211,3 +212,6 @@ module.exports = async function (fastify) {
 	}
   });
 };
+
+fn.connMap = connMap;
+module.exports = fn;

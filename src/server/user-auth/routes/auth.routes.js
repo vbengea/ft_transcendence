@@ -5,6 +5,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const qrcode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
+const { connMap } = require('../../games/ws.cjs');
 
 function authRoutes(fastify, options, done) {
 	const userService = options.userService;
@@ -82,16 +83,23 @@ function authRoutes(fastify, options, done) {
 			return reply.send({ message: '2FA required', tempToken});
 		}
 
-		const token = fastify.jwt.sign({ id: user.id, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
+		const conn = connMap.get(user.id);
 
-		reply.setCookie('access_token', token, {
-			path: '/',
-			secure: true,
-			httpOnly: true,
-			sameSite: 'strict'
-		});
+		if (conn) {
+			return reply.code(401).send({ error: 'You are logged-in in a different browser instance' });
+		} else {
+			const token = fastify.jwt.sign({ id: user.id, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
 
-		reply.send({ message: 'Login successful', token, user: {id : user.id, email: user.email, name: user.name, avatar: user.avatar } });
+			reply.setCookie('access_token', token, {
+				path: '/',
+				secure: true,
+				httpOnly: true,
+				sameSite: 'strict'
+			});
+
+			reply.send({ message: 'Login successful', token, user: {id : user.id, email: user.email, name: user.name, avatar: user.avatar } });
+		}
+
 	});
 
 	fastify.post('/login/2fa', async (request, reply) => {
