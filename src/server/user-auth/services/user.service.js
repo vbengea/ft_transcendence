@@ -441,7 +441,7 @@ function createUserService(prisma) {
 					AND: [
 						{ id: { not: currentUserId } },
 						{ human: true },
-						{ anynimous: false },
+						{ anonymous: false },
 						{
 							OR: [
 								{ name: { contains: query } },
