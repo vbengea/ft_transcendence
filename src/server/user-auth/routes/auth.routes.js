@@ -477,6 +477,42 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.put('/username', { preHandler: verifyToken }, async (request, reply) => {
+		const { name } = request.body;
+		if (!name) {
+			return reply.code(400).send({ error: 'Missing name field' });
+		}
+
+		if (name.length > 50) {
+			return reply.code(400).send({ error: 'Name exceeds maximum length of 50 characters' });
+		}
+
+		const nameValidation = authUtils.verifyUsername(name);
+		if (!nameValidation.valid) {
+			return reply.code(400).send({ error: nameValidation.error });
+		}
+
+		try {
+			const user = await userService.getUserById(request.user.id);
+
+			if (!user) {
+				return reply.code(404).send({ error: 'User not found' });
+			}
+
+			const nameExists = await userService.usernameExists(name);
+			if (nameExists && name !== user.name) {
+				return reply.code(409).send({ error: 'Name already taken' });
+			}
+
+			await userService.updateUsername(user.id, name);
+
+			reply.send({ message: 'Username updated successfully', name });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to updated username' });
+		}
+	});
+
 	done();
 }
 

@@ -554,6 +554,20 @@ function createUserService(prisma) {
 			}
 
 			return { message: 'Friend removed successfully' };
+		},
+
+		async updateUsername(userId, name) {
+			return prisma.user.update({
+				where: { id: userId },
+				data: { name }
+			});
+		},
+
+		async usernameExists(name) {
+			const user = await prisma.user.findFirst({
+				where: { name }
+			});
+			return !!user;
 		}
 	};
 }
