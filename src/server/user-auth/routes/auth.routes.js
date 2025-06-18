@@ -211,6 +211,11 @@ function authRoutes(fastify, options, done) {
 				user = await userService.createGoogleUser({ google_id, email, name, avatar });
 			}
 
+			const conn = connMap.get(user.id);
+			if (conn) {
+				return reply.code(401).send({ error: 'You are logged-in in a different browser instance' });
+			}
+
 			if (user.two_fa_enabled) {
 				const tempToken = fastify.jwt.sign(
 					{ id: user.id, name: user.name, twoFA: true },
@@ -236,7 +241,7 @@ function authRoutes(fastify, options, done) {
 			reply.send({
 				message: 'Google login successful',
 				token,
-				user: { id: user.id, email: user.email, name: user.name }
+				user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar }
 			});
 		} catch (err) {
 			fastify.log.error(err);
