@@ -71,7 +71,11 @@ template('template-view3', async () => {
 			script.async = true;
 			document.head.appendChild(script);
 			
-			script.onload = initGoogleSignIn;
+			script.onload = () => {
+				setTimeout(() => {
+					initGoogleSignIn(config.googleClientId);
+				}, 100);
+			};
 		} else {
 			initGoogleSignIn(config.googleClientId);
 		}
@@ -79,7 +83,14 @@ template('template-view3', async () => {
 		function initGoogleSignIn(clientId) {
 			(window as any).google.accounts.id.initialize({
 				client_id: clientId,
-				callback: handleGoogleSignIn
+				callback: handleGoogleSignIn,
+				ux_mode: 'popup',
+				context: 'signin',
+				error_callback: (error) => {
+					console.error('Google Sign In Error:', error);
+					const err = document.querySelector("#error");
+					err.innerHTML = "An error occurred with Google Sign In. Please try again.";
+				}
 			});
 			(window as any).google.accounts.id.prompt();
 		}
