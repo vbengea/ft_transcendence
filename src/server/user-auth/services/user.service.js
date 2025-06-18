@@ -199,12 +199,29 @@ function createUserService(prisma) {
 		},
 
 		async createGoogleUser({ google_id, email, name, avatar }) {
+
+			let bots = new Set();
+			const comp = await this.getComputerPlayers();
+			while (comp.length >= 3 && bots.size < 3) {
+				const i = Math.floor(Math.random() * comp.length);
+				bots.add(comp[i]);
+				comp.splice(i, 1);
+			}
+
+
+			bots = Array.from(bots);
+
 			return prisma.user.create({
 				data: {
 					email,
 					name: name,
 					googleId: google_id,
-					avatar
+					avatar,
+					human: true,
+					anonymous: false,
+					friends: bots.length ? {
+						connect: bots.map(({ id }) => { return { id }; })
+					} : {}
 				},
 				select: {
 					id: true,
