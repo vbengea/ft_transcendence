@@ -60,73 +60,88 @@ template('template-view3', async () => {
 	let myDiv = document.getElementById(appDiv);
 	myDiv.innerHTML = "";
 	const link3 = createDiv('view3', Templates.login) as HTMLElement;
-	
-	link3.querySelector('#google-signin').addEventListener('click', async () => {
-		const configResponse = await fetch(`${BASE}/config`);
-		const config = await configResponse.json();
+	myDiv.appendChild(link3);
 
-		if (!(window as any).google) {
-			const script = document.createElement('script');
-			script.src = 'https://accounts.google.com/gsi/client';
-			script.async = true;
-			document.head.appendChild(script);
-			
-			script.onload = () => {
-				setTimeout(() => {
-					initGoogleSignIn(config.googleClientId);
-				}, 100);
-			};
-		} else {
-			initGoogleSignIn(config.googleClientId);
-		}
+	const googleButtonContainer = link3.querySelector('#google-signin');
+	
+	const configResponse = await fetch(`${BASE}/config`);
+	const config = await configResponse.json();
+
+	if (!(window as any).google) {
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client';
+		script.async = true;
+		document.head.appendChild(script);
 		
-		function initGoogleSignIn(clientId) {
-			(window as any).google.accounts.id.initialize({
-				client_id: clientId,
-				callback: handleGoogleSignIn,
-				ux_mode: 'popup',
-				context: 'signin',
-				error_callback: (error) => {
-					console.error('Google Sign In Error:', error);
-					const err = document.querySelector("#error");
-					err.innerHTML = "An error occurred with Google Sign In. Please try again.";
-				}
-			});
-			(window as any).google.accounts.id.prompt();
-		}
-		
-		async function handleGoogleSignIn(response) {
-			try {
-				const id_token = response.credential;
-				
-				const resp = await fetch(`${BASE}/google`, {
-					method: "POST",
-					body: JSON.stringify({ id_token }),
-					headers: {
-						"Content-Type": "application/json"
-					}
-				});
-				
-				const json = await resp.json();
-				if(resp.ok) {
-					if (json.message == '2FA required') {
-						localStorage.setItem('tempToken', json.tempToken);
-						location.hash = '/2fa/verify';
-					} else {
-						location.hash = '/';
-					}
-				} else {
-					const err = document.querySelector("#error");
-					err.innerHTML = json.message || json.error;
-				}
-			} catch (error) {
-				console.error('Error handling Google Sign In:', error);
+		script.onload = () => {
+			setTimeout(() => {
+				initGoogleSignIn(config.googleClientId, googleButtonContainer);
+			}, 100);
+		};
+	} else {
+		initGoogleSignIn(config.googleClientId, googleButtonContainer);
+	}
+	
+	function initGoogleSignIn(clientId, container) {
+		(window as any).google.accounts.id.initialize({
+			client_id: clientId,
+			callback: handleGoogleSignIn,
+			context: 'signin',
+			error_callback: (error) => {
+				console.error('Google Sign In Error:', error);
 				const err = document.querySelector("#error");
 				err.innerHTML = "An error occurred with Google Sign In. Please try again.";
 			}
-		}
-	});
+		});
+
+		(window as any).google.accounts.id.renderButton(
+			container,
+			{
+				type: 'standard',
+				theme: 'outline',
+				size: 'large',
+				shape: 'rectangular',
+				text: 'continue_with',
+				logo_alignment: 'center',
+				width: container.offsetWidth
+			}
+		);
+
+		(window as any).google.accounts.id.disableAutoSelect();
+	}
 	
+	async function handleGoogleSignIn(response) {
+		try {
+			const id_token = response.credential;
+			
+			const resp = await fetch(`${BASE}/google`, {
+				method: "POST",
+				body: JSON.stringify({ id_token }),
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: 'include'
+			});
+			
+			const json = await resp.json();
+			if(resp.ok) {
+				if (json.message == '2FA required') {
+					localStorage.setItem('tempToken', json.tempToken);
+					location.hash = '/2fa/verify';
+				} else {
+					location.hash = '/';
+				}
+			} else {
+				const err = document.querySelector("#error");
+				err.innerHTML = json.message || json.error;
+			}
+		} catch (error) {
+			console.error('Error handling Google Sign In:', error);
+			const err = document.querySelector("#error");
+			err.innerHTML = "An error occurred with Google Sign In. Please try again.";
+		}
+	}
+
 	link3.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		var data = new FormData(document.querySelector('form'));
@@ -150,9 +165,7 @@ template('template-view3', async () => {
 			const err = document.querySelector("#error");
 			err.innerHTML = json.message || json.error;
 		}
-	});
-	
-	return myDiv.appendChild(link3);
+	});	
 });
 
 template('template-view4', async () => {

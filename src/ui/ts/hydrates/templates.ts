@@ -91,13 +91,9 @@ export namespace Templates {
 					</div>
 				</div>
 
-				<div class="mt-6 flex justify-center">
-					<button id="google-signin" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-offset-2">
-						<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-							<path d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.514 0-10 4.486-10 10s4.486 10 10 10c8.326 0 10-7.721 10-11.651 0-0.561-0.057-1.102-0.161-1.631h-9.839z"/>
-						</svg>
-						<span>Google</span>
-					</button>
+				<div class="mt-6">
+					<div id="google-signin" class="flex justify-center">
+					</div>
 				</div>
 			</div>
 
