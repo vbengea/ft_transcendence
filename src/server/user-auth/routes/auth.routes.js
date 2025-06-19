@@ -6,6 +6,7 @@ const qrcode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
 const { connMap } = require('../../games/ws.cjs');
+const prisma = require('../../prisma/prisma.cjs');
 
 function authRoutes(fastify, options, done) {
 	const userService = options.userService;
@@ -209,6 +210,12 @@ function authRoutes(fastify, options, done) {
 			let user = await userService.getByGoogleId(google_id);
 			if (!user) {
 				user = await userService.createGoogleUser({ google_id, email, name, avatar });
+			} else {
+				const localAvatar = await userService.downloadAndSaveAvatar(email, avatar);
+				user = await prisma.user.update({
+					where: { id: user.id },
+					data: { avatar: localAvatar }
+				});
 			}
 
 			const conn = connMap.get(user.id);

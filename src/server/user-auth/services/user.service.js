@@ -3,6 +3,7 @@
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
 const jdenticon = require("jdenticon");
+const fetch = require('node-fetch');
 const fs = require("fs");
 
 function createUserService(prisma) {
@@ -211,12 +212,14 @@ function createUserService(prisma) {
 
 			bots = Array.from(bots);
 
+			const localAvatar = await this.downloadAndSaveAvatar(email, avatar);
+
 			return prisma.user.create({
 				data: {
 					email,
 					name: name,
 					googleId: google_id,
-					avatar,
+					avatar: localAvatar,
 					human: true,
 					anonymous: false,
 					friends: bots.length ? {
@@ -229,6 +232,21 @@ function createUserService(prisma) {
 					name: true
 				}
 			});
+		},
+
+		async downloadAndSaveAvatar(email, avatarUrl) {
+			const path = `images/avatar/${email}.png`;
+			const filePath = `/app/public/${path}`;
+
+			try {
+				const response = await fetch(avatarUrl);
+				const buffer = await response.arrayBuffer();
+				await fs.promises.writeFile(filePath, Buffer.from(buffer));
+				return path;
+			} catch (err) {
+				console.error('Error downloading avatar:', error);
+				return this.generateIcon(email, true, false);
+			}
 		},
 
 		async getFriends(id, human) {
