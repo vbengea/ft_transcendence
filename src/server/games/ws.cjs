@@ -165,7 +165,7 @@ const broadcast = async (tid, uid) => {
 	const tour = await tournamentSrv.getTournamentById(tid);
 	const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid, tid);
 	const match = matches[0];
-	if (match.user1 && match.user2){
+	if (match && match.user1 && match.user2){
 		const tournamentId = tour.id;
 		const organizerId = tour.organizerId;
 		const game = tour.game.name;

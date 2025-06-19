@@ -395,6 +395,7 @@ addEventListener("mouseup", tapHandler);
 addEventListener("resize", resizeScreen);
 addEventListener("click", clickHandler);
 addEventListener("keyup", keyHandler);
+addEventListener('online', initWebSocket);
 
 const removeEvents = () => {
 	removeEventListener("keydown", paddleHandler);
