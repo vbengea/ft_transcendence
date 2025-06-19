@@ -19,6 +19,13 @@ fastify.register(multipart, {
   }
 });
 
+const cors = require('@fastify/cors');
+fastify.register(cors, {
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+})
+
 
 // AUTH VERIFICATION ................................................................................
 const fjwt = require('@fastify/jwt')

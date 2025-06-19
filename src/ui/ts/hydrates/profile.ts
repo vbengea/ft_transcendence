@@ -38,6 +38,26 @@ export const hydrateProfile = async (userId) => {
 		}
 
 		if (isCurr) {
+
+			const profileNameElement = document.getElementById('profile-name');
+
+			const nameContainer = document.createElement('div');
+			nameContainer.className = 'relative inline-block';
+			nameContainer.style.cursor = 'pointer';
+
+			const parentElement = profileNameElement.parentElement;
+			parentElement.replaceChild(nameContainer, profileNameElement);
+			nameContainer.appendChild(profileNameElement);
+
+			const nameOverlay = document.createElement('div');
+			nameOverlay.className = 'absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center hover:bg-opacity-10 transition-opacity';
+			nameOverlay.innerHTML = '<span class="text-transparent hover:text-indigo-600 text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>Edit</span>';
+
+			nameContainer.addEventListener('click', () => {
+				showNameEditForm(profileNameElement, userData);
+			});
+
+
 			avatarOverlay.addEventListener('click', () => {
 				fileInput.click();
 			});
@@ -174,6 +194,116 @@ export const hydrateProfile = async (userId) => {
 	} catch (err) {
 		console.error("Error in profile page:", err);
 	}
+}
+
+async function showNameEditForm(nameElement, userData) {
+	const form = document.createElement('form');
+	form.className = 'flex flex-col space-y-2 mt-2 w-full';
+
+	const input = document.createElement('input');
+	input.type = 'text';
+	input.value = userData.name;
+	input.className = 'px-2 py-1 border border-indigo-300 rounded text-lg font-bold w-full';
+	input.maxLength = 50;
+
+	const buttonsContainer = document.createElement('div');
+	buttonsContainer.className = 'flex space-x-2 justify-center';
+
+	const saveButton = document.createElement('button');
+	saveButton.type = 'submit';
+	saveButton.className = 'bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm';
+	saveButton.textContent = 'Save';
+
+	const cancelButton = document.createElement('button');
+	cancelButton.type = 'button';
+	cancelButton.className = 'bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400 text-sm';
+	cancelButton.textContent = 'Cancel';
+
+	buttonsContainer.appendChild(saveButton);
+	buttonsContainer.appendChild(cancelButton);
+
+	form.appendChild(input);
+	form.appendChild(buttonsContainer);
+
+	const nameContainer = nameElement.parentElement;
+	const originalElement = nameElement;
+	const originalText = nameElement.textContent;
+
+	nameContainer.style.display = 'none';
+
+	const profileSection = nameContainer.parentElement;
+	profileSection.insertBefore(form, nameContainer.nextSibling);
+
+	input.focus();
+	input.select();
+
+	form.addEventListener('submit', async (e) => {
+		e.preventDefault();
+
+		const newName = input.value.trim();
+
+		if (!newName) {
+			alert('Name cannot be empty');
+			return;
+		}
+
+		if (newName === userData.name) {
+			nameContainer.style.display = '';
+			form.remove();
+			return;
+		}
+
+		try {
+			const response = await fetch('/auth/username', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+				body: JSON.stringify({ name: newName })
+			});
+
+			if (response.ok) {
+				nameElement.textContent = newName;
+
+				const userSession = JSON.parse(sessionStorage.TRANSCENDER_USER);
+				userSession.user.name = newName;
+				sessionStorage.TRANSCENDER_USER = JSON.stringify(userSession);
+
+				nameContainer.style.display = '';
+				form.remove();
+
+				const successMessage = document.createElement('div');
+				successMessage.className = 'text-green-600 text-sm mt-1';
+				successMessage.textContent = 'Username updated successfully';
+				profileSection.insertBefore(successMessage, nameContainer.nextSibling);
+
+				setTimeout(() => {
+					if (profileSection.contains(successMessage)) {
+						profileSection.removeChild(successMessage);
+					}
+				}, 3000);
+			} else {
+				const error = await response.json();
+				alert(`Error ${error.error || 'Failed to update username'}`);
+			}
+		} catch (err) {
+			console.error('Error updating username:', err);
+			alert('An error ocurred while updating your username');
+		}
+	});
+
+	cancelButton.addEventListener('click', () => {
+		nameContainer.style.display = '';
+		form.remove();
+	});
+
+	input.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') {
+			nameContainer.style.display = '';
+			form.remove();
+		}
+	});
 }
 
 async function loadFriends(userId) {

@@ -17,8 +17,9 @@ export function closeWS() {
 }
 
 export function initWebSocket() {
-	WS = new WebSocket(`wss://{HOST}:{PORT}/ws`);
 
+	WS = new WebSocket(`https://${window.location.host}/ws`);
+	
 	WS.onerror = (event) => {
 		console.log(event)
 		removeEvents();
