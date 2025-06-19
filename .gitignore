@@ -4,3 +4,6 @@ node_modules
 .DS_Store
 /src/generated/prisma
 /src/ui/tmp
+/src/server/db
+/src/server/prisma/migrations
+webpack.config.dev.js
