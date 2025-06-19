@@ -234,10 +234,11 @@ function createUserService(prisma) {
 			});
 		},
 
+
+
 		async downloadAndSaveAvatar(email, avatarUrl) {
 			const path = `images/avatar/${email}.png`;
-			const filePath = `/app/public/${path}`;
-
+			const filePath = `${process.cwd()}/public/${path}`;
 			try {
 				const response = await fetch(avatarUrl);
 				const buffer = await response.arrayBuffer();
@@ -313,7 +314,7 @@ function createUserService(prisma) {
 
 		async generateIcon(email, human, anonymous) {
 			const path = `images/avatar/${email}.png`;
-			const file = `/app/public/${path}`;
+			const file = `${process.cwd()}/public/${path}`;
 			if (human && !anonymous)
 				fs.writeFileSync(file, jdenticon.toPng(email, 200));
 			return path;

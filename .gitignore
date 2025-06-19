@@ -6,4 +6,7 @@ node_modules
 /src/ui/tmp
 /src/server/db
 /src/server/prisma/migrations
+/app/
 webpack.config.dev.js
+ssnginx.key
+ssnginx.crt
