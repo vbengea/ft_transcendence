@@ -407,13 +407,13 @@ let keys = {};
 export function gameLoop() {
 	if (location.hash.includes('#/landing/pong')) {
 		if (keys['KeyZ'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0 }));
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0, key: 'z' }));
 		if (keys['KeyM'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 1 }));
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 1, key: 'm' }));
 		if (keys['KeyA'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 0 }));
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 0, key: 'a' }));
 		if (keys['KeyK'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 1 }));
+			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 1, key: 'k' }));
 		setTimeout(gameLoop, 15);
 	} else {
 		keys = {};

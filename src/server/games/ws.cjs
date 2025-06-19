@@ -7,6 +7,7 @@ const chatSrv = require('../user-auth/services/chat.service')(prisma);
 const userSrv = require('../user-auth/services/user.service')(prisma);
 
 const MAX_USERS = 4;
+const ANONYMOUS = 'anonymous@gmail.com';
 
 const matchMap = new Map();
 const socketMap = new Map();
@@ -39,7 +40,7 @@ function setUser(i, socket, raw, uid, match) {
 		match[`user${i}`].matchId = match.id;
 		userMap.set(uid, match[`user${i}`]);
 
-		if (match.user2Id === 'anonymous@gmail.com') {
+		if (match.user2Id === ANONYMOUS) {
 			const p = match.user2;
 			const r = Object.assign(raw, { });
 			p.raw = r;
@@ -111,10 +112,17 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket);
 		if (user && match){
-			if (match.user3)
+			if (match.round.tournament.totalPlayers > 2) {
 				match.game.mplay(user.player, raw.isDown);
-			else
-				match.game.play(raw.isDown, raw.type === 'pong' ? raw.side : user.player.getSide());
+			} else {
+				const isAnonymous = match.user2Id === ANONYMOUS;
+				const side = user.player.getSide();
+				if (!isAnonymous && (raw.key === 'k' || raw.key === 'm')) {
+					return;
+				}
+				const i = raw.type === 'pong' ? (isAnonymous ? raw.side : side) : side;
+				match.game.play(raw.isDown, i);
+			}
 		}
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);

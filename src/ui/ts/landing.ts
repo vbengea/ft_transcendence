@@ -74,6 +74,7 @@ let hydrateTemplate = async (url, params) => {
 					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
 				</div>`
 			}).join('');
+			
 			div.addEventListener('click', (e) => {
 				const cel : any = e.target;
 				if (cel.dataset) {
@@ -106,6 +107,12 @@ let hydrateTemplate = async (url, params) => {
 				});
 				shuffle(users);
 				const tusers = users.slice();
+
+				if (mode === 'multi' && users.length !== 4){
+					document.querySelector('#error').innerHTML = 'Please select 4 players.';
+					return;
+				}
+
 				const len = users.length;
 				const el : HTMLInputElement = document.querySelector('#tournament_name');
 				const tname = el.value;
@@ -153,7 +160,7 @@ let hydrateTemplate = async (url, params) => {
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
 				} else {
-					document.querySelector('#error').innerHTML = 'Please select a base 2 number of participants.';
+					document.querySelector('#error').innerHTML = 'Please select a base 2 number of players.';
 				}
 			});
 			break;

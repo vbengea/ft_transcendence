@@ -279,7 +279,6 @@ class Pong {
 		await tournamentSrv.startMatch(this.mid);
 		this.status = 1;
 		this.reset();
-		this.moveBall();
 	}
 
 	send() {
@@ -289,45 +288,45 @@ class Pong {
 		}
 		const s1 = u1.getScreen();
 		const b1 = s1.getBall();
-		const p1s = s1.getPaddles();
 		const so1 = u1.getSocket();
 		const sindex = u1.getPaddleIndex();
-		const sin = p1s[sindex];
 		const sos = new Map();
 
 		u1.setScore(this.scores[u1.getSide()]);
 
 		if (so1)
-			sos.set(so1, u1.getSide());
-			
-		let i = 0;
+			sos.set(so1, sindex);
+
 		for(let p of this.players){
-			if (p && p.getUser().id !== u1.getUser().id) {
-				const s2 = p.getScreen();
-				const b2 = s2.getBall();
+			if (p) {
+				const s = p.getScreen();
+				const b = s.getBall();
 
-				const wRatio = s2.getWidth() / s1.getWidth();
-				const hRatio = s2.getHeight() / s1.getHeight();
+				let wRatio = s.getWidth() / s1.getWidth();
+				let hRatio = s.getHeight() / s1.getHeight();
 
-				b2.setX(b1.getX() * wRatio);
-				b2.setY(b1.getY() * hRatio);
-
-				const paddles = s2.getPaddles();
-				const index = p.getPaddleIndex();
-				const pad = paddles[index];
+				b.setX(b1.getX() * wRatio);
+				b.setY(b1.getY() * hRatio);
 
 				p.setScore(this.scores[p.getSide()]);
 
-				if (pad)
-					p1s[index].setY(pad.getY() / hRatio);
-				if (sin)
-					paddles[sindex].setY(sin.getY() * hRatio);
+				const paddles = s.getPaddles();
+				const index = p.getPaddleIndex();
+				const pad = paddles[index];
+
+				for(let pp of this.players){
+					if (pp.getPaddleIndex() !== p.getPaddleIndex()) {
+						const ss = pp.getScreen();
+						hRatio = ss.getHeight() / s1.getHeight();
+						const ppi = ss.getPaddles()[index];
+						ppi.setY(pad.getY() / hRatio);
+					}
+				}
 
 				const so = p.getSocket();
 				if (so)
-					sos.set(so, p.getSide());
+					sos.set(so, index);
 			}
-			i++;
 		}
 
 		const json = JSON.stringify(this);
@@ -393,6 +392,11 @@ class Pong {
 		b.setY(this.rand(s.getHeight()) / 2.0 - b.getY() / 2.0);
 		b.setDx(this.randomSign());
 		b.setDy(this.randomSign());
+		if (b.getY() < 15) {
+			this.reset();
+		} else {
+			setTimeout(this.moveBall.bind(this), 100);
+		}
 	}
 
 	mplay(pl, down) {
@@ -553,6 +557,17 @@ class Pong {
 		return y;
 	}
 
+	verifyScore(i) {
+		this.scores[i]++;
+		this.send();
+		if (this.scores[i] >= MAX_SCORE) {																	// Check scores ...................................
+			this.manageResults(i);
+			return true;
+		}
+		setTimeout(this.reset.bind(this), 100);
+		return false;
+	}
+
 	moveBall() {
 		if (this.isGiveUp) {
 			if (this.giveUpSide === 0) {
@@ -569,37 +584,32 @@ class Pong {
 		const s = p1.getScreen();
 		const b = s.getBall();
 
-		b.setX(b.getX() + b.getDx());																		// Moving the ball ................................
+		b.setX(b.getX() + b.getDx());																			// Moving the ball ................................
 		b.setY(b.getY() + b.getDy());
 		
-		if (b.getX() < 0) {																					// Ball reaches LEFT side of the screen ...........
-			this.scores[1]++;
-			this.reset();
-		} else if (b.getX() > s.getWidth()) {																// Ball reaches RIGHT side of the screen ..........
-			this.scores[0]++;
-			this.reset();
-		} else if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {	// Ball bounces of the TOP or the BOTTOM ..........
-			b.setDy(-b.getDy());
+		if (b.getX() < 0) {																						// Ball reaches LEFT side of the screen ...........
+			if (this.verifyScore(1))
+				return;
+
+		} else if (b.getX() > s.getWidth()) {																	// Ball reaches RIGHT side of the screen ..........
+			if (this.verifyScore(0))
+				return;
+			
 		} else {
-			const paddle = this.checkPaddleCollisions(s);													// Check paddle collisions ........................
-			if (paddle != null) {
-				this.changeBallDirection(b);
-				this.changeBallAngle(paddle, b);															// Ball bounces in angle and direction ............
+			if (b.getY() < s.getLineHeight() || b.getY() > (s.getHeight() - s.getLineHeight() * 2)) {			// Ball bounces of the TOP or the BOTTOM ..........
+				b.setDy(-b.getDy());
+			} else {
+				const paddle = this.checkPaddleCollisions(s);													// Check paddle collisions ........................
+				if (paddle != null) {
+					this.changeBallDirection(b);
+					this.changeBallAngle(paddle, b);															// Ball bounces in angle and direction ............
+				}
 			}
-		}
-
-		if (this.scores[0] >= MAX_SCORE) {																	// Check scores ...................................
-			this.manageResults(0);
-
-		} else if (this.scores[1] >= MAX_SCORE) {
-			this.manageResults(1);
-
-		} else {
 			for(let p of this.players)
 				if (!p.getUser().human)
 					this.computer(p, b);
-			this.send();																					// Refresh UI .....................................
-			setTimeout(this.moveBall.bind(this), 1);														// Move ball again ................................
+			this.send();																						// Refresh UI .....................................
+			setTimeout(this.moveBall.bind(this), 1);		
 		}
 	}
 
