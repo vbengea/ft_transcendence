@@ -106,6 +106,12 @@ let hydrateTemplate = async (url, params) => {
 				});
 				shuffle(users);
 				const tusers = users.slice();
+
+				if (mode === 'multi' && users.length !== 4){
+					document.querySelector('#error').innerHTML = 'Please select 4 players.';
+					return;
+				}
+
 				const len = users.length;
 				const el : HTMLInputElement = document.querySelector('#tournament_name');
 				const tname = el.value;
@@ -153,7 +159,7 @@ let hydrateTemplate = async (url, params) => {
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
 				} else {
-					document.querySelector('#error').innerHTML = 'Please select a base 2 number of participants.';
+					document.querySelector('#error').innerHTML = 'Please select a base 2 number of players.';
 				}
 			});
 			break;

@@ -10,3 +10,4 @@ node_modules
 webpack.config.dev.js
 ssnginx.key
 ssnginx.crt
+.env_local
