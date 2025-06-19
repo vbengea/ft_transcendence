@@ -251,7 +251,7 @@ class Player {
 
 class Pong {
 
-	constructor(mid, limit, match, maps) {
+	constructor(mid, limit, match, maps, broadcast) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -266,6 +266,7 @@ class Pong {
 		this.maps = maps;
 		this.isGiveUp = false;
 		this.giveUpSide = -1;
+		this.broadcast = broadcast;
 	}
 
 	toJSON() {
@@ -610,6 +611,7 @@ class Pong {
 		for(let p of this.players) {
 			if (p.getSide() === winnerSide) {
 				await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+				this.broadcast(this.match.round.tournament.id, p.getUser().id);
 				p.wins = true;
 				const s1 = p.getSocket();
 				if (s1)

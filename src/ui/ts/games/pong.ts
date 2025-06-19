@@ -100,7 +100,6 @@ export function displayPong(data: Data) {
 				else if (n == 3)
 					c = 'yellow-300';
 			}
-			console.log(c)
 			if (n % 2 == 0) {
 				avatarsLeft += ` &nbsp; <img class="w-8 h-8 rounded-full" src="${u.avatar}" alt="${u.name} image"> &nbsp; `;
 				namesLeft += `<div class="text-sm text-${c} text-center">${u.name}</div>`;

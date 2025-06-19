@@ -209,6 +209,7 @@ class TicTacToe {
 		for(let p of this.players) {
 			if (p.getSide() === winnerSide) {
 				await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+				this.broadcast(this.match.round.tournament.id, p.getUser().id);
 				p.wins = true;
 				const s1 = p.getSocket();
 				if (s1)

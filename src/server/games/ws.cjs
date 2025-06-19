@@ -4,6 +4,7 @@ const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
 const chatSrv = require('../user-auth/services/chat.service')(prisma);
+const userSrv = require('../user-auth/services/user.service')(prisma);
 
 const MAX_USERS = 4;
 
@@ -21,7 +22,7 @@ const maps = {
 }
 
 function newGame(type, mid, limit, match) {
-	return type === 'pong' ? new Pong(mid, limit, match, maps) : new TicTacToe(mid, 2, match, maps);
+	return type === 'pong' ? new Pong(mid, limit, match, maps, broadcast) : new TicTacToe(mid, 2, match, maps, broadcast);
 }
 
 function newPlayer(type, user) {
@@ -138,36 +139,60 @@ async function chat(uid, socket, raw) {
 		});
 
 	} else if (raw.subtype === 'send') {
-		const sender = chatMap.get(uid);
-		const receiver = chatMap.get(raw.receiverId);
-		const blocked = await chatSrv.getBlockedUsers(raw.receiverId);
-
-		sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
-
-		for (let b of blocked){
-			if (b.id === uid){
-				return;
-			}
-		}
-
-		if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
-			if (receiver.mode === 'count'){
-				receiver.socket.send(JSON.stringify({ type: 'chat', count: 1 }));
-			} else if (receiver.mode === 'list'){
-				receiver.socket.send(JSON.stringify({ type: 'chat', sender: sender.user, count: 1 }));
-			} else if (receiver.mode === 'friend') {
-				receiver.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
-			}
-		}
-
-		chatSrv.createMessage(uid, raw.receiverId, raw.text);
+		chatSend(uid, raw);
 		
 	} else if (raw.subtype === 'block'){
 		await chatSrv.blockUser(uid, raw.receiverId);
 	}
 }
 
-const fn = async function (fastify) {
+const chatSend = async (uid, raw) => {
+	const sender = chatMap.get(uid);
+	const blocked = await chatSrv.getBlockedUsers(raw.receiverId);
+
+	sender.socket.send(JSON.stringify({ type: 'chat',  sender: sender.user, text: raw.text }));
+
+	for (let b of blocked){
+		if (b.id === uid){
+			return;
+		}
+	}
+
+	chatSendReceiver(sender.user, raw.receiverId, raw.text);
+}
+
+const broadcast = async (tid, uid) => {
+	const tour = await tournamentSrv.getTournamentById(tid);
+	const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid, tid);
+	const match = matches[0];
+	if (match.user1 && match.user2){
+		const tournamentId = tour.id;
+		const organizerId = tour.organizerId;
+		const game = tour.game.name;
+		const tname = tour.name;
+		const organizer = await userSrv.getUserById(organizerId);
+		const start = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Start</button>`;
+		const link = `Your next game of the ${tname} tournament is ready to ${start}`;
+		chatSendReceiver(organizer, match.user1Id, link);
+		chatSendReceiver(organizer, match.user2Id, link);
+	}
+}
+
+async function chatSendReceiver(sender, receiverId, text) {
+	const receiver = chatMap.get(receiverId);
+	if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
+		if (receiver.mode === 'count'){
+			receiver.socket.send(JSON.stringify({ type: 'chat', count: 1 }));
+		} else if (receiver.mode === 'list'){
+			receiver.socket.send(JSON.stringify({ type: 'chat', sender, count: 1 }));
+		} else if (receiver.mode === 'friend') {
+			receiver.socket.send(JSON.stringify({ type: 'chat',  sender, text: text }));
+		}
+	}
+	chatSrv.createMessage(sender.id, receiverId, text);
+}
+
+async function fn(fastify) {
   fastify.get('/ws', { websocket: true, preHandler: [fastify.authenticate] }, (socket, request) => {
 	const userId = request.user.id;
 	const conn = connMap.get(userId);
@@ -213,5 +238,5 @@ const fn = async function (fastify) {
   });
 };
 
-fn.connMap = connMap;
-module.exports = fn;
+exports.connMap = connMap;
+exports.fn = fn;

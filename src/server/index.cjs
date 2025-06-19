@@ -62,7 +62,7 @@ fastify.get('/', function (req, reply) {
 })
 
 fastify.register(require('@fastify/websocket'))
-fastify.register(require('./games/ws.cjs'))
+fastify.register(require('./games/ws.cjs').fn)
 
 fastify.listen({ host: ADDRESS, port: parseInt(PORT, 10) }, err => {
   if (err) {

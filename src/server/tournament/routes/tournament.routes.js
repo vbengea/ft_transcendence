@@ -18,7 +18,10 @@ function tournamentRoutes(fastify, options, done) {
 
 			reply.code(201).send({
 				message: 'Tournament created successfully',
-				tournamentId: tournament.id
+				tournamentId: tournament.id,
+				totalRounds: tournament.totalRounds,
+				totalPlayers: tournament.totalPlayers,
+				name: tournament.name
 			});
 		} catch (err) {
 			fastify.log.error(err);

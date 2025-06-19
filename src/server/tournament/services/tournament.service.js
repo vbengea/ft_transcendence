@@ -1,5 +1,3 @@
-
-
 function createTournamentService(prisma) {
 	return {
 		async createTournament(organizerId, name, users, rounds, gameName) {
@@ -259,20 +257,27 @@ function createTournamentService(prisma) {
 		},
 
 		async advanceToNextMatch(match, user) {
-			if (match.round.tournament.totalRounds > match.round.number) {
-				round = await prisma.round.findUnique({ where: { id: match.round.id }, include: { matches: true } });
+			const t = match.round.tournament;
+			if (t.totalRounds > match.round.number) {
+				const tournamentId = t.id;
+
+				let round = await prisma.round.findUnique({ where: { id: match.round.id }, include: { matches: true } });
 				let i = 0;
 				for(let r of round.matches) {
 					if (r.user1Id === user.id || r.user2Id === user.id)
 						break;
 					i++;
 				}
+				
 				let j = Math.floor(i / 2);
+
 				round = (await prisma.round.findMany({
-					where: { tournamentId: match.round.tournament.id, number: round.number + 1 }, 
+					where: { tournamentId, number: round.number + 1 }, 
 					include: { matches: true } 
 				}))[0];
+				
 				match = round.matches[j];
+				
 				if (i % 2 == 0)
 					await prisma.match.update({ where:{ id: match.id }, data: { user1Id: user.id }})
 				else if (match.user2 == null)

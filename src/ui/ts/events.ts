@@ -75,14 +75,20 @@ export const createTournament = async (tournament) => {
 
 	for(let u of tournament.users){
 		if (u.human && u.id !== uid)
-			tournamentChat(tournament.gameType, u.id, t.tournamentId);
+			tournamentChat(tournament.gameType, u.id, t.tournamentId, t.totalRounds > 1 ? t.name : null);
 	}
 
 	location.hash = `#/landing/${tournament.gameType}/${t.tournamentId}`;
 };
 
-const tournamentChat = (game, receiverId, tournamentId) => {
-	const text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+const tournamentChat = (game, receiverId, tournamentId, tname?) => {
+	let text = '';
+	if (tname) {
+		const start = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Start</button>`;
+		text = `Your first game of the ${tname} tournament is ready to ${start}`;
+	} else {
+		text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
+	}
 	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
 }
 
@@ -432,4 +438,3 @@ export const send = function (message, callback = null) {
         }
     }, 1000);
 };
-
