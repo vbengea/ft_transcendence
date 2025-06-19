@@ -115,10 +115,12 @@ async function play(uid, socket, raw) {
 			if (match.round.tournament.totalPlayers > 2) {
 				match.game.mplay(user.player, raw.isDown);
 			} else {
-				if (match.user2Id !== ANONYMOUS && (raw.key === 'k' || raw.key === 'm')) {
+				const isAnonymous = match.user2Id === ANONYMOUS;
+				const side = user.player.getSide();
+				if (!isAnonymous && (raw.key === 'k' || raw.key === 'm')) {
 					return;
 				}
-				const i = raw.type === 'pong' ? raw.side : user.player.getSide();
+				const i = raw.type === 'pong' ? (isAnonymous ? raw.side : side) : side;
 				match.game.play(raw.isDown, i);
 			}
 		}

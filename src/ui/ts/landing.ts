@@ -74,6 +74,7 @@ let hydrateTemplate = async (url, params) => {
 					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
 				</div>`
 			}).join('');
+			
 			div.addEventListener('click', (e) => {
 				const cel : any = e.target;
 				if (cel.dataset) {
