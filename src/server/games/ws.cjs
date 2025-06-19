@@ -112,14 +112,10 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket);
 		if (user && match){
-			console.log(0);
 			if (match.round.tournament.totalPlayers > 2) {
-				console.log(0);
 				match.game.mplay(user.player, raw.isDown);
 			} else {
-				console.log(1, match.user1Id, match.user2Id);
 				if (match.user2Id !== ANONYMOUS && (raw.key === 'k' || raw.key === 'm')) {
-					console.log(2);
 					return;
 				}
 				const i = raw.type === 'pong' ? raw.side : user.player.getSide();
