@@ -1,117 +1,117 @@
-
 datasource db {
   provider = "sqlite"
-  url = "file:../db/data.db"
+  url      = "file:../db/data.db"
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
 model User {
-  id                    String        @id     @default(cuid())
-  email                 String        @unique
-  name                  String?
-  passwordHash          String?
-  googleId              String?       @unique
-  avatar                String?
-  two_fa_secret         String?
-  two_fa_enabled        Boolean       @default(false)
-  human                 Boolean       @default(true)
-  anonymous				Boolean		  @default(false)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
-  friends               User[]        @relation("UserFriends")
-  friendOf              User[]        @relation("UserFriends")
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String?
+  passwordHash   String?
+  googleId       String?  @unique
+  avatar         String?
+  two_fa_secret  String?
+  two_fa_enabled Boolean  @default(false)
+  human          Boolean  @default(true)
+  anonymous      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  friends        User[]   @relation("UserFriends")
+  friendOf       User[]   @relation("UserFriends")
 
-  blockedUserId 		String?
-  blockedUser   		User?  		  @relation("BlockedUsers", fields: [blockedUserId], references: [id])
-  blockedUsers  		User[] 		  @relation("BlockedUsers")
+  blockedUserId String?
+  blockedUser   User?   @relation("BlockedUsers", fields: [blockedUserId], references: [id])
+  blockedUsers  User[]  @relation("BlockedUsers")
 
-  organizedTournaments  Tournament[]
-  matchesAsUser1        Match[]       @relation("User1Matches")
-  matchesAsUser2        Match[]       @relation("User2Matches")
-  matchesAsUser3        Match[]       @relation("User3Matches")
-  matchesAsUser4        Match[]       @relation("User4Matches")
-  sentMessages     		Message[]	  @relation("sentMessages")
-  receivedMessages 		Message[]	  @relation("receivedMessages")
-  sentFriendRequests    FriendRequest[] @relation("SentFriendRequests")
-  receivedFriendRequests  FriendRequest[] @relation("ReceivedFriendRequests")
+  organizedTournaments   Tournament[]
+  matchesAsUser1         Match[]         @relation("User1Matches")
+  matchesAsUser2         Match[]         @relation("User2Matches")
+  matchesAsUser3         Match[]         @relation("User3Matches")
+  matchesAsUser4         Match[]         @relation("User4Matches")
+  sentMessages           Message[]       @relation("sentMessages")
+  receivedMessages       Message[]       @relation("receivedMessages")
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 }
 
 model Game {
-  id                    String        @id     @default(cuid())
-  name                  String        @unique
-  description           String        @unique
-  tournaments           Tournament[]
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String       @unique
+  tournaments Tournament[]
 }
 
 model Tournament {
-  id                    String        @id     @default(cuid())
-  name                  String
-  totalRounds           Int
-  totalPlayers          Int
-  customization         String
-  game                  Game          @relation(fields: [gameId], references: [id])
-  gameId                String
-  organizer             User          @relation(fields: [organizerId], references: [id])
-  organizerId           String
-  rounds                Round[]
+  id            String  @id @default(cuid())
+  name          String
+  totalRounds   Int
+  totalPlayers  Int
+  customization String
+  game          Game    @relation(fields: [gameId], references: [id])
+  gameId        String
+  organizer     User    @relation(fields: [organizerId], references: [id])
+  organizerId   String
+  rounds        Round[]
 }
 
 model Round {
-  id                    String        @id     @default(cuid())
-  name                  String
-  number                Int
-  matches               Match[]
-  tournament            Tournament    @relation(fields: [tournamentId], references: [id])
-  tournamentId          String
+  id           String     @id @default(cuid())
+  name         String
+  number       Int
+  matches      Match[]
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
 }
 
 model Match {
-  id                    String        @id     @default(cuid())
-  user1                 User?         @relation("User1Matches", fields: [user1Id], references: [id])
-  user1Id               String?
-  user2                 User?         @relation("User2Matches", fields: [user2Id], references: [id])
-  user2Id               String?
-  user3                 User?         @relation("User3Matches", fields: [user3Id], references: [id])
-  user3Id               String?
-  user4                 User?         @relation("User4Matches", fields: [user4Id], references: [id])
-  user4Id               String?
-  creationTime          DateTime      @default(now())
-  startTime             DateTime?
-  endTime               DateTime?
-  user1Score            Int           @default(0)
-  user2Score            Int           @default(0)
-  user3Score            Int           @default(0)
-  user4Score            Int           @default(0)
-  round                 Round         @relation(fields: [roundId], references: [id])
-  roundId               String
-  winScore              Int
+  id           String    @id @default(cuid())
+  user1        User?     @relation("User1Matches", fields: [user1Id], references: [id])
+  user1Id      String?
+  user2        User?     @relation("User2Matches", fields: [user2Id], references: [id])
+  user2Id      String?
+  user3        User?     @relation("User3Matches", fields: [user3Id], references: [id])
+  user3Id      String?
+  user4        User?     @relation("User4Matches", fields: [user4Id], references: [id])
+  user4Id      String?
+  creationTime DateTime  @default(now())
+  startTime    DateTime?
+  endTime      DateTime?
+  user1Score   Int       @default(0)
+  user2Score   Int       @default(0)
+  user3Score   Int       @default(0)
+  user4Score   Int       @default(0)
+  round        Round     @relation(fields: [roundId], references: [id])
+  roundId      String
+  winScore     Int
 }
 
 model Message {
-  id         			String        @id     @default(cuid())
-  text       			String
-  sender     			User @relation(name: "sentMessages", fields: [senderId], references: [id])
-  receiver   			User @relation(name: "receivedMessages", fields: [receiverId], references: [id])
-  senderId   			String
-  receiverId 			String
-  href					String?
-  isLink				Boolean @default(false)
-  isRead				Boolean @default(false)
-  creationTime          DateTime @default(now())
+  id           String   @id @default(cuid())
+  text         String
+  sender       User     @relation(name: "sentMessages", fields: [senderId], references: [id])
+  receiver     User     @relation(name: "receivedMessages", fields: [receiverId], references: [id])
+  senderId     String
+  receiverId   String
+  href         String?
+  isLink       Boolean  @default(false)
+  isRead       Boolean  @default(false)
+  creationTime DateTime @default(now())
 }
 
 model FriendRequest {
-  id                    String        @id     @default(cuid())
-  sender                User          @relation("SentFriendRequests", fields: [senderId], references: [id])
-  senderId              String
-  receiver              User          @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
-  receiverId            String
-  status                String        @default("PENDING")
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  id         String   @id @default(cuid())
+  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  receiverId String
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   @@unique([senderId, receiverId])
 }

@@ -1,123 +1,147 @@
-import { Data } from '../types';
-import { get } from './main';
-import { THREEx } from './keyboard';
+import { Data, Game } from '../types';
 import * as BABYLON from "@babylonjs/core";
+import { gameLoop } from '../events';
 
-function bongInit() {
+var scene = null;
+
+async function bongInit() {
 	const canvas : HTMLCanvasElement = document.querySelector("#bong");
 	const engine = new BABYLON.Engine(canvas, true);
-	const keyboard = new THREEx.KeyboardState();
-	const scene = createScene(engine);
+	scene = await createScene(engine, canvas);
+	
+	(window as any).scene = scene;
 
-	let goingUp = false;
-	let initialPosition = true;
-	let zMovement = Math.floor(Math.random() * 10) / 10;
-
-	engine.runRenderLoop(() => {
-		checkMovement(scene, keyboard);
-		ballMovement(scene, { initialPosition, goingUp, zMovement });
-		scene.render();
-	});
-
+	scene.render();
 	window.addEventListener("resize", () => {
 		engine.resize();
 	});
 }
 
-function createScene(engine) {
+async function createScene(engine, canvas) {
 	const scene = new BABYLON.Scene(engine);
+
 	const camera = new BABYLON.ArcRotateCamera(
 		"Camera",  
 		BABYLON.Tools.ToRadians(0),  
 		BABYLON.Tools.ToRadians(0), 50,  
 		new BABYLON.Vector3(0,0,0), scene);
 
-	scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
-	scene.collisionsEnabled = true;
-	camera.checkCollisions = true;
-	camera.keysUp.push(13);
-	camera.keysDown.push(83);
-	camera.keysLeft.push(65);
-	camera.keysRight.push(68);
-
 	const light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
 	const light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
 
-	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1.5}, scene);
-	const tiledBox = BABYLON.MeshBuilder.CreateTiledBox("box", { width:10, tileSize:1, depth: 1}, scene);
-	const tiledBox2 = BABYLON.MeshBuilder.CreateTiledBox("box2", { width:10, tileSize:1, depth: 1}, scene);
+	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
+	const LEFT = BABYLON.MeshBuilder.CreateTiledBox("right", { width:10, tileSize:1, depth: 1}, scene);
+	const RIGHT = BABYLON.MeshBuilder.CreateTiledBox("left", { width:10, tileSize:1, depth: 1}, scene);
 
-	tiledBox.position = new BABYLON.Vector3(0,0,35)
-	tiledBox2.position = new BABYLON.Vector3(0,0,-35)
+	RIGHT.position = new BABYLON.Vector3(0,0,34)
+	LEFT.position = new BABYLON.Vector3(0,0,-35)
 	sphere.position = new BABYLON.Vector3(0,0,0)
+
+	txt(scene);
+
+	var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 40, height: 70}, scene);
+	ground.position = new BABYLON.Vector3(-0.5,-0.5,0);
+
+	scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.5, 1);
+
+	const backgroundMaterial = new BABYLON.BackgroundMaterial("backgroundMaterial", scene);
+	backgroundMaterial.useRGBColor = false;
+	backgroundMaterial.primaryColor = BABYLON.Color3.Black()
+
+	ground.material = backgroundMaterial;
 
 	return scene;
 }
 
-function checkMovement(scene, keyboard){
-	const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-	const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+function txt(scene) {
+	const textLen = 2 + 0.5;
+	const RIGHT_TEXT = BABYLON.MeshBuilder.CreatePlane("right_text", { width: textLen, height: 3 }, scene);
+	const LEFT_TEXT = BABYLON.MeshBuilder.CreatePlane("left_text", { width: textLen, height: 3 }, scene);
 
-	let limit = (vw / vh * 19)
-	let isInside = (scene.getMeshByName("box").position.x > limit * -1)
-	let isInside2 = ( scene.getMeshByName("box").position.x < limit )
+	RIGHT_TEXT.material = new BABYLON.StandardMaterial("outputplane_right", scene);
+	LEFT_TEXT.material = new BABYLON.StandardMaterial("outputplane_left", scene);
 
-	let box2IsInside = (scene.getMeshByName("box2").position.x > limit * -1)
-	let box2IsInside2 = ( scene.getMeshByName("box2").position.x < limit )
+	const outputplaneTextureRight = new BABYLON.DynamicTexture('texture_right',{ width:220, height:130 }, scene, true);
+	const outputplaneTextureLeft = new BABYLON.DynamicTexture('texture_left',{ width:220, height:130 }, scene, true);
 
-	if(keyboard.pressed("K") && isInside){
-		scene.getMeshByName("box").position.x -= 1;
-	}
-	if(keyboard.pressed("M") && isInside2){
-		scene.getMeshByName("box").position.x += 1;
-	}
-	if(keyboard.pressed("A") && box2IsInside){
-		scene.getMeshByName("box2").position.x -= 1;
-	}
-	if(keyboard.pressed("Z") && box2IsInside2){
-		scene.getMeshByName("box2").position.x += 1;
-	}
-}
+	RIGHT_TEXT.material['diffuseTexture'] = outputplaneTextureRight;
+	LEFT_TEXT.material['diffuseTexture'] = outputplaneTextureLeft;
+	RIGHT_TEXT.material.backFaceCulling = false;
+	LEFT_TEXT.material.backFaceCulling = false;
+	
+	outputplaneTextureRight.drawText('0', null, 110, "bold 120px verdana", "white", "black");
+	outputplaneTextureRight.update();
+	outputplaneTextureLeft.drawText('0', null, 110, "bold 120px verdana", "white", "black");
+	outputplaneTextureLeft.update();
 
-function ballMovement(scene, { initialPosition, goingUp, zMovement }){
-	if(scene.getMeshByName("sphere").intersectsMesh(scene.getMeshByName("box2"), true)){
-		initialPosition = false;
-		goingUp = true;
-	} else if(scene.getMeshByName("sphere").intersectsMesh(scene.getMeshByName("box"), true)){
-		initialPosition = false;
-		goingUp = false;
-	}
+	RIGHT_TEXT.position = new BABYLON.Vector3(-18,0,3)
+	RIGHT_TEXT.rotate(BABYLON.Axis.X, Math.PI/2, BABYLON.Space.WORLD);
+	RIGHT_TEXT.rotate(BABYLON.Axis.Y, -Math.PI/2, BABYLON.Space.WORLD);
 
-	const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-	const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
-
-	let limit = (vw / vh * 21)
-	let isLeaving = (scene.getMeshByName("sphere").position.x > limit * -1)
-	let isLeaving2 = ( scene.getMeshByName("sphere").position.x < limit )
-
-	if(!isLeaving || !isLeaving2){
-		scene.getMeshByName("sphere").position.z += zMovement * -1
-		zMovement = zMovement * -1;
-	}
-
-	if(initialPosition || goingUp){
-		scene.getMeshByName("sphere").position.z += 0.4;
-	} else {
-		scene.getMeshByName("sphere").position.z -= 0.4;
-	}
-
-	scene.getMeshByName("sphere").position.x -= zMovement;
+	LEFT_TEXT.position = new BABYLON.Vector3(-18,0,-3)
+	LEFT_TEXT.rotate(BABYLON.Axis.X, Math.PI/2, BABYLON.Space.WORLD);
+	LEFT_TEXT.rotate(BABYLON.Axis.Y, -Math.PI/2, BABYLON.Space.WORLD);
 }
 
 export function getLayoutPayloadBong(subtype : string, tournamentId : string) {
 	const sc = {
-		w: get(document.body, "width"),
-		h: get(document.body, "height")
+		w: 70,
+		h: 40,
+		lineHeight: 1
 	};
+
+	const paddles = [{
+		x: 1,
+		y: 15,
+		w: 1,
+		h: 10,
+	},{
+		x: 68.5,
+		y: 15,
+		w: 1,
+		h: 10,
+	}]
+
+	const ball = {
+		w: 1,
+		h: 1,
+	};
+
 	bongInit();
-	return { type: "bong", subtype, screen: sc, tournamentId };
+	gameLoop();
+	return { type: "bong", subtype, screen: sc, paddles, ball, tournamentId };
 }
 
 export function displayBong(data: Data) {
-	
+	const game : Game = data.game;
+	const side : number = data.side;
+
+	let n = 0;
+
+	for (let player of game.players) {
+		if (player) {
+			if (side == n) {
+				const boxY = 40;
+				const boxX = 70;
+				
+				let LEFT = player.screen.paddles[1].y - boxY/2.0 + 5;
+				let RIGHT = player.screen.paddles[0].y - boxY/2.0 + 5;
+				let x = player.screen.ball.y - boxY/2.0;
+				let z = player.screen.ball.x - boxX/2.0;
+
+				scene.getMeshByName("sphere").position.x = x;
+				scene.getMeshByName("sphere").position.z = z;
+				scene.getMeshByName("right").position.x = RIGHT;
+				scene.getMeshByName("left").position.x = LEFT;
+				scene.render();
+			}
+
+			if (n % 2 == 0) {
+				scene.getTextureByName("texture_left").drawText(player.score.toString(), null, 122, "bold 160px verdana", "white", "#08775f");
+			} else {
+				scene.getTextureByName("texture_right").drawText(player.score.toString(), null, 122, "bold 160px verdana", "white", "#08775f");
+			}
+		}
+		n++;
+	}
 }

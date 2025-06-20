@@ -1,4 +1,5 @@
 const { Pong, PongPlayer, PongTXT } = require('./pong.cjs')
+const { Bong, BongPlayer, BongTXT } = require('./bong.cjs')
 const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
 
 const prisma = require('../prisma/prisma.cjs');
@@ -23,10 +24,14 @@ const maps = {
 }
 
 function newGame(type, mid, limit, match) {
+	if (type === 'bong')
+		return new Bong(mid, limit, match, maps, broadcast);
 	return type === 'pong' ? new Pong(mid, limit, match, maps, broadcast) : new TicTacToe(mid, 2, match, maps, broadcast);
 }
 
 function newPlayer(type, user) {
+	if (type === 'bong')
+		return new BongPlayer(user);
 	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
 }
 
@@ -120,7 +125,7 @@ async function play(uid, socket, raw) {
 				if (!isAnonymous && (raw.key === 'k' || raw.key === 'm')) {
 					return;
 				}
-				const i = raw.type === 'pong' ? (isAnonymous ? raw.side : side) : side;
+				const i = (raw.type === 'pong' || raw.type === 'bong') ? (isAnonymous ? raw.side : side) : side;
 				match.game.play(raw.isDown, i);
 			}
 		}
@@ -214,7 +219,7 @@ async function fn(fastify) {
 	socket.on('message', async (message) => {
 		const raw = JSON.parse(message.toString());
 		const uid = request.user.id;
-		if (raw.type == 'pong' || raw.type == 'tictactoe') {
+		if (raw.type == 'pong' || raw.type === 'bong' || raw.type == 'tictactoe') {
 			play(uid, socket, raw);
 		} else if (raw.type == 'chat') {
 			chat(uid, socket, raw);
