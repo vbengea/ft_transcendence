@@ -25,7 +25,7 @@ async function createScene(engine, paddles) {
 	const camera = new BABYLON.ArcRotateCamera(
 		"Camera",  
 		BABYLON.Tools.ToRadians(0),  
-		BABYLON.Tools.ToRadians(0), 50,  
+		BABYLON.Tools.ToRadians(0), 60,  
 		new BABYLON.Vector3(0,0,0), scene);
 
 	const light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
