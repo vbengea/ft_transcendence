@@ -31,6 +31,4 @@ RUN node --run css && node --run js && node --run migrate
 
 COPY --chmod=0777 ./tools/ssl.sh /
 
-COPY --chmod=0777 ./tools/sdl.sh /
-
 CMD ["/ssl.sh"]
