@@ -434,12 +434,26 @@ class Bong {
 		const s = p.getScreen();
 		const index = p.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
-
-		if (y < 0)
-			y = 0;
-
-		if (y > 30)
-			y = 30;
+		const isMulti = s.getPaddles().length > 2;
+		
+		if (isMulti) {
+			if (index > 1) {
+				if (y < 20)
+					y = 20;
+				else if (y > 32)
+					y = 32;
+			} else {
+				if (y < 1)
+					y = 1;
+				else if (y > 12)
+					y = 12;
+			}
+		} else {
+			if (y < 1)
+				y = 1;
+			else if (y > 32)
+				y = 32;
+		}
 
 		paddle.setY(y);
 	}
@@ -527,9 +541,9 @@ class Bong {
 
 			if (b.getDy() == 0) {																				// ball moving stright across......................
 				if (b.getY() < center) {
-					y = d.getY() - 5;
+					y = d.getY() - 1;
 				} else {
-					y = d.getY() + 5;
+					y = d.getY() + 1;
 				}
 			}
 
@@ -641,11 +655,16 @@ class Bong {
 
 		const paddles = s.getPaddles();
 		const ps = [];
-		if (s.getWidth() - ball.getX() < 20) {
-			ps.push(paddles[1]);
-
-		} else if (ball.getX() < 50) {
-			ps.push(paddles[0]);
+		if (s.getWidth() * 0.1 > ball.getX()) {
+			for (let i = 0; i < paddles.length; i++){
+				if (i % 2 === 0)
+					ps.push(paddles[i]);
+			}
+		} else if (s.getWidth() * 0.9 <  ball.getX()) {
+			for (let i = 0; i < paddles.length; i++){
+				if (i % 2 !== 0)
+					ps.push(paddles[i]);
+			}
 		} else {
 			return null;
 		}
@@ -656,14 +675,14 @@ class Bong {
 			top_b = paddle.getY();
 			bottom_b = paddle.getY() + paddle.getHeight();
 
-			if (left_a > right_b) {	
-
-			} else if (right_a < left_b) {																		// RHS: Ball right edge passed paddle left edge ...
-
-			} else if (top_a > bottom_b) {																		// Ball top edge lower than paddle bottom edge ....
-
-			} else if (bottom_a < top_b) {																		// Ball bottom edge higher than paddle top edge ...
-
+			if (left_a > right_b) {																			// LHS: Ball left edge passed paddle right edge ...
+				
+			} else if (right_a < left_b) {																	// RHS: Ball right edge passed paddle left edge ...
+				
+			} else if (top_a > bottom_b) {																	// Ball top edge lower than paddle bottom edge ....
+				
+			} else if (bottom_a < top_b) {																	// Ball bottom edge higher than paddle top edge ...
+				
 			} else {
 				padd = paddle;
 				break;
@@ -674,11 +693,6 @@ class Bong {
 	}
 
 	changeBallDirection(ball) {
-		// if (ball.getDx() < 0) {
-		// 	ball.setDx(ball.getDx() - 0.1);
-		// } else {
-		// 	ball.setDx(ball.getDx() + 0.1);
-		// }
 		ball.setDx(-ball.getDx());
 	}
 

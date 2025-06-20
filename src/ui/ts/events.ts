@@ -283,13 +283,13 @@ const tapHandler = (e) => {
 };
 
 const resizeScreen = (e) => {
-	const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
-	if (game === 'pong')
-		send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId)));
-	else if (game === 'bong')
-		send(JSON.stringify(getLayoutPayloadBong("layout", tournamentId)));
-	else if (game === 'tictactoe')
-		send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId)));
+	// const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
+	// if (game === 'pong')
+	// 	send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId)));
+	// else if (game === 'bong')
+	// 	send(JSON.stringify(getLayoutPayloadBong("layout", tournamentId)));
+	// else if (game === 'tictactoe')
+	// 	send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId)));
 };
 
 const handleWheel = (e) => {

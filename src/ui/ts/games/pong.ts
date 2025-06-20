@@ -2,7 +2,7 @@ import { Payload, Data, Game } from '../types';
 import { gameLoop } from '../events';
 import { get } from './main';
 
-export function getLayoutPayloadPong(subtype : string, tournamentId : string) {
+export function getLayoutPayloadPong(subtype : string, tournamentId : string, tournamnent: { id }) {
 	const BALL : HTMLElement | null = document.querySelector("#ball");
 	const LEFT_1 : HTMLElement | null = document.querySelector(`#paddle-left-1`);
 	const RIGHT_1 : HTMLElement | null = document.querySelector(`#paddle-right-2`);

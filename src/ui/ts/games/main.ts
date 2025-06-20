@@ -9,10 +9,11 @@ export function get(obj : Element | null, prop : string) {
 let display : DisplayFn = null;
 let payload : PayloadFn = null
 
-export function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : string, tournamentId: string) {
+export async function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : string, tournamentId: string) {
 	display = displayfn;
 	payload = payloadfn;
-	send(JSON.stringify(payload("connect", tournamentId)));
+	const t = await (await fetch(`/api/tournament/${tournamentId}`)).json();
+	send(JSON.stringify(payload("connect", tournamentId, t)));
 }
 
 export async function handleGame(data: Data){

@@ -1,7 +1,7 @@
 import { Data } from '../types';
 import { get } from './main';
 
-export function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string) {
+export function getLayoutPayloadTicTacToe(subtype : string, tournamentId : string, tournamnent: { id }) {
 	const sc = {
 		w: get(document.body, "width"),
 		h: get(document.body, "height")
