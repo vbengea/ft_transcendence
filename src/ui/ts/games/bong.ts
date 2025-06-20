@@ -30,8 +30,8 @@ async function createScene(engine, canvas) {
 	const light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
 
 	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
-	const LEFT = BABYLON.MeshBuilder.CreateTiledBox("right", { width:10, tileSize:1, depth: 1}, scene);
-	const RIGHT = BABYLON.MeshBuilder.CreateTiledBox("left", { width:10, tileSize:1, depth: 1}, scene);
+	const LEFT = BABYLON.MeshBuilder.CreateTiledBox("right", { width:8, tileSize:1, depth: 1}, scene);
+	const RIGHT = BABYLON.MeshBuilder.CreateTiledBox("left", { width:8, tileSize:1, depth: 1}, scene);
 
 	RIGHT.position = new BABYLON.Vector3(0,0,34)
 	LEFT.position = new BABYLON.Vector3(0,0,-35)
@@ -92,12 +92,12 @@ export function getLayoutPayloadBong(subtype : string, tournamentId : string) {
 
 	const paddles = [{
 		x: 1,
-		y: 15,
+		y: 8,
 		w: 1,
 		h: 10,
 	},{
-		x: 68.5,
-		y: 15,
+		x: 68,
+		y: 8,
 		w: 1,
 		h: 10,
 	}]

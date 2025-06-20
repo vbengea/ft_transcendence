@@ -47,9 +47,6 @@ async function fill() {
 			}
 		}
 	})
-
-	chatSrv.createMessage(juan.id, leon.id, 'Hello Leon');
-	chatSrv.createMessage(leon.id, juan.id, 'Hi there!');
 }
 
 fill();
