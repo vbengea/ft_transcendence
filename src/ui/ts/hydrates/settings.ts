@@ -1,3 +1,5 @@
+import { validatePassword } from "../utils";
+
 export const hydrateSettings = async () => {
 	try {
 
@@ -179,21 +181,11 @@ export const hydrateSettings = async () => {
 							return;
 						}
 
-						const validations = [
-							{ test: newPassword.length >= 6, message: 'Password must be at least 6 characters' },
-							{ test: /[A-Z]/.test(newPassword), message: 'Password must contain at least one uppercase letter' },
-							{ test: /[a-z]/.test(newPassword), message: 'Password must contain at least one lowercase letter' },
-							{ test: /[0-9]/.test(newPassword), message: 'Password must contain at least one number' },
-							{ test: /[!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\-]/.test(newPassword), message: 'Password must contain at least one special character' },
-							{ test: /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\-]+$/.test(newPassword), message: 'Password can only contain letters, numbers and special characters' }
-						];
-
-						for (const validation of validations) {
-							if (!validation.test) {
-								errorElement.textContent = validation.message;
-								errorElement.classList.remove('hidden');
-								return;
-							}
+						const validPass = validatePassword(newPassword);
+						if (!validPass.valid) {
+							errorElement.textContent = validPass.message;
+							errorElement.classList.remove('hidden');
+							return;
 						}
 
 						try {
