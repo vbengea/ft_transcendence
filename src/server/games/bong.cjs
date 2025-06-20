@@ -595,7 +595,7 @@ class Bong {
 				if (!p.getUser().human)
 					this.computer(p, b);
 			this.send();																						// Refresh UI .....................................
-			setTimeout(this.moveBall.bind(this), 30);		
+			setTimeout(this.moveBall.bind(this), 25);		
 		}
 	}
 
@@ -674,11 +674,11 @@ class Bong {
 	}
 
 	changeBallDirection(ball) {
-		if (ball.getDx() < 0) {
-			ball.setDx(ball.getDx() - 0.1);
-		} else {
-			ball.setDx(ball.getDx() + 0.1);
-		}
+		// if (ball.getDx() < 0) {
+		// 	ball.setDx(ball.getDx() - 0.1);
+		// } else {
+		// 	ball.setDx(ball.getDx() + 0.1);
+		// }
 		ball.setDx(-ball.getDx());
 	}
 
@@ -686,23 +686,23 @@ class Bong {
 		let hit_pos = paddle.getY() + paddle.getHeight() - ball.getY();
 
 		if (hit_pos >= 0 && hit_pos < 7) {
-			ball.setDy(1.5);
+			ball.setDy(1);
 		} else if (hit_pos >= 7 && hit_pos < 14) {
-			ball.setDy(1.1);
+			ball.setDy(0.7);
 		} else if (hit_pos >= 14 && hit_pos < 21) {
-			ball.setDy(0.9);
+			ball.setDy(0.3);
 		} else if (hit_pos >= 21 && hit_pos < 28) {
-			ball.setDy(0.6);
+			ball.setDy(0.1);
 		} else if (hit_pos >= 28 && hit_pos < 32) {
 			ball.setDy(0);
 		} else if (hit_pos >= 32 && hit_pos < 39) {
-			ball.setDy(-0.6);
+			ball.setDy(-0.1);
 		} else if (hit_pos >= 39 && hit_pos < 46) {
-			ball.setDy(-0.9);
+			ball.setDy(-0.3);
 		} else if (hit_pos >= 46 && hit_pos < 53) {
-			ball.setDy(-1.1);
+			ball.setDy(-0.7);
 		} else if (hit_pos >= 53 && hit_pos <= 60) {
-			ball.setDy(-1.5);
+			ball.setDy(-1);
 		}
 	}
 
