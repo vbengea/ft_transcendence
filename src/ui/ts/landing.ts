@@ -1,7 +1,7 @@
 import { createTournament, changeMode } from './events';
 import { getLayoutPayloadPong, displayPong } from './games/pong';
-import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
 import { getLayoutPayloadBong, displayBong } from './games/bong';
+import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
 import { play } from './games/main';
 import { hydrateProfile } from './hydrates/profile';
 import { hydrateSettings } from './hydrates/settings';
@@ -21,7 +21,7 @@ function shuffle(array) {
 let hydrateTemplate = async (url, params) => {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	switch(url) {
-		case 'pongsel': case 'tictactoesel':
+		case 'pongsel': case 'bongsel': case 'tictactoesel':
 			const multi = document.querySelector("#multiplayer");
 			document.querySelector("#single").addEventListener('click', (e) => {
 				sessionStorage.mode = 'single';
@@ -37,7 +37,11 @@ let hydrateTemplate = async (url, params) => {
 				sessionStorage.mode = 'tournament';
 				location.hash = '#/landing/players';
 			});
-			sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pong' : 'tictactoe');
+			if (url === 'bongsel') {
+				sessionStorage.setItem('selectedGame', 'bong');
+			} else {
+				sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pong' : 'tictactoe');
+			}
 			break;
 		case 'players':
 			const mode = sessionStorage.mode;
@@ -311,6 +315,17 @@ const playPong = async (params) => {
 	play(getLayoutPayloadPong, displayPong, 'pong', tournamentId);
 };
 
+const playBong = async (params) => {
+	const tournamentId = params[0];
+	const app = document.querySelector('#app');
+	if (!tournamentId){
+		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		return;
+	}
+	app.innerHTML = await (await fetch(`./pages/bong.html`)).text();
+	play(getLayoutPayloadBong, displayBong, 'bong', tournamentId);
+};
+
 const playTicTacToe = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
@@ -320,17 +335,6 @@ const playTicTacToe = async (params) => {
 	}
 	app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
-};
-
-const playBong = async (params) => {
-	const tournamentId = params[0];
-	const app = document.querySelector('#app');
-	if (!tournamentId){
-		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
-		return;
-	}
-	app.innerHTML = await (await fetch(`./pages/bong.html`)).text();
-	play(getLayoutPayloadBong, displayBong, 'pong', tournamentId);
 };
 
 export const landing = async (url) => {
@@ -360,7 +364,7 @@ export const landing = async (url) => {
 			playBong(params);
 
 		} else {
-			if (url === 'pong' || url === 'tictactoe' || url === 'bong')
+			if (url === 'pong' || url === 'bong' || url === 'tictactoe')
 				url = 'nogame';
 
 			app.innerHTML = await (await fetch(`./pages/template.html`)).text();

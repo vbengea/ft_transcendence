@@ -1,6 +1,7 @@
 import { Message } from './types';
 import { handleGame } from './games/main';
 import { getLayoutPayloadPong } from './games/pong';
+import { getLayoutPayloadBong } from './games/bong';
 import { getLayoutPayloadTicTacToe } from './games/tictactoe';
 
 export let WS = null;
@@ -123,8 +124,9 @@ const processChatUserList = () => {
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">Block</li>
-								<li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Pong</li>
-								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Tictactoe</li>
+								<li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Pong?</li>
+								<li data-friend_option="bong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Bong?</li>
+								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">Play Tictactoe?</li>
 								<li data-friend_option="profile" data-friend_id="${u.id}" class="px-4 py-2">View profile</li>
 							</ul>
 						</div>
@@ -284,6 +286,8 @@ const resizeScreen = (e) => {
 	const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
 	if (game === 'pong')
 		send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId)));
+	else if (game === 'bong')
+		send(JSON.stringify(getLayoutPayloadBong("layout", tournamentId)));
 	else if (game === 'tictactoe')
 		send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId)));
 };
@@ -355,7 +359,7 @@ const clickHandler = (e) => {
 			if (target.dataset.friend_option === "block"){
 				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
 				changeMode("list");
-			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "tictactoe") {
+			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "bong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
 				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: true }
@@ -405,15 +409,16 @@ const removeEvents = () => {
 
 let keys = {};
 export function gameLoop() {
-	if (location.hash.includes('#/landing/pong')) {
+	if (location.hash.includes('#/landing/pong') || location.hash.includes('#/landing/bong')) {
+		const type = location.hash.split('/')[2];
 		if (keys['KeyZ'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 0, key: 'z' }));
+			send(JSON.stringify({ type,  subtype: "play",  isDown: true, side: 0, key: 'z' }));
 		if (keys['KeyM'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: true, side: 1, key: 'm' }));
+			send(JSON.stringify({ type,  subtype: "play",  isDown: true, side: 1, key: 'm' }));
 		if (keys['KeyA'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 0, key: 'a' }));
+			send(JSON.stringify({ type,  subtype: "play",  isDown: false, side: 0, key: 'a' }));
 		if (keys['KeyK'])
-			send(JSON.stringify({ type: "pong",  subtype: "play",  isDown: false, side: 1, key: 'k' }));
+			send(JSON.stringify({ type,  subtype: "play",  isDown: false, side: 1, key: 'k' }));
 		setTimeout(gameLoop, 15);
 	} else {
 		keys = {};
