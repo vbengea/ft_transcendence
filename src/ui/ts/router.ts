@@ -1,6 +1,7 @@
 import { initWebSocket, WS, closeWS } from './events';
 import { landing } from './landing';
 import { Templates } from './hydrates/templates';
+import { validatePassword } from './utils';
 
 const appDiv = "app";
 
@@ -188,8 +189,16 @@ template('template-view4', async () => {
 link4.addEventListener('submit', async (e) => {
 	e.preventDefault();
 	var data = new FormData(document.querySelector('form'));
+	const password = data.get('password');
 
-	if (data.get('password') !== data.get('confirm-password')) {
+	const validPass = validatePassword(password);
+	if (!validPass.valid) {
+		const err = document.querySelector('#error');
+		err.innerHTML = validPass.message;
+		return;
+	}
+
+	if (password !== data.get('confirm-password')) {
 		const err = document.querySelector("#error");
 		err.innerHTML = "Passwords do not match";
 		return;
