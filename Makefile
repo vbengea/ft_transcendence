@@ -8,7 +8,7 @@ build:
 	docker build -t pong .
 
 run: build
-	docker run --name $(NAME) --env-file .env -p $(PORT):$(PORT) $(NAME)
+	docker run --name $(NAME) --restart always --env-file .env -p $(PORT):$(PORT) $(NAME)
 
 down:
 	docker stop $(NAME)
