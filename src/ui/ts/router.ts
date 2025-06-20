@@ -82,6 +82,23 @@ template('template-view3', async () => {
 	} else {
 		initGoogleSignIn(config.googleClientId, googleButtonContainer);
 	}
+
+	const formContainer = link3.querySelector('form').closest('div');
+
+	const footerContainer = document.createElement('div');
+	footerContainer.className = 'mt-6 text-center';
+
+	const cookieNotice = document.createElement('p');
+	cookieNotice.className = 'text-xs text-gray-500 mt-4 mx-auto';
+	cookieNotice.style.maxWidth = '384px';
+	cookieNotice.style.overflowWrap = 'break-word';
+	cookieNotice.innerHTML = 'By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>';
+
+	footerContainer.appendChild(cookieNotice);
+
+	if (formContainer && formContainer.parentNode) {
+		formContainer.parentNode.appendChild(footerContainer);
+	}
 	
 	function initGoogleSignIn(clientId, container) {
 		(window as any).google.accounts.id.initialize({
@@ -186,6 +203,23 @@ template('template-view4', async () => {
 		}
 	});
 
+	const formContainer = link4.querySelector('form').closest('div');
+
+	const footerContainer = document.createElement('div');
+	footerContainer.className = 'mt-6 text-center';
+
+	const cookieNotice = document.createElement('p');
+	cookieNotice.className = 'text-xs text-gray-500 mx-auto';
+	cookieNotice.style.maxWidth = '384px';
+	cookieNotice.style.overflowWrap = 'break-word';
+	cookieNotice.innerHTML = 'By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>';
+
+	footerContainer.appendChild(cookieNotice);
+
+	if (formContainer && formContainer.parentNode) {
+		formContainer.parentNode.appendChild(footerContainer);
+	}
+
 link4.addEventListener('submit', async (e) => {
 	e.preventDefault();
 	var data = new FormData(document.querySelector('form'));
@@ -234,6 +268,35 @@ route('/login', 'template-view3');
 route('/register', 'template-view4');
 route('/2fa/verify', 'template-2fa-verify');
 
+route('/privacy', async () => {
+	let myDiv = document.getElementById(appDiv);
+	myDiv.innerHTML = "";
+
+	try {
+		const content = await fetch(`./pages/privacy.html`).then(res => res.text());
+
+		const privacyPage = document.createElement('div');
+		privacyPage.id = 'privacy.page';
+		privacyPage.innerHTML = `
+			<div class="min-h-screen bg-gray-100 py-8">
+				<div class="container mx-auto px-4">
+					<div class="bg-white rounded-lg shadow p-6">
+						<div class="mb-6 flex justify-between items-center">
+							<h1 class="text-3xl font-bold">Privacy Policy</h1>
+							<a href="#/login" class="text-indigo-600 hover:underline">Return to Login</a>
+						</div>
+						${content}
+					</div>
+				</div>
+			</div>
+		`;
+		return myDiv.appendChild(privacyPage);
+	} catch (err) {
+		console.error(err);
+		return myDiv.innerHTML = '<div class="text-center py-10">Unable to load Privacy Policy</div>';
+	}
+});
+
 let createDiv = (id, xmlString) => {
 	let d = document.createElement('div');
 	d.id = id;
@@ -265,7 +328,7 @@ async function resolveRoute(route) {
 			location.hash = '#/login';
 			closeWS();
 			return () => {};
-		} else if (route == '/login' || route == '/register' || route == '/2fa/verify') {
+		} else if (route == '/login' || route == '/register' || route == '/2fa/verify' || route == '/privacy') {
 			return routes[route];
 		} else if (route == '/2fa/setup') {
 			if (authorized()) {
