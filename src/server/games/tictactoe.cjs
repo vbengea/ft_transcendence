@@ -106,7 +106,7 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid, limit, match, maps) {
+	constructor(mid, limit, match, maps, broadcast) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -118,6 +118,7 @@ class TicTacToe {
 		this.limit = limit;
 		this.matchMap = maps.matchMap;
 		this.maps = maps;
+		this.broadcast = broadcast;
 	}
 
 	toJSON() {
