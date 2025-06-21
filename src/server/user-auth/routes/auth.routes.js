@@ -520,6 +520,18 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.patch('/lang/:lang', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const userId = request.user.id;
+			const lang = request.params.lang;
+			await userService.userLangUpdate(userId, lang);
+			reply.send({ message: 'Language updated successfully' });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to update language' });
+		}
+	});
+
 	done();
 }
 

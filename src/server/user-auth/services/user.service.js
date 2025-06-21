@@ -136,6 +136,13 @@ function createUserService(prisma) {
 			});
 		},
 
+		async userLangUpdate(userId, lang) {
+			await prisma.user.update({
+				where: { id: userId },
+				data: { lang }
+			});
+		},
+
 		async userExists(email, name) {
 			const count = await prisma.user.count({
 				where: {

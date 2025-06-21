@@ -26,8 +26,7 @@ export const hydrateSettings = async () => {
 		if (response.ok) {
 			const userData = await response.json();
 			const statusContainer = document.getElementById('2fa-status-container');
-			const combo : HTMLOptionElement = document.querySelector(`#${userData.user.lang}`);
-			combo.selected = true;
+			doLang(userData);
 
 			if (userData.user && userData.user.two_fa_enabled) {
 				statusContainer.innerHTML = `
@@ -269,3 +268,13 @@ export const hydrateSettings = async () => {
 		`;
 	}
 };
+
+async function doLang(userData) {
+	const combo : HTMLOptionElement = document.querySelector(`#${userData.user.lang}`);
+	combo.selected = true;
+	const lang : HTMLOptionElement = document.querySelector(`#languages`);
+	lang.addEventListener('change', async (e) => {
+		const lg = (e.target as HTMLSelectElement).value;
+		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
+	});
+}
