@@ -297,11 +297,7 @@ let hydrateTemplate = async (url, params) => {
 					html += `<td class="px-6 py-4 text-center"></td><td class="px-6 py-4 text-center">1</td>`
 				}
 
-				if (m.round.tournament.totalPlayers > 2) {
-					html += `<td class="px-6 py-4 text-center">Multi player</td>`
-				} else {
-					html += `<td class="px-6 py-4 text-center"></td>`
-				}
+				html += `<td class="px-6 py-4 text-center">${m.round.tournament.name}</td>`
 
 				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
 
