@@ -1,26 +1,71 @@
-<div class="h-full bg-[url(./images/matches.png)] bg-no-repeat bg-cover flex-col justify-center">
-	<table class="w-1/2  m-10 mb-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<div class="h-full bg-[url(./images/matches.png)] mb-20 bg-no-repeat bg-cover flex flex-col items-center">
+
+	<div class="container flex flex-col bg-white">
+		<div class="w-full draggable">
+			<div class="container flex flex-col items-center gap-16 mx-auto my-32">
+			<div class="grid w-full grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-y-8">
+				<div class="flex flex-col items-center">
+				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto1" countTo="250">0</span></h3>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Games played</p>
+				</div>
+				<div class="flex flex-col items-center">
+				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto2" countTo="12">0</span></h3>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Wins</p>
+				</div>
+				<div class="flex flex-col items-center">
+				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto3" countTo="2600" data-decimal="1">0</span></h3>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Loses</p>
+				</div>
+				<div class="flex flex-col items-center">
+				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto4" countTo="18000">0</span>%</h3>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Average</p>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900">Ovarall</h3>
+	<table class="w-1/2 m-0 mb-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 			<tr>
-				<th scope="col" class="px-6 py-3">
-					Date
-				</th>
-				<th scope="col" class="px-6 py-3">
-					Versus
-				</th>
-				<th scope="col" class="px-6 py-3 text-center">
-					Win
-				</th>
-				<th scope="col" class="px-6 py-3 text-center">
-					Loose
-				</th>
-				<th scope="col" class="px-6 py-3 text-center">
-					Score
-				</th>
+				<th scope="col" class="px-6 py-3">Against</th>
+				<th scope="col" class="px-6 py-3 text-center">Wins</th>
+				<th scope="col" class="px-6 py-3 text-center">Loses</th>
+				<th scope="col" class="px-6 py-3 text-center">Average</th>
 			</tr>
 		</thead>
-		<tbody id="matches"></tbody>
+		<tbody id="matches1"></tbody>
 	</table>
 
-	<button id="submit" type="submit" class="text-white w-30 ml-10 bg-gray-700 mt-5 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Next</button>
+	<h3 class="text-5xl mt-20 font-extrabold leading-tight text-center text-dark-grey-900">Pong</h3>
+	<table class="w-1/2 m-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+			<tr>
+				<th scope="col" class="px-6 py-3">Against</th>
+				<th scope="col" class="px-6 py-3 text-center">Win</th>
+				<th scope="col" class="px-6 py-3 text-center">Loose</th>
+				<th scope="col" class="px-6 py-3 text-center">Tournament</th>
+				<th scope="col" class="px-6 py-3 text-center">Date</th>
+			</tr>
+		</thead>
+		<tbody id="matches2"></tbody>
+	</table>
+
+	<h3 class="text-5xl mt-20 font-extrabold leading-tight text-center text-dark-grey-900">Tic tac toe</h3>
+	<table class="w-1/2 m-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+			<tr>
+				<th scope="col" class="px-6 py-3">Against</th>
+				<th scope="col" class="px-6 py-3 text-center">Win</th>
+				<th scope="col" class="px-6 py-3 text-center">Loose</th>
+				<th scope="col" class="px-6 py-3 text-center">Tournament</th>
+				<th scope="col" class="px-6 py-3 text-center">Date</th>
+			</tr>
+		</thead>
+		<tbody id="matches3"></tbody>
+	</table>
+
+	<button id="submit" type="submit" class="text-white w-30 mt-20 mb-20 bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Close</button>
 </div>
+
