@@ -14,11 +14,13 @@ const CHAR_LIMIT = 255;
 const ANONYMOUS = "anonymous@gmail.com"
 
 export const lang = (html) => {
-	const translate = JSON.parse(sessionStorage.langRaw)[0];
-	let arr;
-	const reg = /\{\{(.*?)\}\}/g;
-	while ((arr = reg.exec(html)) !== null)
-		html = html.replace(arr[0], translate[arr[1]]);
+	if (sessionStorage.langRaw) {
+		const translate = JSON.parse(sessionStorage.langRaw)[0];
+		let arr;
+		const reg = /\{\{(.*?)\}\}/g;
+		while ((arr = reg.exec(html)) !== null)
+			html = html.replace(arr[0], translate[arr[1]]);
+	}
 	return html;
 };
 
