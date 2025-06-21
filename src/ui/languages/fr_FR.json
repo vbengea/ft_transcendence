@@ -67,5 +67,11 @@
 	"or_continue_with": "Ou continuer avec",
 	"want_to_member": "Envie de devenir membre ?",
 	"register": "S'inscrire",
-	"close": "Fermer"
+	"close": "Fermer",
+	"game_customization_options": "Options de personnalisation du jeu",
+	"default_game_settings": "Paramètres de jeu par défaut",
+	"maximum_score": "Score maximum",
+	"game_maps": "Cartes disponibles",
+	"player_color": "Couleur du joueur",
+	"camera_optics": "Optique de la caméra"
 }]

@@ -67,5 +67,11 @@
 	"or_continue_with": "Or continue with",
 	"want_to_member": "Want to be a member?",
 	"register": "Register",
-	"close": "Close"
+	"close": "Close",
+	"game_customization_options": "Game Customization Options",
+	"default_game_settings": "Default Game Settings",
+	"maximum_score": "Maximum Score",
+	"game_maps": "Available Maps",
+	"player_color": "Player Color",
+	"camera_optics": "Camera Optics"
 }]
