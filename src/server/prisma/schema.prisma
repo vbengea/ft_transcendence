@@ -17,6 +17,7 @@ model User {
   avatar         String?
   two_fa_secret  String?
   two_fa_enabled Boolean  @default(false)
+  lang           String   @default("en_EN")
   human          Boolean  @default(true)
   anonymous      Boolean  @default(false)
   createdAt      DateTime @default(now())

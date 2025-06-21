@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const utils = require('../user-auth/services/user.service')(prisma)
-const chatSrv = require('../user-auth/services/chat.service')(prisma)
 const DEFAULT_PASSWORD = "1234";
 
 async function fill() {
@@ -35,7 +34,7 @@ async function fill() {
 	const edgar = await utils.createUser("edgar@gmail.com", "Edgar Allan Poe", true, DEFAULT_PASSWORD);
 	const leon = await utils.createUser("tolstoi@gmail.com", "Léon Tolstói", true, DEFAULT_PASSWORD);
 	const miguel = await utils.createUser("unamuno@gmail.com", "Miguel de Unamuno", true, DEFAULT_PASSWORD);
-	const juan = await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD);
+	const juan = await utils.createUser("juaflore@gmail.com", "Juan Daniel Flores", true, DEFAULT_PASSWORD, false, "fr_FR");
 
 	const connect = [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }];
 

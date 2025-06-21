@@ -1,3 +1,4 @@
+
 <!-- <div class="p-8 max-w-2xl mx-auto">
 	<h1 class="text-2xl font-bold mb-6">Account Settings</h1>
 	
@@ -26,6 +27,9 @@
 	<div class="flex bg-white rounded-lg shadow-md overflow-hidden">
 		<div class="w-64 bg-gray-50 border-r border-gray-200">
 		<nav class="flex flex-col py-4">
+			<button id="tab-lang" class="tab-button px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
+			Languages
+			</button>
 			<button id="tab-2fa" class="tab-button active px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
 			Two-Factor Authentication
 			</button>
@@ -39,6 +43,19 @@
 		</div>
 		
 		<div class="flex-1 p-6">
+
+		<div id="content-lang" class="tab-content hidden">
+			<h2 class="text-lg font-semibold mb-4">Languages</h2>
+			<form class="max-w-sm mx-auto">
+				</br>
+				<select id="languages" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+					<option id="en_EN" value="en_EN">English</option>
+					<option id="en_ES" value="en_ES">Spanish</option>
+					<option id="fr_FR" value="fr_FR">France</option>
+				</select>
+			</form>
+		</div>
+
 		<div id="content-2fa" class="tab-content">
 			<h2 class="text-lg font-semibold mb-4">Two-Factor Authentication</h2>
 			<div id="2fa-status-container" class="mt-4">

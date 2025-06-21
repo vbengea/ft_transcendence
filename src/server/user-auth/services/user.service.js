@@ -20,7 +20,7 @@ function createUserService(prisma) {
 			});
 		},
 
-		async createUser(email, name, human, plainPassword, anonymous = false) {
+		async createUser(email, name, human, plainPassword, anonymous = false, lang = 'en_EN') {
 			const passwordHash = await bcrypt.hash(plainPassword, 10);
 			let bots = new Set();
 			if (human) {
@@ -46,9 +46,11 @@ function createUserService(prisma) {
 				} : {}
 			};
 
-			if (anonymous){
+			if (anonymous)
 				data.id = email;
-			}
+
+			if (lang)
+				data.lang = lang;
 
 			return prisma.user.create({
 				data,
@@ -233,8 +235,6 @@ function createUserService(prisma) {
 				}
 			});
 		},
-
-
 
 		async downloadAndSaveAvatar(email, avatarUrl) {
 			const path = `images/avatar/${email}.png`;

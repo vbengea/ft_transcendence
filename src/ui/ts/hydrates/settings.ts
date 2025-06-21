@@ -26,6 +26,8 @@ export const hydrateSettings = async () => {
 		if (response.ok) {
 			const userData = await response.json();
 			const statusContainer = document.getElementById('2fa-status-container');
+			const combo : HTMLOptionElement = document.querySelector(`#${userData.user.lang}`);
+			combo.selected = true;
 
 			if (userData.user && userData.user.two_fa_enabled) {
 				statusContainer.innerHTML = `
