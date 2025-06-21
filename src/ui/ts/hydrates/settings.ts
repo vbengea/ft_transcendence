@@ -1,4 +1,5 @@
 import { validatePassword } from "../utils";
+import { landing } from "../landing";
 
 export const hydrateSettings = async () => {
 	try {
@@ -271,10 +272,13 @@ export const hydrateSettings = async () => {
 
 async function doLang(userData) {
 	const combo : HTMLOptionElement = document.querySelector(`#${userData.user.lang}`);
-	combo.selected = true;
 	const lang : HTMLOptionElement = document.querySelector(`#languages`);
+	combo.selected = true;
 	lang.addEventListener('change', async (e) => {
 		const lg = (e.target as HTMLSelectElement).value;
 		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
+		let url = window.location.hash.slice(1) || "/";
+		console.log(url.slice(9));
+		landing(url.slice(9));
 	});
 }

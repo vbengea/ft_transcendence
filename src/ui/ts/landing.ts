@@ -60,7 +60,7 @@ let hydrateTemplate = async (url, params) => {
 			if (isComputer){
 				inp.value = mode === 'single' ? 'Single player' : 'Multi player';
 				inp.style.display = 'none';
-				lab.innerHTML = mode === 'single' ? 'Pick 2' : 'Pick 4';
+				lab.innerHTML = lang(mode === 'single' ? 'Pick 2' : 'Pick 4');
 			}
 			const response = await fetch(mode === 'single' ? `/auth/computer` : (mode === 'multi' ? `/auth/friends/${userData.id}` : `/auth/human_friends`));
 			const friends = await response.json();
@@ -70,7 +70,7 @@ let hydrateTemplate = async (url, params) => {
 
 			const onlineStatuses = await fetchOnlineStatus(friends);
 
-			div.innerHTML = friends.map(f => {
+			div.innerHTML = lang(friends.map(f => {
 				const isOnline = onlineStatuses[f.id] === true;
 				const statusClass = isOnline ? 'bg-green-400' : 'bg-gray-400';
 				return `
@@ -79,7 +79,7 @@ let hydrateTemplate = async (url, params) => {
 					<span data-sid="${f.id}" class="absolute bottom-2 left-10 transform translate-y-1/4 w-3.5 h-3.5 ${statusClass} border-2 border-white dark:border-gray-800 rounded-full"></span>
 					<span data-sid="${f.id}" class="ml-2 font-sans text-sm">${f.name}</span>
 				</div>`
-			}).join('');
+			}).join(''));
 			
 			div.addEventListener('click', (e) => {
 				const cel : any = e.target;
@@ -116,7 +116,7 @@ let hydrateTemplate = async (url, params) => {
 				const tusers = users.slice();
 
 				if (mode === 'multi' && users.length !== 4){
-					document.querySelector('#error').innerHTML = 'Please select 4 players.';
+					document.querySelector('#error').innerHTML = lang('Please select 4 players.');
 					return;
 				}
 
@@ -165,9 +165,9 @@ let hydrateTemplate = async (url, params) => {
 					createTournament(tournament);
 
 				} else if (!tname) {
-					document.querySelector('#error').innerHTML = 'Tournament name should not be empty';
+					document.querySelector('#error').innerHTML = lang('Tournament name should not be empty');
 				} else {
-					document.querySelector('#error').innerHTML = 'Please select a base 2 number of players.';
+					document.querySelector('#error').innerHTML = lang('Please select a base 2 number of players.');
 				}
 			});
 			break;
@@ -203,7 +203,7 @@ let hydrateTemplate = async (url, params) => {
 						</div>
 					`).join('')}
 				</div>`
-				r1.innerHTML = content1;
+				r1.innerHTML = lang(content1);
 			}
 			break;
 
@@ -310,13 +310,13 @@ let hydrateTemplate = async (url, params) => {
 				u.avg = mavg.toFixed(1);
 			}
 
-			avg = wins * 100 / count;
+			avg = count ? (wins * 100 / count) : 0;
 			let avgs = avg.toFixed(1);
 
-			document.querySelector('#countto1').innerHTML = count + '';
-			document.querySelector('#countto2').innerHTML = wins + '';
-			document.querySelector('#countto3').innerHTML = loses + '';
-			document.querySelector('#countto4').innerHTML = avgs + '';
+			document.querySelector('#countto1').innerHTML = lang(count + '');
+			document.querySelector('#countto2').innerHTML = lang(wins + '');
+			document.querySelector('#countto3').innerHTML = lang(loses + '');
+			document.querySelector('#countto4').innerHTML = lang(avgs + '');
 
 			umap.forEach(m => {
 				mt1.innerHTML += `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
@@ -356,11 +356,11 @@ const playPong = async (params) => {
 	const tournamentId = params[0];
 
 	if (!tournamentId){
-		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		app.innerHTML = lang(await (await fetch(`./pages/nogame.html`)).text());
 		return;
 	}
 
-	app.innerHTML = await (await fetch(`./pages/pong.html`)).text();
+	app.innerHTML = lang(await (await fetch(`./pages/pong.html`)).text());
 
 	const LHS = document.querySelector("#paddle-left-wrapper");
 	const RHS = document.querySelector("#paddle-right-wrapper");
@@ -371,22 +371,22 @@ const playPong = async (params) => {
 		mode = 'multi';
 
 	if (mode === 'single') {
-		LHS.innerHTML = `<div id="score-left" class="absolute flex flex-col self-start left-4/12 top-5"></div>
-			<div id="paddle-left-1" class="mx-1 my-3 w-3 h-1/8 bg-white absolute self-center"></div>`;
+		LHS.innerHTML = lang(`<div id="score-left" class="absolute flex flex-col self-start left-4/12 top-5"></div>
+			<div id="paddle-left-1" class="mx-1 my-3 w-3 h-1/8 bg-white absolute self-center"></div>`);
 
-		RHS.innerHTML = `<div id="score-right" class="absolute flex flex-col self-start right-4/12 top-5"></div>
-			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-1/8 bg-white absolute self-center right-0"></div>`;
+		RHS.innerHTML = lang(`<div id="score-right" class="absolute flex flex-col self-start right-4/12 top-5"></div>
+			<div id="paddle-right-2" class="mx-1 my-3 w-3 h-1/8 bg-white absolute self-center right-0"></div>`);
 	} else {
-		LHS.innerHTML = `<div id="score-left" class="absolute flex flex-col self-start left-4/12 top-5">
+		LHS.innerHTML = lang(`<div id="score-left" class="absolute flex flex-col self-start left-4/12 top-5">
 				<span class="text-red-300"></span><span class="text-green-300"></span>
 				<span class="text-blue-300"></span><span class="text-yellow-300"></span>
 			</div>
 			<div id="paddle-left-1" class="mx-1 my-0 w-1/96 h-1/8 bg-red-300 absolute self-center"></div>
-			<div id="paddle-left-3" class="mx-1 my-0 w-1/96 h-1/8 bg-green-300 absolute self-center"></div>`;
+			<div id="paddle-left-3" class="mx-1 my-0 w-1/96 h-1/8 bg-green-300 absolute self-center"></div>`);
 
-		RHS.innerHTML = `<div id="score-right" class="absolute flex flex-col self-start right-4/12 top-5"></div>
+		RHS.innerHTML = lang(`<div id="score-right" class="absolute flex flex-col self-start right-4/12 top-5"></div>
 			<div id="paddle-right-2" class="mx-1 my-0 w-3 h-1/8 bg-blue-300 absolute self-center right-0"></div>
-			<div id="paddle-right-4" class="mx-1 my-0 w-3 h-1/8 bg-yellow-300 absolute self-center right-0"></div>`;
+			<div id="paddle-right-4" class="mx-1 my-0 w-3 h-1/8 bg-yellow-300 absolute self-center right-0"></div>`);
 	}
 
 	play(getLayoutPayloadPong, displayPong, 'pong', tournamentId);
@@ -396,10 +396,10 @@ const playBong = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
 	if (!tournamentId){
-		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		app.innerHTML = lang(await (await fetch(`./pages/nogame.html`)).text());
 		return;
 	}
-	app.innerHTML = await (await fetch(`./pages/bong.html`)).text();
+	app.innerHTML = lang(await (await fetch(`./pages/bong.html`)).text());
 	play(getLayoutPayloadBong, displayBong, 'bong', tournamentId);
 };
 
@@ -407,18 +407,31 @@ const playTicTacToe = async (params) => {
 	const tournamentId = params[0];
 	const app = document.querySelector('#app');
 	if (!tournamentId){
-		app.innerHTML = await (await fetch(`./pages/nogame.html`)).text();
+		app.innerHTML = lang(await (await fetch(`./pages/nogame.html`)).text());
 		return;
 	}
-	app.innerHTML = await (await fetch(`./pages/tictactoe.html`)).text();
+	app.innerHTML = lang(await (await fetch(`./pages/tictactoe.html`)).text());
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
 };
 
+export const lang = (html) => {
+	const translate = JSON.parse(sessionStorage.langRaw)[0];
+	let arr;
+	const reg = /\{\{(.*?)\}\}/g;
+	while ((arr = reg.exec(html)) !== null)
+		html = html.replace(arr[0], translate[arr[1]]);
+	return html;
+};
+
 export const landing = async (url) => {
+	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	const app = document.querySelector('#app');
 	const params = [];
 
 	try {
+		const raw = await fetch(`/languages/${userData.lang}.json`);
+		sessionStorage.langRaw = await raw.text();
+
 		if (url.includes('/')){
 			const paths = url.split('/');
 			let i = 0;
@@ -444,7 +457,7 @@ export const landing = async (url) => {
 			if (url === 'pong' || url === 'bong' || url === 'tictactoe')
 				url = 'nogame';
 
-			app.innerHTML = await (await fetch(`./pages/template.html`)).text();
+			app.innerHTML = lang(await (await fetch(`./pages/template.html`)).text());
 
 			const user = document.querySelector("#user");
 			const img : any = document.querySelector('#user_inner_3');
@@ -452,7 +465,7 @@ export const landing = async (url) => {
 
 			changeMode("count");
 			
-			img.src = JSON.parse(sessionStorage.TRANSCENDER_USER).user.avatar;
+			img.src = userData.avatar;
 
 			user.addEventListener('click', (e) => {
 				e.preventDefault();
@@ -468,10 +481,10 @@ export const landing = async (url) => {
 			const response = await fetch(`./pages/${url}.html`);
 
 			if (response.ok) {
-				content.innerHTML = await response.text();
+				content.innerHTML = lang(await response.text());
 				hydrateTemplate(url, params);
 			} else {
-				content.innerHTML = '<div class="mt-12 text-center text-2xl text-red-400">Content not found</div>';
+				content.innerHTML = lang('<div class="mt-12 text-center text-2xl text-red-400">Content not found</div>');
 			}
 		}
 
