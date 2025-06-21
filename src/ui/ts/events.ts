@@ -1,7 +1,6 @@
 import { Message } from './types';
 import { handleGame } from './games/main';
 import { getLayoutPayloadPong } from './games/pong';
-import { getLayoutPayloadBong } from './games/bong';
 import { getLayoutPayloadTicTacToe } from './games/tictactoe';
 
 export let WS = null;
@@ -14,8 +13,8 @@ const CHAR_LIMIT = 255;
 const ANONYMOUS = "anonymous@gmail.com"
 
 export const lang = (html) => {
-	if (localStorage.langRaw) {
-		const translate = JSON.parse(localStorage.langRaw)[0];
+	if (sessionStorage.langRaw) {
+		const translate = JSON.parse(sessionStorage.langRaw)[0];
 		let arr;
 		const reg = /\{\{(.*?)\}\}/g;
 		while ((arr = reg.exec(html)) !== null)
@@ -24,13 +23,11 @@ export const lang = (html) => {
 	return html;
 };
 
-export const loadLang = async () => {
-	const lang = localStorage.lang || "en_EN";
+export const loadLang = async (lg) => {
+	const lang = lg || "en_EN";
 	const raw = await fetch(`/languages/${lang}.json`);
-	localStorage.langRaw = await raw.text();
+	sessionStorage.langRaw = await raw.text();
 }
-
-loadLang();
 
 export function closeWS() {
 	WS.close();

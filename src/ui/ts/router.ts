@@ -14,7 +14,7 @@ let template = (name, templateFunction) => {
 	return templates[name] = templateFunction;
 };
 
-let route = (path, template) => {
+let route = async (path, template) => {
 	if (typeof template == "function") {
 		return routes[path] = template;
 	}
@@ -314,7 +314,7 @@ async function authorized() {
 		return false;
 	} else {
 		sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
-		localStorage.lang = raw.user.lang;
+		sessionStorage.lang = raw.user.lang;
 		if (WS === null){
 			initWebSocket();
 		}
@@ -371,12 +371,13 @@ function testUsers() {
 }
 
 async function router(evt) {
+	if (!sessionStorage.lang)
+		await loadLang("en_EN");
 	let url = window.location.hash.slice(1) || "/";
 	if (url.startsWith('/landing/')) {
 		if (await authorized())
 			landing(url.slice(9));
 	} else {
-		loadLang();
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
 			routeResolved();

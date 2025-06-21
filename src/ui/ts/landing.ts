@@ -420,7 +420,7 @@ export const landing = async (url) => {
 	const params = [];
 
 	try {
-		loadLang();
+		loadLang(sessionStorage.lang);
 		
 		if (url.includes('/')){
 			const paths = url.split('/');
