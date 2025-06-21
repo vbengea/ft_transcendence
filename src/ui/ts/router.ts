@@ -327,6 +327,8 @@ async function resolveRoute(route) {
 		if (route == '/logout') {
 			fetch(`${BASE}/logout`, { method: "DELETE" });
 			sessionStorage.TRANSCENDER_USER = '';
+			sessionStorage.lang = '';
+			sessionStorage.langRaw = '';
 			location.hash = '#/login';
 			closeWS();
 			return () => {};
