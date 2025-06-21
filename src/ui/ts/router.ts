@@ -314,7 +314,7 @@ async function authorized() {
 		return false;
 	} else {
 		sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
-		sessionStorage.lang = raw.user.lang;
+		localStorage.lang = raw.user.lang;
 		if (WS === null){
 			initWebSocket();
 		}

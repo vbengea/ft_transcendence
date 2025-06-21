@@ -278,7 +278,7 @@ async function doLang(userData) {
 	lang.addEventListener('change', async (e) => {
 		const data = JSON.parse(sessionStorage.TRANSCENDER_USER);
 		const lg = (e.target as HTMLSelectElement).value;
-		sessionStorage.lang = lg;
+		localStorage.lang = lg;
 		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
 		data.user.lang = lg;
 		sessionStorage.TRANSCENDER_USER = JSON.stringify(data);

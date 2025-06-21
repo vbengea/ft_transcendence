@@ -14,8 +14,8 @@ const CHAR_LIMIT = 255;
 const ANONYMOUS = "anonymous@gmail.com"
 
 export const lang = (html) => {
-	if (sessionStorage.langRaw) {
-		const translate = JSON.parse(sessionStorage.langRaw)[0];
+	if (localStorage.langRaw) {
+		const translate = JSON.parse(localStorage.langRaw)[0];
 		let arr;
 		const reg = /\{\{(.*?)\}\}/g;
 		while ((arr = reg.exec(html)) !== null)
@@ -25,9 +25,9 @@ export const lang = (html) => {
 };
 
 export const loadLang = async () => {
-	const lang = sessionStorage.lang || "en_EN";
+	const lang = localStorage.lang || "en_EN";
 	const raw = await fetch(`/languages/${lang}.json`);
-	sessionStorage.langRaw = await raw.text();
+	localStorage.langRaw = await raw.text();
 }
 
 loadLang();
