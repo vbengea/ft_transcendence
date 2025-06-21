@@ -12,6 +12,15 @@ let receiverId : String;
 
 const CHAR_LIMIT = 255;
 
+export const lang = (html) => {
+	const translate = JSON.parse(sessionStorage.langRaw)[0];
+	let arr;
+	const reg = /\{\{(.*?)\}\}/g;
+	while ((arr = reg.exec(html)) !== null)
+		html = html.replace(arr[0], translate[arr[1]]);
+	return html;
+};
+
 export function closeWS() {
 	WS.close();
 	WS = null;
@@ -33,9 +42,9 @@ export function initWebSocket() {
 		else if (data.type === 'chat') {
 			if (data.count){
 				const el = document.querySelector('#message_count');
-				let n = parseInt(el.innerHTML) || 0;
+				let n = lang(parseInt(el.innerHTML) || 0);
 				n++;
-				el.innerHTML = n + '';
+				el.innerHTML = lang(n + '');
 			}
 			if (data.sender) {
 				let u: Message = chatUserList.filter(c => c.id === data.sender.id)[0];
@@ -103,7 +112,7 @@ const processChatUserList = () => {
 			chatUserList.sort((a, b) => {
 				return b.count - a.count;
 			});
-			el.innerHTML = chatUserList.filter(r => r.id !== user.id).map(u => `
+			el.innerHTML = lang(chatUserList.filter(r => r.id !== user.id).map(u => `
 				<li class="cursor-pointer pt-3 p-5 sm:pt-4 ${u.blocked ? 'bg-red-300' : ''}" data-friend_element="${u.id}">
 					<div class="flex items-center space-x-4" data-friend_element="${u.id}">
 						<div class="flex-shrink-0" data-friend_element="${u.id}">
@@ -133,7 +142,7 @@ const processChatUserList = () => {
 
 					</div>
 				</li>
-			`).join('');
+			`).join(''));
 		} else {
 			el.innerHTML = '';
 		}
@@ -196,7 +205,7 @@ const processUserMessages = () => {
 		</div>
 		`;
 
-		el.innerHTML = html;
+		el.innerHTML = lang(html);
 		scrollToBottom();
 	};
 }
@@ -224,7 +233,7 @@ export const changeMode = async (mode, friendId?) => {
 		if (ct) {
 			const count = await (await fetch("/auth/new_message_count")).text();
 			if (count != '0') {
-				ct.innerHTML = count;
+				ct.innerHTML = lang(count);
 			} else {
 				ct.innerHTML = '';
 			}

@@ -1,5 +1,6 @@
 import { validatePassword } from "../utils";
 import { landing } from "../landing";
+import { lang } from "../events";
 
 export const hydrateSettings = async () => {
 	try {
@@ -30,7 +31,7 @@ export const hydrateSettings = async () => {
 			doLang(userData);
 
 			if (userData.user && userData.user.two_fa_enabled) {
-				statusContainer.innerHTML = `
+				statusContainer.innerHTML = lang(`
 					<div class="flex items-center mb-3">
 						<svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -41,7 +42,7 @@ export const hydrateSettings = async () => {
 					<button id="disable-2fa" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
 						Disable Two-Factor Authentication
 					</button>
-				`;
+				`);
 
 				setTimeout(() => {
 					document.getElementById('disable-2fa').addEventListener('click', async () => {
@@ -67,7 +68,7 @@ export const hydrateSettings = async () => {
 					});
 				}, 100);
 			} else {
-				statusContainer.innerHTML = `
+				statusContainer.innerHTML = lang(`
 					<button id="setup-2fa-btn" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
 						Setup Two-Factor Authentication
 					</button>
@@ -95,7 +96,7 @@ export const hydrateSettings = async () => {
 							</button>
 						</form>
 					</div>
-				`;
+				`);
 
 				setTimeout(() => {
 					document.getElementById('setup-2fa-btn').addEventListener('click', async () => {
@@ -110,7 +111,7 @@ export const hydrateSettings = async () => {
 
 							if (response.ok) {
 								const data = await response.json();
-								document.getElementById('qrcode-container').innerHTML = `<img src="${data.qrcode}" alt="QR Code" class="border p-2 rounded">`;
+								document.getElementById('qrcode-container').innerHTML = lang(`<img src="${data.qrcode}" alt="QR Code" class="border p-2 rounded">`);
 								document.getElementById('manual-code').textContent = data.manualCode;
 							} else {
 								const result = await response.json();
@@ -145,12 +146,12 @@ export const hydrateSettings = async () => {
 								location.reload();
 							} else {
 								const result = await response.json();
-								errorElement.textContent = result.error || 'Failed to verify code';
+								errorElement.textContent = lang(result.error || 'Failed to verify code');
 								errorElement.classList.remove('hidden');
 							}
 						} catch (err) {
 							console.error('Error verifying 2FA code:', err);
-							errorElement.textContent = 'An error ocurred. Please try again.';
+							errorElement.textContent = lang('An error ocurred. Please try again.');
 							errorElement.classList.remove('hidden');
 						}
 					});
@@ -172,13 +173,13 @@ export const hydrateSettings = async () => {
 						errorElement.classList.add('hidden');
 
 						if (!newPassword.trim()) {
-							errorElement.textContent = 'Password cannot be empty';
+							errorElement.textContent = lang('Password cannot be empty');
 							errorElement.classList.remove('hidden');
 							return;
 						}
 
 						if (newPassword !== confirmPassword) {
-							errorElement.textContent = 'Passwords do not match';
+							errorElement.textContent = lang('Passwords do not match');
 							errorElement.classList.remove('hidden');
 							return;
 						}
@@ -208,12 +209,12 @@ export const hydrateSettings = async () => {
 								(passwordForm as HTMLFormElement).reset();
 							} else {
 								const result = await response.json();
-								errorElement.textContent = result.error || 'Failed to update password';
+								errorElement.textContent = lang(result.error || 'Failed to update password');
 								errorElement.classList.remove('hidden');
 							}
 						} catch (err) {
 							console.error('Error updating password:', err);
-							errorElement.textContent = 'An error ocurred. Please try again.';
+							errorElement.textContent = lang('An error ocurred. Please try again.');
 							errorElement.classList.remove('hidden');
 						}
 					});
@@ -222,7 +223,7 @@ export const hydrateSettings = async () => {
 
 			setTimeout(() => {
 				document.getElementById('delete-account').addEventListener('click', async () => {
-					if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+					if (confirm(lang('Are you sure you want to delete your account? This action cannot be undone.'))) {
 						const confirmText = prompt('Type "DELETE" to confirm account deletion:');
 						if (confirmText === 'DELETE') {
 							try {
@@ -252,21 +253,21 @@ export const hydrateSettings = async () => {
 			setupTabs();
 		} else {
 			const statusContainer = document.getElementById('2fa-status-container');
-			statusContainer.innerHTML = `
+			statusContainer.innerHTML = lang(`
 				<div class="text-red-500">
 					<p>Authentication error. Please <a href="#/login" class="text-indigo-600 hover:underline">log in</a> to view your settings.</p>
 				</div>
-			`;
+			`);
 			setupTabs();
 		}
 	} catch (err) {
 		console.error("Error fetching user data:", err);
 		const statusContainer = document.getElementById('2fa-status-container');
-		statusContainer.innerHTML = `
+		statusContainer.innerHTML = lang(`
 			<div class="text-red-500">
 				<p>Error connecting to server. Please try again later.</p>
 			</div>
-		`;
+		`);
 	}
 };
 

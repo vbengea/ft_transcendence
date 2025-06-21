@@ -1,4 +1,5 @@
 import { fetchOnlineStatus } from "../utils";
+import { lang } from "../events";
 
 export const hydrateProfile = async (userId) => {
 	try {
@@ -16,7 +17,7 @@ export const hydrateProfile = async (userId) => {
 
 		const avatarOverlay = document.createElement('div');
 		avatarOverlay.className = 'absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer';
-		avatarOverlay.innerHTML = '<span class="text-white text-sm">Change Avatar</span>';
+		avatarOverlay.innerHTML = lang('<span class="text-white text-sm">Change Avatar</span>');
 
 		const fileInput = document.createElement('input');
 		fileInput.type = 'file';
@@ -51,7 +52,7 @@ export const hydrateProfile = async (userId) => {
 
 			const nameOverlay = document.createElement('div');
 			nameOverlay.className = 'absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center hover:bg-opacity-10 transition-opacity';
-			nameOverlay.innerHTML = '<span class="text-transparent hover:text-indigo-600 text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>Edit</span>';
+			nameOverlay.innerHTML = lang('<span class="text-transparent hover:text-indigo-600 text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>Edit</span>');
 
 			nameContainer.addEventListener('click', () => {
 				showNameEditForm(profileNameElement, userData);
@@ -320,20 +321,20 @@ async function loadFriends(userId) {
 			const isCurr = userCurr.id === userId;
 
 			if (friends.length === 0) {
-				friendsList.innerHTML = `
+				friendsList.innerHTML = lang(`
 					<div class="col-span-2 flex items-center justify-center h-20 bg-gray-50 rounded-md">
 						<span class="text-gray-500">You don't have any friends yet</span>
 					</div>
-				`;
+				`);
 			} else {
 				const onlineStatuses = isCurr ? await fetchOnlineStatus(friends) : {};
 
 				friendsList.innerHTML = friends.map(friend => {
 					const statusIndicator = isCurr ? 
-						`<span data-friend-id="${friend.id}" class="absolute bottom-0 right-0 transform translate-y-1/4 w-2.5 h-2.5 ${onlineStatuses[friend.id] ? 'bg-green-400' : 'bg-gray-400'} border-2 border-white rounded-full" title="${onlineStatuses[friend.id] ? 'Online' : 'Offline'}"></span>` : 
+						lang(`<span data-friend-id="${friend.id}" class="absolute bottom-0 right-0 transform translate-y-1/4 w-2.5 h-2.5 ${onlineStatuses[friend.id] ? 'bg-green-400' : 'bg-gray-400'} border-2 border-white rounded-full" title="${onlineStatuses[friend.id] ? 'Online' : 'Offline'}"></span>`) : 
 						'';
 						
-					return `
+					return lang(`
 						<div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
 						<div class="flex items-center">
 							<div class="relative">
@@ -349,7 +350,7 @@ async function loadFriends(userId) {
 							Remove
 						</button>
 						</div>
-					`;
+					`);
 				}).join('');
 
 				document.querySelectorAll('.remove-friend').forEach(button => {
@@ -401,7 +402,7 @@ async function loadFriendsRequests(userId) {
 
 			if (requests.length > 0) {
 				requestsContainer.classList.remove('hidden');
-				requestsList.innerHTML = requests.map(request => `
+				requestsList.innerHTML = requests.map(request => lang(`
 					<div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
 						<div class="flex items-center">
 							<img src="${request.sender.avatar}" alt="${request.sender.name}" class="w-10 h-10 rounded-full mr-3">
@@ -419,7 +420,7 @@ async function loadFriendsRequests(userId) {
 							</button>
 						</div>
 					</div>
-				`).join('');
+				`)).join('');
 
 				document.querySelectorAll('.accept-request').forEach(button => {
 					button.addEventListener('click', async () => {
@@ -470,7 +471,7 @@ async function searchUsers() {
 	const resultsContainer = document.getElementById('search-results');
 
 	if (!searchQuery) {
-		resultsContainer.innerHTML = `<p class="text-gray-500">Please enter a search term</p>`;
+		resultsContainer.innerHTML = lang(`<p class="text-gray-500">Please enter a search term</p>`);
 		return;
 	}
 
@@ -483,9 +484,9 @@ async function searchUsers() {
 			const users = await response.json();
 
 			if (users.length === 0) {
-				resultsContainer.innerHTML = `<p class="text-gray-500">No users found</p>`;
+				resultsContainer.innerHTML = lang(`<p class="text-gray-500">No users found</p>`);
 			} else {
-				resultsContainer.innerHTML = users.map(user => `
+				resultsContainer.innerHTML = users.map(user => lang(`
 					<div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
 						<div class="flex items-center">
 							<img src="${user.avatar}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3">
@@ -501,7 +502,7 @@ async function searchUsers() {
 							${user.friendStatus === 'friends' ? 'Friends' : ''}
 						</button>
 					</div>
-				`).join('');
+				`)).join('');
 
 				document.querySelectorAll('.send-request').forEach(button => {
 					if (button.getAttribute('disabled') !== 'disabled') {
@@ -518,11 +519,11 @@ async function searchUsers() {
 			}
 		} else {
 			const error = await response.json();
-			resultsContainer.innerHTML = `<p class="text-red-500">${error.error || 'Error searching for users'}</p>`;
+			resultsContainer.innerHTML = lang(`<p class="text-red-500">${error.error || 'Error searching for users'}</p>`);
 		}
 	} catch (err) {
 		console.error('Error searching users:', err);
-		resultsContainer.innerHTML = `<p class="text-red-500">An error occurred while searching</p>`;
+		resultsContainer.innerHTML = lang(`<p class="text-red-500">An error occurred while searching</p>`);
 	}
 }
 

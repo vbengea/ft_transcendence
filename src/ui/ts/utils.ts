@@ -1,3 +1,4 @@
+import { lang } from './events';
 
 export const fetchOnlineStatus = async (friends) => {
 	if (!friends || friends.length === 0) return {};
@@ -28,7 +29,7 @@ export function validatePassword(password) {
 
 	for (const validation of validations) {
 		if (!validation.test) {
-			return { valid: false, message: validation.message };
+			return { valid: false, message: lang(validation.message) };
 		}
 	}
 

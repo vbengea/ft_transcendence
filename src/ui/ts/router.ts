@@ -1,4 +1,4 @@
-import { initWebSocket, WS, closeWS } from './events';
+import { initWebSocket, WS, closeWS, lang } from './events';
 import { landing } from './landing';
 import { Templates } from './hydrates/templates';
 import { validatePassword } from './utils';
@@ -50,7 +50,7 @@ template('template-2fa-verify', async ()  => {
 			location.hash = '/';
 		} else {
 			const err = document.querySelector("#error");
-			err.innerHTML = json.message || json.error;
+			err.innerHTML = lang(json.message || json.error);
 		}
 	});
 
@@ -92,7 +92,7 @@ template('template-view3', async () => {
 	cookieNotice.className = 'text-xs text-gray-500 mt-4 mx-auto';
 	cookieNotice.style.maxWidth = '384px';
 	cookieNotice.style.overflowWrap = 'break-word';
-	cookieNotice.innerHTML = 'By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>';
+	cookieNotice.innerHTML = lang('By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>');
 
 	footerContainer.appendChild(cookieNotice);
 
@@ -108,7 +108,7 @@ template('template-view3', async () => {
 			error_callback: (error) => {
 				console.error('Google Sign In Error:', error);
 				const err = document.querySelector("#error");
-				err.innerHTML = "An error occurred with Google Sign In. Please try again.";
+				err.innerHTML = lang("An error occurred with Google Sign In. Please try again.");
 			}
 		});
 
@@ -151,12 +151,12 @@ template('template-view3', async () => {
 				}
 			} else {
 				const err = document.querySelector("#error");
-				err.innerHTML = json.message || json.error;
+				err.innerHTML = lang(json.message || json.error);
 			}
 		} catch (error) {
 			console.error('Error handling Google Sign In:', error);
 			const err = document.querySelector("#error");
-			err.innerHTML = "An error occurred with Google Sign In. Please try again.";
+			err.innerHTML = lang("An error occurred with Google Sign In. Please try again.");
 		}
 	}
 
@@ -181,7 +181,7 @@ template('template-view3', async () => {
 			}
 		} else {
 			const err = document.querySelector("#error");
-			err.innerHTML = json.message || json.error;
+			err.innerHTML = lang(json.message || json.error);
 		}
 	});	
 });
@@ -197,7 +197,7 @@ template('template-view4', async () => {
 
 	confirmPasswordField.addEventListener('input', () => {
 		if (passwordField.value !== confirmPasswordField.value) {
-			errorElement.innerHTML = "Passwords do not match";
+			errorElement.innerHTML = lang("Passwords do not match");
 		} else {
 			errorElement.innerHTML = "";
 		}
@@ -212,7 +212,7 @@ template('template-view4', async () => {
 	cookieNotice.className = 'text-xs text-gray-500 mx-auto';
 	cookieNotice.style.maxWidth = '384px';
 	cookieNotice.style.overflowWrap = 'break-word';
-	cookieNotice.innerHTML = 'By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>';
+	cookieNotice.innerHTML = lang('By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>');
 
 	footerContainer.appendChild(cookieNotice);
 
@@ -228,13 +228,13 @@ link4.addEventListener('submit', async (e) => {
 	const validPass = validatePassword(password);
 	if (!validPass.valid) {
 		const err = document.querySelector('#error');
-		err.innerHTML = validPass.message;
+		err.innerHTML = lang(validPass.message);
 		return;
 	}
 
 	if (password !== data.get('confirm-password')) {
 		const err = document.querySelector("#error");
-		err.innerHTML = "Passwords do not match";
+		err.innerHTML = lang("Passwords do not match");
 		return;
 	}
 	const response = await fetch(`${BASE}/register`, {
@@ -252,7 +252,7 @@ link4.addEventListener('submit', async (e) => {
 	else
 	{
 		const err = document.querySelector("#error");
-		err.innerHTML = json.message || json.error;
+		err.innerHTML = lang(json.message || json.error);
 	}
 });
 return myDiv.appendChild(link4);
@@ -277,7 +277,7 @@ route('/privacy', async () => {
 
 		const privacyPage = document.createElement('div');
 		privacyPage.id = 'privacy.page';
-		privacyPage.innerHTML = `
+		privacyPage.innerHTML = lang(`
 			<div class="min-h-screen bg-gray-100 py-8">
 				<div class="container mx-auto px-4">
 					<div class="bg-white rounded-lg shadow p-6">
@@ -289,18 +289,18 @@ route('/privacy', async () => {
 					</div>
 				</div>
 			</div>
-		`;
+		`);
 		return myDiv.appendChild(privacyPage);
 	} catch (err) {
 		console.error(err);
-		return myDiv.innerHTML = '<div class="text-center py-10">Unable to load Privacy Policy</div>';
+		return myDiv.innerHTML = lang('<div class="text-center py-10">Unable to load Privacy Policy</div>');
 	}
 });
 
 let createDiv = (id, xmlString) => {
 	let d = document.createElement('div');
 	d.id = id;
-	d.innerHTML = xmlString;
+	d.innerHTML = lang(xmlString);
 	return d.firstChild;
 };
 

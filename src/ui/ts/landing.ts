@@ -1,4 +1,4 @@
-import { createTournament, changeMode } from './events';
+import { createTournament, changeMode, lang } from './events';
 import { getLayoutPayloadPong, displayPong } from './games/pong';
 import { getLayoutPayloadBong, displayBong } from './games/bong';
 import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
@@ -412,15 +412,6 @@ const playTicTacToe = async (params) => {
 	}
 	app.innerHTML = lang(await (await fetch(`./pages/tictactoe.html`)).text());
 	play(getLayoutPayloadTicTacToe, displayTicTacToe, 'tictactoe', tournamentId);
-};
-
-export const lang = (html) => {
-	const translate = JSON.parse(sessionStorage.langRaw)[0];
-	let arr;
-	const reg = /\{\{(.*?)\}\}/g;
-	while ((arr = reg.exec(html)) !== null)
-		html = html.replace(arr[0], translate[arr[1]]);
-	return html;
 };
 
 export const landing = async (url) => {

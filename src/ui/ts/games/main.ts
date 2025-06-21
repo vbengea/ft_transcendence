@@ -1,5 +1,5 @@
 import { DisplayFn, PayloadFn, Data } from '../types';
-import { send } from '../events';
+import { send, lang } from '../events';
 
 export function get(obj : Element | null, prop : string) {
 	if (obj != null)
@@ -22,17 +22,17 @@ export async function handleGame(data: Data){
 		location.hash = data.redirect;
 	} else if (data.message){
 		if (SPLASH) {
-			SPLASH.innerHTML = await (await fetch(`./pages/vs.html`)).text();
+			SPLASH.innerHTML = lang(await (await fetch(`./pages/vs.html`)).text());
 			SPLASH.classList.remove('invisible');
 			const LOG = document.querySelector(`#messanger`);
 			if (LOG)		
-				LOG.innerHTML = data.message;
+				LOG.innerHTML = lang(data.message);
 			for (let i = 1; i <= 4; i++){
 				const img : HTMLImageElement = document.querySelector(`#user-${i}-img`);
 				const txt : HTMLImageElement = document.querySelector(`#user-${i}-name`);
 				if (data.match.counter >= i){
 					img.src = data.match[`user${i}`].avatar;
-					txt.innerHTML = data.match[`user${i}`].name;
+					txt.innerHTML = lang(data.match[`user${i}`].name);
 				} else {
 					img.parentElement.classList.add('hidden');
 				}
