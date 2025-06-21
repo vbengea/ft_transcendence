@@ -1,6 +1,6 @@
 import { validatePassword } from "../utils";
 import { landing } from "../landing";
-import { lang } from "../events";
+import { lang, loadLang } from "../events";
 
 export const hydrateSettings = async () => {
 	try {
@@ -280,6 +280,7 @@ async function doLang(userData) {
 		const lg = (e.target as HTMLSelectElement).value;
 		localStorage.lang = lg;
 		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
+		await loadLang();
 		data.user.lang = lg;
 		sessionStorage.TRANSCENDER_USER = JSON.stringify(data);
 		let url = window.location.hash.slice(1) || "/";
