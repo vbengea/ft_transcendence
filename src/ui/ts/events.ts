@@ -11,6 +11,7 @@ let chatUserMessages : Message[] = [];
 let receiverId : String;
 
 const CHAR_LIMIT = 255;
+const ANONYMOUS = "anonymous@gmail.com"
 
 export const lang = (html) => {
 	const translate = JSON.parse(sessionStorage.langRaw)[0];
@@ -120,7 +121,7 @@ const processChatUserList = () => {
 			chatUserList.sort((a, b) => {
 				return b.count - a.count;
 			});
-			el.innerHTML = lang(chatUserList.filter(r => r.id !== user.id).map(u => `
+			el.innerHTML = lang(chatUserList.filter(r => r.id !== user.id && r.email !== ANONYMOUS).map(u => `
 				<li class="cursor-pointer pt-3 p-5 sm:pt-4 ${u.blocked ? 'bg-red-300' : ''}" data-friend_element="${u.id}">
 					<div class="flex items-center space-x-4" data-friend_element="${u.id}">
 						<div class="flex-shrink-0" data-friend_element="${u.id}">
