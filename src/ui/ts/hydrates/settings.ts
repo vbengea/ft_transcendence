@@ -275,8 +275,11 @@ async function doLang(userData) {
 	const lang : HTMLOptionElement = document.querySelector(`#languages`);
 	combo.selected = true;
 	lang.addEventListener('change', async (e) => {
+		const data = JSON.parse(sessionStorage.TRANSCENDER_USER);
 		const lg = (e.target as HTMLSelectElement).value;
 		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
+		data.user.lang = lg;
+		sessionStorage.TRANSCENDER_USER = JSON.stringify(data);
 		let url = window.location.hash.slice(1) || "/";
 		console.log(url.slice(9));
 		landing(url.slice(9));
