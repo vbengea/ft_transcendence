@@ -13,3 +13,4 @@ ssnginx.crt
 .env_local
 a.out
 SDL
+.env
