@@ -7,7 +7,6 @@ import { hydrateProfile } from './hydrates/profile';
 import { hydrateSettings } from './hydrates/settings';
 import { fetchOnlineStatus } from './utils';
 
-
 function shuffle(array) {
   let currentIndex = array.length;
   while (currentIndex != 0) {
@@ -20,7 +19,9 @@ function shuffle(array) {
 
 let hydrateTemplate = async (url, params) => {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
+
 	switch(url) {
+
 		case 'pongsel': case 'bongsel': case 'tictactoesel':
 			const multi = document.querySelector("#multiplayer");
 			document.querySelector("#single").addEventListener('click', (e) => {
@@ -43,6 +44,7 @@ let hydrateTemplate = async (url, params) => {
 				sessionStorage.setItem('selectedGame', url === 'pongsel' ? 'pong' : 'tictactoe');
 			}
 			break;
+
 		case 'players':
 			const mode = sessionStorage.mode;
 			const div = document.querySelector("#players");
@@ -98,6 +100,7 @@ let hydrateTemplate = async (url, params) => {
 					}
 				}
 			});
+
 			sub.addEventListener('click', async (e) => {
 				const users = [];
 				document.querySelectorAll('div [class*="bg-amber-400"').forEach(n => {
@@ -168,6 +171,7 @@ let hydrateTemplate = async (url, params) => {
 				}
 			});
 			break;
+
 		case 'stats':
 			const tournament1 = JSON.parse(localStorage.tournament);
 			const r1 : HTMLInputElement = document.querySelector('#rounds');
@@ -202,6 +206,7 @@ let hydrateTemplate = async (url, params) => {
 				r1.innerHTML = content1;
 			}
 			break;
+
 		case 'win': case 'loose':
 			if (url === 'win'){
 				const match = await (await fetch('/api/tournaments/current_match')).json();
@@ -233,31 +238,107 @@ let hydrateTemplate = async (url, params) => {
 				setTimeout(() => location.hash = '#/landing/matches', 3000);
 			}
 			break;
+
 		case 'nogame':
 			setTimeout(() => location.hash = '#/', 3000);
 			break;
+
 		case 'matches':
 			const it = document.querySelector("#submit");
 			const user = userData;
 			const matchesRaw = await fetch(`/api/matches/${user.id}`);
 			const matches = await matchesRaw.json();
-			const mt : HTMLInputElement = document.querySelector('#matches');
+			const mt1 : HTMLInputElement = document.querySelector('#matches1');
+			const mt2 : HTMLInputElement = document.querySelector('#matches2');
+			const mt3 : HTMLInputElement = document.querySelector('#matches3');
+
 			it.addEventListener('click', () => {
 				location.hash = '/';
 			});
-			mt.innerHTML = matches.map(m => {
-				return `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+
+			let count = matches.length, wins = 0, loses = 0, avg = 0;
+			let ii = 0, jj = 0;
+			const umap = new Map();
+			let u = null;
+
+			for(let m of matches) {
+
+				if (m.user1Id == user.id) {
+					ii = 1;
+					jj = 2;
+				} else if (m.user2Id === user.id) {
+					ii = 2;
+					jj = 1;
+				} else if (m.user3Id === user.id) {
+					ii = 3;
+					jj = 2;
+				} else if (m.user4Id === user.id) {
+					ii = 4;
+					jj = 1;
+				}
+
+				u = umap.get(m[`user${jj}`].name) || { name: m[`user${jj}`].name, count: 0, wins: 0, loses: 0, avg: '' };
+				u.count++;
+
+				let html = `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+						<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+							${m[`user${jj}`].name}
+						</th>`;
+
+				if (m[`user${ii}Score`] > m[`user${jj}Score`]) {
+					u.wins++;
+					umap.set(m[`user${jj}`].name, u);
+					wins++;
+					html += `<td class="px-6 py-4 text-center">1</td><td class="px-6 py-4 text-center"></td>`
+
+				} else {
+					u.loses++;
+					loses++;
+					html += `<td class="px-6 py-4 text-center"></td><td class="px-6 py-4 text-center">1</td>`
+				}
+
+				if (m.round.tournament.totalPlayers > 2) {
+					html += `<td class="px-6 py-4 text-center">Multi player</td>`
+				} else {
+					html += `<td class="px-6 py-4 text-center"></td>`
+				}
+
+				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
+
+				if (m.round.tournament.game.name === 'pong' || m.round.tournament.game.name === 'bong')
+					mt2.innerHTML += html;
+				else
+					mt3.innerHTML += html;
+
+				let mavg = u.wins * 100 / u.count;
+				u.avg = mavg.toFixed(1);
+			}
+
+			avg = wins * 100 / count;
+			let avgs = avg.toFixed(1);
+
+			document.querySelector('#countto1').innerHTML = count + '';
+			document.querySelector('#countto2').innerHTML = wins + '';
+			document.querySelector('#countto3').innerHTML = loses + '';
+			document.querySelector('#countto4').innerHTML = avgs + '';
+
+			umap.forEach(m => {
+				mt1.innerHTML += `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 					<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-						${m.user1Id == user.id ? m.user2.name : m.user1.name}
+						${m.name}
 					</th>
 					<td class="px-6 py-4 text-center">
-						${ m.user1Id == user.id ? (m.user1Score > m.user2Score ? 1 : '') : (m.user2Score > m.user1Score ? 1 : '') }
+						${m.wins}
 					</td>
 					<td class="px-6 py-4 text-center">
-						${ m.user1Id == user.id ? (m.user1Score < m.user2Score ? 1 : '') : (m.user2Score < m.user1Score ? 1 : '') }
+						${m.loses}
+					</td>
+					<td class="px-6 py-4 text-center">
+						${m.avg}%
 					</td>
 				</tr>`;
-			}).join('');
+			});
+
 			break;
 
 		case 'settings':

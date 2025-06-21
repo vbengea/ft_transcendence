@@ -182,6 +182,15 @@ function createTournamentService(prisma) {
 					},
 					user4: {
 						select: { id: true, name: true, avatar: true, human: true }
+					},
+					round: {
+						include: {
+							tournament: {
+								include: {
+									game: true
+								}
+							}
+						}
 					}
 				}
 			});
