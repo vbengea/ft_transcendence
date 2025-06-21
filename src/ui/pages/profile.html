@@ -5,33 +5,33 @@
 				<div class="relative w-48 h-48">
 					<img id="profile-avatar" class="h-full w-full rounded-full object-cover border-4 border-indigo-100" src="./images/user.png" alt="Profile avatar">
 				</div>
-				<h1 id="profile-name" class="mt-4 text-2xl font-bold text-gray-900">Loading...</h1>
-				<p id="profile-email" class="text-gray-600">Loading...</p>
+				<h1 id="profile-name" class="mt-4 text-2xl font-bold text-gray-900">{{loading}}...</h1>
+				<p id="profile-email" class="text-gray-600">{{loading}}...</p>
 			</div>
 			
 			<div class="p-6 md:w-2/3">
-				<h2 class="text-xl font-semibold mb-4">Game Statistics</h2>
+				<h2 class="text-xl font-semibold mb-4">{{game_statistics}}</h2>
 				
 				<div class="mb-6">
-					<h3 class="text-lg font-medium text-gray-800 mb-2">Overall Stats</h3>
+					<h3 class="text-lg font-medium text-gray-800 mb-2">{{overall_status}}</h3>
 					<div class="grid grid-cols-3 gap-4">
 						<div class="bg-gray-50 rounded p-3 text-center">
-							<p class="text-gray-500 text-sm">Total Games</p>
+							<p class="text-gray-500 text-sm">{{total_games}}</p>
 							<p id="total-games" class="text-2xl font-bold text-indigo-600">-</p>
 						</div>
 						<div class="bg-gray-50 rounded p-3 text-center">
-							<p class="text-gray-500 text-sm">Wins</p>
+							<p class="text-gray-500 text-sm">{{wins}}</p>
 							<p id="total-wins" class="text-2xl font-bold text-green-600">-</p>
 						</div>
 						<div class="bg-gray-50 rounded p-3 text-center">
-							<p class="text-gray-500 text-sm">Losses</p>
+							<p class="text-gray-500 text-sm">{{losses}}</p>
 							<p id="total-losses" class="text-2xl font-bold text-red-600">-</p>
 						</div>
 					</div>
 				</div>
 				
 				<div>
-					<h3 class="text-lg font-medium text-gray-800 mb-2">Game Performance</h3>
+					<h3 class="text-lg font-medium text-gray-800 mb-2">{{game_performance}}</h3>
 					<div class="space-y-3">
 						<div class="bg-gray-50 rounded p-3">
 							<div class="flex justify-between mb-1">
@@ -44,7 +44,7 @@
 						</div>
 						<div class="bg-gray-50 rounded p-3">
 							<div class="flex justify-between mb-1">
-								<p class="font-medium">Tic Tac Toe</p>
+								<p class="font-medium">{{tictactoe}}</p>
 								<p id="tictactoe-win-rate" class="text-sm text-gray-600">-</p>
 							</div>
 							<div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -56,7 +56,7 @@
 				
 				<div class="mt-6 text-right">
 					<a href="#/landing/matches" class="inline-flex items-center text-indigo-600 hover:text-indigo-800">
-						View match history
+						{{view_match_history}}
 						<svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
 						</svg>
@@ -68,34 +68,34 @@
 
 	<div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
 		<div class="p-6">
-			<h2 class="text-xl font-semibold mb-4">Friends</h2>
+			<h2 class="text-xl font-semibold mb-4">{{friends}}</h2>
 			
 			<div class="mb-6">
 			<div class="flex justify-between items-center mb-2">
-				<h3 id="friends-title" class="text-lg font-medium">My Friends</h3>
+				<h3 id="friends-title" class="text-lg font-medium">{{my_friends}}</h3>
 				<button id="find-friends-btn" class="text-sm bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700">
-				Find Friends
+				{{find_friends}}
 				</button>
 			</div>
 			<div id="friends-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 				<div class="flex items-center justify-center h-20 bg-gray-50 rounded-md">
-				<span class="text-gray-400">Loading friends...</span>
+				<span class="text-gray-400">{{loading_friends}}...</span>
 				</div>
 			</div>
 			</div>
 			
 			<div id="friend-requests-container" class="mb-6 hidden">
-			<h3 class="text-lg font-medium mb-2">Friend Requests</h3>
+			<h3 class="text-lg font-medium mb-2">{{friend_requests}}</h3>
 			<div id="friend-requests" class="space-y-2"></div>
 			</div>
 			
 			<div id="find-friends-container" class="hidden">
-			<h3 class="text-lg font-medium mb-2">Find Friends</h3>
+			<h3 class="text-lg font-medium mb-2">{{find_friends}}</h3>
 			<div class="flex mb-4">
 				<input type="text" id="search-user" placeholder="Search by name or email" 
 				class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
 				<button id="search-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700">
-				Search
+				{{search}}
 				</button>
 			</div>
 			<div id="search-results" class="space-y-2"></div>
@@ -104,6 +104,6 @@
 	</div>
 	
 	<p id="profile_footer" class="mt-4 text-center text-sm text-gray-600">
-		For account security settings, please visit the <a href="#/landing/settings" class="text-indigo-600 hover:underline">Settings page</a>.
+		{{for_account_security}} <a href="#/landing/settings" class="text-indigo-600 hover:underline">{{settings_page}}</a>.
 	</p>
 </div>

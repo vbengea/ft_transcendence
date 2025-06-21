@@ -70,29 +70,29 @@ export const hydrateSettings = async () => {
 			} else {
 				statusContainer.innerHTML = lang(`
 					<button id="setup-2fa-btn" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-						Setup Two-Factor Authentication
+						{{setup_two_factor_authentication}}
 					</button>
-					<p class="text-sm text-gray-600 mt-2">Add an extra layer of security to your account.</p>
+					<p class="text-sm text-gray-600 mt-2">{{add_extra_layer_security}}.</p>
 					<div id="2fa-setup-container" class="hidden mt-6 p-4 bg-gray-50 rounded-md">
 						<div class="text-center mb-4">
-							<p class="mb-4">Scan this QR code with your authenticator app:</p>
+							<p class="mb-4">{{scan_this_qr}}:</p>
 							<div id="qrcode-container" class="flex justify-center mb-4">
 								<div class="animate-spin h-8 w-8 border-2 border-indigo-500 rounded-full border-t-transparent"></div>
 							</div>
-							<p class="mt-4 text-sm text-gray-500">Or enter this code manually:</p>
+							<p class="mt-4 text-sm text-gray-500">{{manual_qr}}:</p>
 							<p id="manual-code" class="font-mono text-sm mt-2 p-2 bg-gray-100 rounded break-all overflow-auto max-w-full"></p>
 						</div>
 						
 						<form id="2fa-verify-form" class="mt-6">
 							<div>
-								<label for="2fa-code" class="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+								<label for="2fa-code" class="block text-sm font-medium text-gray-700 mb-1">{{verification_code}}</label>
 								<input type="text" id="2fa-code" name="code" required 
 									class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-								<p class="text-xs text-gray-500 mt-1">Enter the 6-digit code from your authenticator app</p>
+								<p class="text-xs text-gray-500 mt-1">{{enter_verification_code}}</p>
 							</div>
 							<div id="2fa-error" class="text-red-500 text-sm hidden mt-2"></div>
 							<button type="submit" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-								Verify and Enable 2FA
+								{{verify_2fa}}
 							</button>
 						</form>
 					</div>
@@ -278,11 +278,11 @@ async function doLang(userData) {
 	lang.addEventListener('change', async (e) => {
 		const data = JSON.parse(sessionStorage.TRANSCENDER_USER);
 		const lg = (e.target as HTMLSelectElement).value;
+		sessionStorage.lang = lg;
 		await fetch(`/auth/lang/${lg}`, { method: 'PATCH' });
 		data.user.lang = lg;
 		sessionStorage.TRANSCENDER_USER = JSON.stringify(data);
 		let url = window.location.hash.slice(1) || "/";
-		console.log(url.slice(9));
 		landing(url.slice(9));
 	});
 }

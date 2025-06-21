@@ -347,7 +347,7 @@ async function loadFriends(userId) {
 							</div>
 						</div>
 						<button class="remove-friend px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700" data-id="${friend.id}">
-							Remove
+							{{remove}}
 						</button>
 						</div>
 					`);

@@ -1,4 +1,4 @@
-import { initWebSocket, WS, closeWS, lang } from './events';
+import { initWebSocket, WS, closeWS, lang, loadLang } from './events';
 import { landing } from './landing';
 import { Templates } from './hydrates/templates';
 import { validatePassword } from './utils';
@@ -92,7 +92,8 @@ template('template-view3', async () => {
 	cookieNotice.className = 'text-xs text-gray-500 mt-4 mx-auto';
 	cookieNotice.style.maxWidth = '384px';
 	cookieNotice.style.overflowWrap = 'break-word';
-	cookieNotice.innerHTML = lang('By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>');
+	cookieNotice.innerHTML = lang(`{{using_services}}. 
+		<a href="#/privacy" class="text-indigo-600 hover:underline">{{learn_more}}</a>`);
 
 	footerContainer.appendChild(cookieNotice);
 
@@ -306,13 +307,14 @@ let createDiv = (id, xmlString) => {
 
 async function authorized() {
 	const response = await fetch(`${BASE}/status`, { credentials: "include" });
-	let raw = { authenticated: false };
+	let raw = { authenticated: false, user: { lang: 'en_EN' } };
 	try { raw = await response.json(); } catch (e) {}
 	if (response.status == 401 || !raw.authenticated) {
 		location.hash = '#/login';
 		return false;
 	} else {
 		sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify(raw));
+		sessionStorage.lang = raw.user.lang;
 		if (WS === null){
 			initWebSocket();
 		}
@@ -374,6 +376,7 @@ async function router(evt) {
 		if (await authorized())
 			landing(url.slice(9));
 	} else {
+		loadLang();
 		const routeResolved = await resolveRoute(url);
 		if (routeResolved)
 			routeResolved();

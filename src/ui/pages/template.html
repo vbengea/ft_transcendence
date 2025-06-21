@@ -20,15 +20,15 @@
           <div>
             <button id="user" type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
               <span id="user_inner_1" class="absolute -inset-1.5"></span>
-              <span id="user_inner_2" class="sr-only">Open user menu</span>
+              <span id="user_inner_2" class="sr-only"></span>
               <img id="user_inner_3" class="size-8 rounded-full" src="images/user.png" alt="">
             </button>
           </div>
           <div id="menu" class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-            <a href="#/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Welcome</a>
-			<a href="#/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Your Profile</a>
-            <a href="#/landing/settings" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Settings</a>
-            <a href="#/logout" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-3">Sign out</a>
+            <a href="#/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">{{welcome}}</a>
+			<a href="#/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">{{your_profile}}</a>
+            <a href="#/landing/settings" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">{{settings}}</a>
+            <a href="#/logout" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-3">{{sign_out}}</a>
           </div>
         </div>
 
@@ -38,14 +38,4 @@
 </nav>
 <div id="content" class="flex-1 flex-col bg-transparent"></div>
 
-<!-- <div class="fixed bottom-0 left-0 z-50 w-full h-8 bg-white dark:bg-white text-center content-center text-xs">&reg; Frontier</div> -->
-
-<div class="fixed bottom-0 left-0 z-50 w-full bg-white dark:bg-white text-center content-center text-xs flex justify-center items-center py-2">
-  <div class="flex flex-wrap justify-center items-center gap-x-4">
-    <span>&reg; Frontier</span>
-    <span>|</span>
-    <a href="#/landing/privacy" class="text-indigo-600 hover:text-indigo-800">Privacy Policy</a>
-    <span>|</span>
-    <span class="text-gray-600">We use essential cookies to ensure the proper functioning of our service</span>
-  </div>
-</div>
+<div class="fixed bottom-0 left-0 z-50 w-full h-8 bg-white dark:bg-white text-center content-center text-xs">&reg; Frontier</div>

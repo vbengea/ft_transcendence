@@ -1,4 +1,4 @@
-import { createTournament, changeMode, lang } from './events';
+import { createTournament, changeMode, lang, loadLang } from './events';
 import { getLayoutPayloadPong, displayPong } from './games/pong';
 import { getLayoutPayloadBong, displayBong } from './games/bong';
 import { getLayoutPayloadTicTacToe, displayTicTacToe } from './games/tictactoe';
@@ -420,9 +420,8 @@ export const landing = async (url) => {
 	const params = [];
 
 	try {
-		const raw = await fetch(`/languages/${userData.lang}.json`);
-		sessionStorage.langRaw = await raw.text();
-
+		loadLang();
+		
 		if (url.includes('/')){
 			const paths = url.split('/');
 			let i = 0;

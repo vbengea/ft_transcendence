@@ -20,7 +20,7 @@ function createUserService(prisma) {
 			});
 		},
 
-		async createUser(email, name, human, plainPassword, anonymous = false, lang = 'en_EN') {
+		async createUser(email, name, human, plainPassword, anonymous = false, lang = 'fr_FR') {
 			const passwordHash = await bcrypt.hash(plainPassword, 10);
 			let bots = new Set();
 			if (human) {

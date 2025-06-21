@@ -6,33 +6,33 @@
 			<div class="grid w-full grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-y-8">
 				<div class="flex flex-col items-center">
 				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto1" countTo="250">0</span></h3>
-				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Games played</p>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">{{games_played}}</p>
 				</div>
 				<div class="flex flex-col items-center">
 				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto2" countTo="12">0</span></h3>
-				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Wins</p>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">{{wins}}</p>
 				</div>
 				<div class="flex flex-col items-center">
 				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto3" countTo="2600" data-decimal="1">0</span></h3>
-				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Loses</p>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">{{losses}}</p>
 				</div>
 				<div class="flex flex-col items-center">
 				<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900"><span id="countto4" countTo="18000">0</span>%</h3>
-				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">Average</p>
+				<p class="text-base font-medium leading-7 text-center text-dark-grey-600">{{average}}</p>
 				</div>
 			</div>
 			</div>
 		</div>
 	</div>
 
-	<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900">Ovarall</h3>
+	<h3 class="text-5xl font-extrabold leading-tight text-center text-dark-grey-900">{{overall}}</h3>
 	<table class="w-1/2 m-0 mb-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 			<tr>
-				<th scope="col" class="px-6 py-3">Against</th>
-				<th scope="col" class="px-6 py-3 text-center">Wins</th>
-				<th scope="col" class="px-6 py-3 text-center">Loses</th>
-				<th scope="col" class="px-6 py-3 text-center">Average</th>
+				<th scope="col" class="px-6 py-3">{{against}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{wins}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{losses}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{average}}</th>
 			</tr>
 		</thead>
 		<tbody id="matches1"></tbody>
@@ -42,29 +42,30 @@
 	<table class="w-1/2 m-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 			<tr>
-				<th scope="col" class="px-6 py-3">Against</th>
-				<th scope="col" class="px-6 py-3 text-center">Win</th>
-				<th scope="col" class="px-6 py-3 text-center">Loose</th>
-				<th scope="col" class="px-6 py-3 text-center">Tournament</th>
-				<th scope="col" class="px-6 py-3 text-center">Date</th>
+				<th scope="col" class="px-6 py-3">{{against}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{wins}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{losses}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{tournament}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{date}}</th>
 			</tr>
 		</thead>
 		<tbody id="matches2"></tbody>
 	</table>
 
-	<h3 class="text-5xl mt-20 font-extrabold leading-tight text-center text-dark-grey-900">Tic tac toe</h3>
+	<h3 class="text-5xl mt-20 font-extrabold leading-tight text-center text-dark-grey-900">{{tictactoe}}</h3>
 	<table class="w-1/2 m-0 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 		<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 			<tr>
-				<th scope="col" class="px-6 py-3">Against</th>
-				<th scope="col" class="px-6 py-3 text-center">Win</th>
-				<th scope="col" class="px-6 py-3 text-center">Loose</th>
-				<th scope="col" class="px-6 py-3 text-center">Tournament</th>
-				<th scope="col" class="px-6 py-3 text-center">Date</th>
+				<th scope="col" class="px-6 py-3">{{against}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{wins}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{losses}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{tournament}}</th>
+				<th scope="col" class="px-6 py-3 text-center">{{date}}</th>
 			</tr>
 		</thead>
 		<tbody id="matches3"></tbody>
 	</table>
 
-	<button id="submit" type="submit" class="text-white w-30 mt-20 mb-20 bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Close</button>
+	<button id="submit" type="submit" class="text-white w-30 mt-20 mb-20 bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{close}}</button>
 </div>
+
