@@ -302,11 +302,13 @@ const tapHandler = (e) => {
 
 const resizeScreen = async (e) => {
 	const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
-	const t = await (await fetch(`/api/tournament/${tournamentId}`)).json();
-	if (game === 'pong')
-		send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId, t)));
-	else if (game === 'tictactoe')
-		send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId, t)));
+	if (tournamentId) {
+		const t = await (await fetch(`/api/tournament/${tournamentId}`)).json();
+		if (game === 'pong')
+			send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId, t)));
+		else if (game === 'tictactoe')
+			send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId, t)));
+	}
 };
 
 const handleWheel = (e) => {
