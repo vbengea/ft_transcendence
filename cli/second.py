@@ -22,12 +22,12 @@ async def hand_shake(tournamentId, cookie, domain = 'localhost', port = 3000):
 	async with websockets.connect(uri, ssl=ssl_context, additional_headers=headers) as ws:
 		await ws.recv()
 		await ws.send(json.dumps(connect))
-		# while (True):
-		play = input("Play (a OR z)? ")
-		isDown = 0
-		if play == 'z':
-			isDown = 1
-		await ws.send(json.dumps({ 'type': 'pong', 'subtype': 'play', 'isDown': isDown, 'key': play, 'side': 0 }))
+		while (True):
+			play = input("Play (a OR z)? ")
+			isDown = 0
+			if play == 'z':
+				isDown = 1
+			await ws.send(json.dumps({ 'type': 'pong', 'subtype': 'play', 'isDown': isDown, 'key': play, 'side': 0 }))
 			# response = await ws.recv()
 			# print(f"< {response}")
 
