@@ -27,6 +27,8 @@ export const loadLang = async () => {
 	sessionStorage.langRaw = await raw.text();
 }
 
+loadLang();
+
 export function closeWS() {
 	WS.close();
 	WS = null;
