@@ -38,6 +38,8 @@ model User {
   receivedMessages       Message[]       @relation("receivedMessages")
   sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
   receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  customization          Customization   @relation(fields: [customizationId], references: [id])
+  customizationId        Int
 }
 
 model Game {
@@ -115,4 +117,14 @@ model FriendRequest {
   updatedAt  DateTime @updatedAt
 
   @@unique([senderId, receiverId])
+}
+
+model Customization {
+  id        Int    @id @default(autoincrement())
+  score_max Int    @default(10)
+  map       Int    @default(3)
+  color     Int    @default(4)
+  camera    Int    @default(3)
+  userId    Int?   @unique
+  User      User[]
 }
