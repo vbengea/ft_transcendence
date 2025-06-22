@@ -15,10 +15,9 @@ const ANONYMOUS = "anonymous@gmail.com"
 export const lang = (html) => {
 	if (sessionStorage.langRaw) {
 		const translate = JSON.parse(sessionStorage.langRaw)[0];
-		let arr;
-		const reg = /\{\{(.*?)\}\}/g;
-		while ((arr = reg.exec(html)) !== null)
-			html = html.replace(arr[0], translate[arr[1]]);
+		html = html.replace(/{{(.*?)}}/g, (match, token) => {
+			return translate[token] || match;
+		});
 	}
 	return html;
 };
