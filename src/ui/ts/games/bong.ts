@@ -102,24 +102,6 @@ async function createScene(engine, paddles, customization: Customization) {
 
     setMaterial();
 
-	// var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 40, height: 70}, scene);
-
-	// scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.5, 1);
-
-	// const mat = new BABYLON.StandardMaterial("backgroundMaterial", scene);
-	// const bumpTexture = new BABYLON.Texture("images/maps/1.png", scene);
-
-	// // mat.bumpTexture = new BABYLON.Texture("images/maps/1.png", scene);
-	// mat.invertNormalMapX = true;
-	// mat.invertNormalMapY = true;
-
-	// mat.detailMap.isEnabled = true;
-	// mat.detailMap.texture = bumpTexture;
-	// mat.detailMap.texture.uScale = mat.saveUVScale || 10;
-	// mat.detailMap.texture.vScale = mat.saveUVScale || 10;
-
-	// ground.material = mat;
-
 	return scene;
 }
 
