@@ -58,9 +58,9 @@ let hydrateTemplate = async (url, params) => {
 			else 
 				num = 4;
 			if (isComputer){
-				inp.value = mode === 'single' ? 'Single player' : 'Multi player';
+				inp.value = mode === 'single' ? lang('{{single_player}}') : lang('{{multi_player}}');
 				inp.style.display = 'none';
-				lab.innerHTML = lang(mode === 'single' ? 'Pick 2' : 'Pick 4');
+				lab.innerHTML = lang(mode === 'single' ? '{{pick_2}}' : '{{pick_4}}');
 			}
 			const response = await fetch(mode === 'single' ? `/auth/computer` : (mode === 'multi' ? `/auth/friends/${userData.id}` : `/auth/human_friends`));
 			const friends = await response.json();
@@ -116,7 +116,7 @@ let hydrateTemplate = async (url, params) => {
 				const tusers = users.slice();
 
 				if (mode === 'multi' && users.length !== 4){
-					document.querySelector('#error').innerHTML = lang('Please select 4 players.');
+					document.querySelector('#error').innerHTML = lang('{{please_select_4_players}}');
 					return;
 				}
 
@@ -141,13 +141,13 @@ let hydrateTemplate = async (url, params) => {
 							}
 							switch (n - i) {
 								case 0:
-									name = isComputer ? '1v1' : 'Finals';
+									name = isComputer ? lang('{{one_vs_one}}') : lang('{{finals}}');
 									break;
 								case 1:
-									name = 'Semifinals';
+									name = lang('{{semifinals}}');
 									break;
 								case 2:
-									name = 'Quarterfinals'
+									name = lang('{{quarterfinals}}');
 									break;
 								default:
 									name = `Round ${j}`;
@@ -167,7 +167,7 @@ let hydrateTemplate = async (url, params) => {
 				} else if (!tname) {
 					document.querySelector('#error').innerHTML = lang('Tournament name should not be empty');
 				} else {
-					document.querySelector('#error').innerHTML = lang('Please select a base 2 number of players.');
+					document.querySelector('#error').innerHTML = lang('{{please_select_base_2_players}}');
 				}
 			});
 			break;

@@ -17,7 +17,7 @@ export const hydrateProfile = async (userId) => {
 
 		const avatarOverlay = document.createElement('div');
 		avatarOverlay.className = 'absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer';
-		avatarOverlay.innerHTML = lang('<span class="text-white text-sm">Change Avatar</span>');
+		avatarOverlay.innerHTML = lang('<span class="text-white text-sm">{{change_avatar}}</span>');
 
 		const fileInput = document.createElement('input');
 		fileInput.type = 'file';
@@ -52,7 +52,7 @@ export const hydrateProfile = async (userId) => {
 
 			const nameOverlay = document.createElement('div');
 			nameOverlay.className = 'absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center hover:bg-opacity-10 transition-opacity';
-			nameOverlay.innerHTML = lang('<span class="text-transparent hover:text-indigo-600 text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>Edit</span>');
+			nameOverlay.innerHTML = lang('<span class="text-transparent hover:text-indigo-600 text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>{{edit}}</span>');
 
 			nameContainer.addEventListener('click', () => {
 				showNameEditForm(profileNameElement, userData);
@@ -70,12 +70,12 @@ export const hydrateProfile = async (userId) => {
 				}
 
 				if (!file.type.startsWith('image/')) {
-					alert('Please select an image file');
+					alert(lang('{{select_image_file}}'));
 					return;
 				}
 
 				if (file.size > 2 * 1024 * 1024) {
-					alert('Image size should be less than 2MB');
+					alert(lang('{{image_size_limit}}'));
 					return;
 				}
 
@@ -105,12 +105,11 @@ export const hydrateProfile = async (userId) => {
 							menuAvatar.setAttribute('src', result.avatar + '?=' + new Date().getTime());
 						}
 					} else {
-						const error = await response.json();
-						alert(`Error: ${error.message || 'Failed to update avatar'}`);
+						alert(lang('{{avatar_upload_error}}'));
 					}
 				} catch (err) {
 					console.error('Error uploading avatar:', err);
-					alert('An error ocurred while uploading the avatar');
+					alert(lang('{{avatar_upload_error}}'));
 				} finally {
 					avatarElement.style.opacity = '1';
 				}
@@ -213,12 +212,12 @@ async function showNameEditForm(nameElement, userData) {
 	const saveButton = document.createElement('button');
 	saveButton.type = 'submit';
 	saveButton.className = 'bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm';
-	saveButton.textContent = 'Save';
+	saveButton.textContent = lang('{{save}}');
 
 	const cancelButton = document.createElement('button');
 	cancelButton.type = 'button';
 	cancelButton.className = 'bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400 text-sm';
-	cancelButton.textContent = 'Cancel';
+	cancelButton.textContent = lang('{{cancel}}');
 
 	buttonsContainer.appendChild(saveButton);
 	buttonsContainer.appendChild(cancelButton);
@@ -244,7 +243,7 @@ async function showNameEditForm(nameElement, userData) {
 		const newName = input.value.trim();
 
 		if (!newName) {
-			alert('Name cannot be empty');
+			alert(lang('{{name_cannot_be_empty}}'));
 			return;
 		}
 
@@ -276,7 +275,7 @@ async function showNameEditForm(nameElement, userData) {
 
 				const successMessage = document.createElement('div');
 				successMessage.className = 'text-green-600 text-sm mt-1';
-				successMessage.textContent = 'Username updated successfully';
+				successMessage.textContent = lang('{{username_update_success}}');
 				profileSection.insertBefore(successMessage, nameContainer.nextSibling);
 
 				setTimeout(() => {
@@ -285,12 +284,11 @@ async function showNameEditForm(nameElement, userData) {
 					}
 				}, 3000);
 			} else {
-				const error = await response.json();
-				alert(`Error ${error.error || 'Failed to update username'}`);
+				alert(lang('{{username_update_fail}}'));
 			}
 		} catch (err) {
 			console.error('Error updating username:', err);
-			alert('An error ocurred while updating your username');
+			alert(lang('{{username_update_fail}}'));
 		}
 	});
 
@@ -323,7 +321,7 @@ async function loadFriends(userId) {
 			if (friends.length === 0) {
 				friendsList.innerHTML = lang(`
 					<div class="col-span-2 flex items-center justify-center h-20 bg-gray-50 rounded-md">
-						<span class="text-gray-500">You don't have any friends yet</span>
+						<span class="text-gray-500">{{no_friends}}</span>
 					</div>
 				`);
 			} else {
@@ -356,7 +354,7 @@ async function loadFriends(userId) {
 				document.querySelectorAll('.remove-friend').forEach(button => {
 					button.addEventListener('click', async () => {
 						const friendId = button.getAttribute('data-id');
-						if (confirm('Are you sure you want to remove this friend?')) {
+						if (confirm(lang('{{remove_friend_confirm}}'))) {
 							await removeFriend(userId, friendId);
 						}
 					});
@@ -380,12 +378,11 @@ async function removeFriend(userId, friendId) {
 		if (respose.ok) {
 			await loadFriends(userId);
 		} else {
-			const error = await respose.json();
-			alert(`Error: ${error.error || 'Failed to remove friend'}`);
+			alert(lang('{{remove_friend_error}}'));
 		}
 	} catch (err) {
 		console.error('Error removing friend:', err);
-		alert('An error ocurred while removing the friend');
+		alert(lang('{{remove_friend_error}}'));
 	}
 }
 
@@ -413,10 +410,10 @@ async function loadFriendsRequests(userId) {
 						</div>
 						<div>
 							<button class="accept-request px-3 py-1 bg-green-600 text-white rounded mr-2 hover:bg-green-700" data-id="${request.id}">
-								Accept
+								{{accept}}
 							</button>
 							<button class="reject-request px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700" data-id="${request.id}">
-								Reject
+								{{reject}}
 							</button>
 						</div>
 					</div>
@@ -458,11 +455,11 @@ async function handleFriendRequest(userId, requestId, action) {
 			await loadFriendsRequests(userId);
 		} else {
 			const error = await response.json();
-			alert(`Error: ${error.error || `Failed to ${action} friend request`}`);
+			alert(lang(`{{error_${action}_friend_request}}`));
 		}
 	} catch (err) {
 		console.error(`Error ${action}ing friend request:`, err);
-		alert(`An error ocurred while ${action}ing the friend request`);
+		alert(lang(`{{error_${action}_friend_request}}`));
 	}
 }
 
@@ -471,7 +468,7 @@ async function searchUsers() {
 	const resultsContainer = document.getElementById('search-results');
 
 	if (!searchQuery) {
-		resultsContainer.innerHTML = lang(`<p class="text-gray-500">Please enter a search term</p>`);
+		resultsContainer.innerHTML = lang(`<p class="text-gray-500">{{please_enter_a_search}}</p>`);
 		return;
 	}
 
@@ -484,7 +481,7 @@ async function searchUsers() {
 			const users = await response.json();
 
 			if (users.length === 0) {
-				resultsContainer.innerHTML = lang(`<p class="text-gray-500">No users found</p>`);
+				resultsContainer.innerHTML = lang(`<p class="text-gray-500">{{no_users_found}}</p>`);
 			} else {
 				resultsContainer.innerHTML = users.map(user => lang(`
 					<div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
@@ -497,9 +494,9 @@ async function searchUsers() {
 						</div>
 						<button class="send-request px-3 py-1 ${user.friendStatus === 'none' ? 'bg-indigo-600 hover:bg-indigo-700' : ''} ${user.friendStatus === 'pending' ? 'bg-yellow-600 hover:bg-yellow-700' : ''} ${user.friendStatus === 'friends' ? 'bg-green-600 hover:bg-green-700' : ''} text-white rounded" 
 							data-id="${user.id}" ${user.friendStatus !== 'none' ? 'disabled' : ''}>
-							${user.friendStatus === 'none' ? 'Add Friend' : ''}
-							${user.friendStatus === 'pending' ? 'Request Sent' : ''}
-							${user.friendStatus === 'friends' ? 'Friends' : ''}
+							${user.friendStatus === 'none' ? '{{add_friend}}' : ''}
+							${user.friendStatus === 'pending' ? '{{friend_request_sent}}' : ''}
+							${user.friendStatus === 'friends' ? '{{friends}}' : ''}
 						</button>
 					</div>
 				`)).join('');
@@ -509,7 +506,7 @@ async function searchUsers() {
 						button.addEventListener('click', async () => {
 							const userId = button.getAttribute('data-id');
 							await sendFriendRequest(userId);
-							button.textContent = 'Request Sent';
+							button.textContent = lang('{{friend_request_sent}}');
 							button.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
 							button.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
 							button.setAttribute('disabled', 'disabled');
@@ -518,12 +515,11 @@ async function searchUsers() {
 				});
 			}
 		} else {
-			const error = await response.json();
-			resultsContainer.innerHTML = lang(`<p class="text-red-500">${error.error || 'Error searching for users'}</p>`);
+			resultsContainer.innerHTML = lang(`<p class="text-red-500">{{error_searching_users}}</p>`);
 		}
 	} catch (err) {
 		console.error('Error searching users:', err);
-		resultsContainer.innerHTML = lang(`<p class="text-red-500">An error occurred while searching</p>`);
+		resultsContainer.innerHTML = lang(`<p class="text-red-500">{{error_searching_users}}</p>`);
 	}
 }
 
@@ -539,11 +535,10 @@ async function sendFriendRequest(userId) {
 		});
 
 		if (!response.ok) {
-			const error = await response.json();
-			alert(`Error: ${error.error || 'Failed to send friend request'}`);
+			alert(lang('{{friend_request_fail}}'));
 		}
 	} catch (err) {
 		console.error('Error sending friend request:', err);
-		alert('An error ocurred while sending the friend request');
+		alert(lang('{{friend_request_fail}}'));
 	}
 }
