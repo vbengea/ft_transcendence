@@ -277,6 +277,8 @@ route('/privacy', async () => {
 		const content = await fetch(`./pages/privacy.html`).then(res => res.text());
 
 		const privacyPage = document.createElement('div');
+		const processedContent = lang(content);
+
 		privacyPage.id = 'privacy.page';
 		privacyPage.innerHTML = lang(`
 			<div class="min-h-screen bg-gray-100 py-8">
@@ -286,7 +288,7 @@ route('/privacy', async () => {
 							<h1 class="text-3xl font-bold">Privacy Policy</h1>
 							<a href="#/login" class="text-indigo-600 hover:underline">Return to Login</a>
 						</div>
-						${content}
+						${processedContent}
 					</div>
 				</div>
 			</div>
