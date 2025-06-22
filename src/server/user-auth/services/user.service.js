@@ -10,13 +10,19 @@ function createUserService(prisma) {
 	return {
 		async getUserByEmail(email) {
 			return prisma.user.findUnique({
-				where: { email }
+				where: { email },
+				include: {
+					customization: true
+				}
 			});
 		},
 
 		async getUserById(id) {
 			return prisma.user.findUnique({
-				where: { id }
+				where: { id },
+				include: {
+					customization: true
+				}
 			});
 		},
 
@@ -34,6 +40,8 @@ function createUserService(prisma) {
 
 			bots = Array.from(bots);
 
+			const cus = await prisma.customization.create({});
+
 			const data = {
 				email,
 				name,
@@ -43,7 +51,10 @@ function createUserService(prisma) {
 				anonymous,
 				friends: bots.length ? {
 					connect: bots.map(({ id }) => { return { id }; })
-				} : {}
+				} : {},
+				customization: {
+					connect: { id: cus.id }
+				}
 			};
 
 			if (anonymous)
@@ -204,7 +215,10 @@ function createUserService(prisma) {
 
 		async getByGoogleId(googleId) {
 			return prisma.user.findUnique({
-				where: { googleId }
+				where: { googleId },
+				include: {
+					customization: true
+				}
 			});
 		},
 
