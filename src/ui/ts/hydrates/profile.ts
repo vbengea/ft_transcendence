@@ -243,7 +243,7 @@ async function showNameEditForm(nameElement, userData) {
 		const newName = input.value.trim();
 
 		if (!newName) {
-			alert('Name cannot be empty');
+			alert(lang('{{name_cannot_be_empty}}'));
 			return;
 		}
 

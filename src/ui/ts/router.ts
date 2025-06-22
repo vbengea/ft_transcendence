@@ -109,7 +109,7 @@ template('template-view3', async () => {
 			error_callback: (error) => {
 				console.error('Google Sign In Error:', error);
 				const err = document.querySelector("#error");
-				err.innerHTML = lang("An error occurred with Google Sign In. Please try again.");
+				err.innerHTML = lang("{{google_signin_error}}");
 			}
 		});
 
@@ -157,7 +157,7 @@ template('template-view3', async () => {
 		} catch (error) {
 			console.error('Error handling Google Sign In:', error);
 			const err = document.querySelector("#error");
-			err.innerHTML = lang("An error occurred with Google Sign In. Please try again.");
+			err.innerHTML = lang("{{google_signin_error}}");
 		}
 	}
 
@@ -198,7 +198,7 @@ template('template-view4', async () => {
 
 	confirmPasswordField.addEventListener('input', () => {
 		if (passwordField.value !== confirmPasswordField.value) {
-			errorElement.innerHTML = lang("Passwords do not match");
+			errorElement.innerHTML = lang("{{passwords_do_not_match}}");
 		} else {
 			errorElement.innerHTML = "";
 		}
@@ -235,7 +235,7 @@ link4.addEventListener('submit', async (e) => {
 
 	if (password !== data.get('confirm-password')) {
 		const err = document.querySelector("#error");
-		err.innerHTML = lang("Passwords do not match");
+		err.innerHTML = lang("{{passwords_do_not_match}}");
 		return;
 	}
 	const response = await fetch(`${BASE}/register`, {
@@ -296,7 +296,7 @@ route('/privacy', async () => {
 		return myDiv.appendChild(privacyPage);
 	} catch (err) {
 		console.error(err);
-		return myDiv.innerHTML = lang('<div class="text-center py-10">Unable to load Privacy Policy</div>');
+		return myDiv.innerHTML = lang('<div class="text-center py-10">{{privacy_unable_to_load}}</div>');
 	}
 });
 

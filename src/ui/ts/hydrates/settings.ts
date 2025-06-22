@@ -36,17 +36,17 @@ export const hydrateSettings = async () => {
 						<svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 						</svg>
-						<span class="text-gray-800">Two-Factor Authentication is enabled</span>
+						<span class="text-gray-800">{{two_fa_enabled}}</span>
 					</div>
-					<p class="text-sm text-gray-600 mb-3">Your account is protected with 2FA.</p>
+					<p class="text-sm text-gray-600 mb-3">{{your_account_protected_2fa}}</p>
 					<button id="disable-2fa" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-						Disable Two-Factor Authentication
+						{{disable_two_factor_authentication}}
 					</button>
 				`);
 
 				setTimeout(() => {
 					document.getElementById('disable-2fa').addEventListener('click', async () => {
-						if (confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
+						if (confirm(lang('{{are_you_sure_disable_2fa}}'))) {
 							try {
 								const response = await fetch('/auth/2fa', {
 									method: 'DELETE',
@@ -55,13 +55,13 @@ export const hydrateSettings = async () => {
 
 								const result = await response.json();
 								if (response.ok) {
-									alert('2FA has been disabled successfully');
+									alert(lang('{{two_fa_disabled_successfully}}'));
 									location.reload();
 								} else {
-									alert(`Error: ${result.error || 'Failed to disable 2FA'}`);
+									alert(lang(`{{error}}: ${result.error || '{{failed_to_disable_2fa}}'}`));
 								}
 							} catch (err) {
-								alert('An error occurred. Please try again.');
+								alert(lang('{{error_occurred_try_again}}'));
 								console.log(err);
 							}
 						}
@@ -115,11 +115,11 @@ export const hydrateSettings = async () => {
 								document.getElementById('manual-code').textContent = data.manualCode;
 							} else {
 								const result = await response.json();
-								alert(`Error: ${result.error || 'Failed to load 2FA setup'}`);
+								alert(lang(`{{error}}: ${result.error || '{{failed_to_load_2fa_setup}}'}`));
 							}
 						} catch (err) {
 							console.error('Error setting up 2FA', err);
-							alert('An error ocurred while setting up 2FA. Please try again.');
+							alert(lang('{{error_setting_up_2fa}}'));
 						}
 					});
 
@@ -142,16 +142,16 @@ export const hydrateSettings = async () => {
 							});
 
 							if (response.ok) {
-								alert('Two-Factor Authentication has been enabled successfully');
+								alert(lang('{{two_fa_enabled_successfully}}'));
 								location.reload();
 							} else {
 								const result = await response.json();
-								errorElement.textContent = lang(result.error || 'Failed to verify code');
+								errorElement.textContent = lang(result.error || '{{failed_to_verify_code}}');
 								errorElement.classList.remove('hidden');
 							}
 						} catch (err) {
 							console.error('Error verifying 2FA code:', err);
-							errorElement.textContent = lang('An error ocurred. Please try again.');
+							errorElement.textContent = lang('{{error_occurred_try_again}}');
 							errorElement.classList.remove('hidden');
 						}
 					});
@@ -173,13 +173,13 @@ export const hydrateSettings = async () => {
 						errorElement.classList.add('hidden');
 
 						if (!newPassword.trim()) {
-							errorElement.textContent = lang('Password cannot be empty');
+							errorElement.textContent = lang('{{password_cannot_be_empty}}');
 							errorElement.classList.remove('hidden');
 							return;
 						}
 
 						if (newPassword !== confirmPassword) {
-							errorElement.textContent = lang('Passwords do not match');
+							errorElement.textContent = lang('{{passwords_do_not_match}}');
 							errorElement.classList.remove('hidden');
 							return;
 						}
@@ -205,49 +205,48 @@ export const hydrateSettings = async () => {
 							});
 
 							if (response.ok) {
-								alert('Password updated successfully');
+								alert(lang('{{password_updated_successfully}}'));
 								(passwordForm as HTMLFormElement).reset();
 							} else {
 								const result = await response.json();
-								errorElement.textContent = lang(result.error || 'Failed to update password');
+								errorElement.textContent = lang(result.error || '{{failed_to_update_password}}');
 								errorElement.classList.remove('hidden');
 							}
 						} catch (err) {
 							console.error('Error updating password:', err);
-							errorElement.textContent = lang('An error ocurred. Please try again.');
+							errorElement.textContent = lang('{{error_occurred_try_again}}');
 							errorElement.classList.remove('hidden');
 						}
 					});
 				}
 			})
 
-			setTimeout(() => {
-				document.getElementById('delete-account').addEventListener('click', async () => {
-					if (confirm(lang('Are you sure you want to delete your account? This action cannot be undone.'))) {
-						const confirmText = prompt('Type "DELETE" to confirm account deletion:');
-						if (confirmText === 'DELETE') {
-							try {
-								const response = await fetch('/auth/account', {
-									method: 'DELETE',
-									credentials: 'include',
-								});
+			setTimeout(() => {			document.getElementById('delete-account').addEventListener('click', async () => {
+				if (confirm(lang('{{are_you_sure_delete_account}}'))) {
+					const confirmText = prompt(lang('{{type_delete_to_confirm}}'));
+					if (confirmText === 'DELETE') {
+						try {
+							const response = await fetch('/auth/account', {
+								method: 'DELETE',
+								credentials: 'include',
+							});
 
-								if (response.ok) {
-									alert('Your account has been deleted successfully');
-									location.hash = '#/login';
-								} else {
-									const result = await response.json();
-									alert(`Error: ${result.error || 'Failed to delete account'}`);
-								}
-							} catch (err) {
-								alert('An error occurred. Please try again.');
-								console.error(err);
+							if (response.ok) {
+								alert(lang('{{account_deleted_successfully}}'));
+								location.hash = '#/login';
+							} else {
+								const result = await response.json();
+								alert(lang(`{{error}}: ${result.error || '{{failed_to_delete_account}}'}`));
 							}
-						} else if (confirmText !== null) {
-							alert('Account deletion cancelled. You must type "DELETE" exactly to confirm.')
+						} catch (err) {
+							alert(lang('{{error_occurred_try_again}}'));
+							console.error(err);
 						}
+					} else if (confirmText !== null) {
+						alert(lang('{{account_deletion_cancelled}}'))
 					}
-				});
+				}
+			});
 			}, 100);
 
 			setupTabs();
@@ -255,7 +254,7 @@ export const hydrateSettings = async () => {
 			const statusContainer = document.getElementById('2fa-status-container');
 			statusContainer.innerHTML = lang(`
 				<div class="text-red-500">
-					<p>Authentication error. Please <a href="#/login" class="text-indigo-600 hover:underline">log in</a> to view your settings.</p>
+					<p>{{authentication_error_login}}</p>
 				</div>
 			`);
 			setupTabs();
@@ -265,7 +264,7 @@ export const hydrateSettings = async () => {
 		const statusContainer = document.getElementById('2fa-status-container');
 		statusContainer.innerHTML = lang(`
 			<div class="text-red-500">
-				<p>Error connecting to server. Please try again later.</p>
+				<p>{{error_connecting_server}}</p>
 			</div>
 		`);
 	}

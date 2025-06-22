@@ -200,7 +200,7 @@ const processUserMessages = () => {
 
 			<form data-chat="1" class="border-t-gray-300">
 				<div class="flex items-center py-2 pr-0 bg-white" data-chat="1">
-					<input autofocus type="text" id="text" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white border border-gray-300 placeholder="Your message..." data-chat="1" />
+					<input autofocus type="text" id="text" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white border border-gray-300" placeholder="{{your_message_placeholder}}" data-chat="1" />
 					<button id="sendwrap" type="button" class="inline-flex justify-center p-2 mr-3 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
 						<svg id="sendbtn" class="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
 							<path id="sendpath" d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
@@ -384,7 +384,7 @@ const clickHandler = (e) => {
 				const users = [me, you];
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
 				const game = target.dataset.friend_option;
-				const tournament = { name: friend_id === 'anonymous@gmail.com' ? 'Guest play' : 'Single player', users, rounds, gameType: game };
+				const tournament = { name: friend_id === 'anonymous@gmail.com' ? lang('{{guest_play}}') : lang('{{single_player}}'), users, rounds, gameType: game };
 				createTournament(tournament);
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;
