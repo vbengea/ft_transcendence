@@ -697,7 +697,28 @@ class Bong {
 	}
 
 	changeBallAngle(paddle, ball) {
-		ball.setDy(Math.random() * 1.3);
+		let hit_pos = paddle.getY() + paddle.getHeight() - ball.getY();
+		let dy = 0;
+		if (hit_pos >= 0 && hit_pos < 7) {
+			dy = 1;
+		} else if (hit_pos >= 7 && hit_pos < 14) {
+			dy = 0.7;
+		} else if (hit_pos >= 14 && hit_pos < 21) {
+			dy = 0.3;
+		} else if (hit_pos >= 21 && hit_pos < 28) {
+			dy = 0.1;
+		} else if (hit_pos >= 28 && hit_pos < 32) {
+			dy = 0;
+		} else if (hit_pos >= 32 && hit_pos < 39) {
+			dy = -0.1;
+		} else if (hit_pos >= 39 && hit_pos < 46) {
+			dy = -0.3;
+		} else if (hit_pos >= 46 && hit_pos < 53) {
+			dy = -0.7;
+		} else if (hit_pos >= 53 && hit_pos <= 60) {
+			dy = -1;
+		}
+		ball.setDy(Math.random() * dy * 1.5);
 	}
 
 }

@@ -1,6 +1,8 @@
 function createTournamentService(prisma) {
 	return {
 		async createTournament(organizerId, name, users, rounds, gameName) {
+			const organizer = await prisma.user.findUnique({ where: { id: organizerId }, include: { customization: true }});
+			const winScore = organizer.customization.score_max;
 			const game = await prisma.game.findFirst({
 				where: { name: gameName }
 			});
@@ -54,14 +56,14 @@ function createTournamentService(prisma) {
 								user3Id: null,
 								user4Id: null,
 								roundId: round.id,
-								winScore: gameName === 'pong' ? 10 : 3
+								winScore
 							} : {
 								user1Id: matchData.users[0].id,
 								user2Id: matchData.users[2].id,
 								user3Id: matchData.users[1].id,
 								user4Id: matchData.users[3].id,
 								roundId: round.id,
-								winScore: gameName === 'pong' ? 10 : 3
+								winScore
 							}
 						});
 					} 
