@@ -144,7 +144,12 @@ function createTournamentService(prisma) {
 						include: {
 							tournament: { 
 								include: {
-									game: true
+									game: true,
+									organizer: {
+										include: {
+											customization: true
+										}
+									}
 								}
 							}
 						}

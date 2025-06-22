@@ -26,7 +26,7 @@ function createUserService(prisma) {
 			});
 		},
 
-		async createUser(email, name, human, plainPassword, anonymous = false, lang = 'fr_FR') {
+		async createUser(email, name, human, plainPassword, anonymous = false, lang = 'en_EN') {
 			const passwordHash = await bcrypt.hash(plainPassword, 10);
 			let bots = new Set();
 			if (human) {
@@ -151,6 +151,13 @@ function createUserService(prisma) {
 			await prisma.user.update({
 				where: { id: userId },
 				data: { lang }
+			});
+		},
+
+		async userCustomizationUpdate(id, data) {
+			await prisma.customization.update({
+				where: { id },
+				data
 			});
 		},
 

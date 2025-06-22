@@ -12,7 +12,6 @@ const TXT = {
 };
 
 const DIM = 3;
-const MAX_SCORE = 3;
 
 class Screen {
 
@@ -106,7 +105,7 @@ class Player {
 
 class TicTacToe {
 
-	constructor(mid, limit, match, maps, broadcast) {
+	constructor(mid, limit, match, maps, broadcast, score_max) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -119,6 +118,7 @@ class TicTacToe {
 		this.matchMap = maps.matchMap;
 		this.maps = maps;
 		this.broadcast = broadcast;
+		this.score_max = score_max;
 	}
 
 	toJSON() {
@@ -269,10 +269,10 @@ class TicTacToe {
 					this.reset();
 				}
 
-				if (this.scores[0] >= MAX_SCORE) {													// Check scores .....................................
+				if (this.scores[0] >= this.score_max) {													// Check scores .....................................
 					this.manageResults(0);
 
-				} else if (this.scores[1] == MAX_SCORE) {
+				} else if (this.scores[1] == this.score_max) {
 					this.manageResults(1);
 
 				} else {

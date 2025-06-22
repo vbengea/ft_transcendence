@@ -1,6 +1,5 @@
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);
-const MAX_SCORE = 10;
 
 const TXT = {
 	success:  "",
@@ -251,7 +250,7 @@ class Player {
 
 class Pong {
 
-	constructor(mid, limit, match, maps, broadcast) {
+	constructor(mid, limit, match, maps, broadcast, score_max) {
 		this.status = 0;
 		this.render = 0;
 		this.players = [];
@@ -267,6 +266,7 @@ class Pong {
 		this.isGiveUp = false;
 		this.giveUpSide = -1;
 		this.broadcast = broadcast;
+		this.score_max = score_max;
 	}
 
 	toJSON() {
@@ -560,7 +560,7 @@ class Pong {
 	verifyScore(i) {
 		this.scores[i]++;
 		this.send();
-		if (this.scores[i] >= MAX_SCORE) {																	// Check scores ...................................
+		if (this.scores[i] >= this.score_max) {																	// Check scores ...................................
 			this.manageResults(i);
 			return true;
 		}

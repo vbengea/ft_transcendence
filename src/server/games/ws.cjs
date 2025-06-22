@@ -23,10 +23,10 @@ const maps = {
 	onlineUsers
 }
 
-function newGame(type, mid, limit, match) {
+function newGame(type, mid, limit, match, { score_max }) {
 	if (type === 'bong')
-		return new Bong(mid, limit, match, maps, broadcast);
-	return type === 'pong' ? new Pong(mid, limit, match, maps, broadcast) : new TicTacToe(mid, 2, match, maps, broadcast);
+		return new Bong(mid, limit, match, maps, broadcast, score_max);
+	return type === 'pong' ? new Pong(mid, limit, match, maps, broadcast, score_max) : new TicTacToe(mid, 2, match, maps, broadcast, score_max);
 }
 
 function newPlayer(type, user) {
@@ -92,7 +92,7 @@ async function play(uid, socket, raw) {
 				let limit = 2;
 				if (match.round.tournament.totalRounds == 1)
 					limit = match.round.tournament.totalPlayers;
-				match.game = newGame(raw.type, match.id, limit, match);
+				match.game = newGame(raw.type, match.id, limit, match, match.round.tournament.organizer.customization);
 			}
 
 			match.user1 = match.user1 || omatch.user1;

@@ -28,7 +28,9 @@ export const hydrateSettings = async () => {
 		if (response.ok) {
 			const userData = await response.json();
 			const statusContainer = document.getElementById('2fa-status-container');
+
 			doLang(userData);
+			doCustom(userData);
 
 			if (userData.user && userData.user.two_fa_enabled) {
 				statusContainer.innerHTML = lang(`
@@ -285,5 +287,41 @@ async function doLang(userData) {
 		sessionStorage.TRANSCENDER_USER = JSON.stringify(data);
 		let url = window.location.hash.slice(1) || "/";
 		landing(url.slice(9));
+	});
+}
+
+async function doCustom({ user: { customization } }) {
+	const cuz : HTMLOptionElement = document.querySelector(`#customizations`);
+	const def : HTMLOptionElement = document.querySelector(`#default_settings`);
+	const score : HTMLOptionElement = document.querySelector(`#game_score`);
+	const map : HTMLInputElement = document.querySelector(`#map_radio_${customization.map}`);
+	const color : HTMLInputElement = document.querySelector(`#color_radio_${customization.color}`);
+	const camera : HTMLInputElement = document.querySelector(`#camera_radio_${customization.camera}`);
+
+	score.value = customization.score_max;
+	map.checked = true;
+	color.checked = true;
+	camera.checked = true;
+
+	def.addEventListener('click', async (_e) => {
+		await fetch(`/auth/customization/${customization.id}`, { 
+			method: 'PATCH',
+			body: JSON.stringify({ 
+				score_max: 10,
+				map: 3,
+				color: 4,
+				camera: 3
+			})
+		});
+		let url = window.location.hash.slice(1) || "/";
+		landing(url.slice(9));
+	})
+
+	cuz.addEventListener('change', async (e) => {
+		const el = (e.target as HTMLInputElement);
+		await fetch(`/auth/customization/${customization.id}`, { 
+			method: 'PATCH',
+			body: JSON.stringify({ [`${el.dataset.name}`]: parseInt(el.dataset.value || el.value) })
+		});
 	});
 }

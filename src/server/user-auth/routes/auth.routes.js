@@ -532,6 +532,16 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.patch('/customization/:id', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			await userService.userCustomizationUpdate(parseInt(request.params.id), JSON.parse(request.body));
+			reply.send({ message: 'Customizations updated successfully' });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to update Customization' });
+		}
+	});
+
 	done();
 }
 
