@@ -76,3 +76,5 @@ export type Game = {
 export type DisplayFn = (a : Data) => void;
 export type PayloadFn = (a : string, tournamentId : string, tournamnent: { id, totalPlayers: number }) => Payload
 export type Data = { game: Game, side: number, redirect: string, message: string, match: { counter: number } };
+
+export type Customization = { map: number, color: number, camera: number };

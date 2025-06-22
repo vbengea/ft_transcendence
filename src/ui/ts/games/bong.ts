@@ -1,14 +1,14 @@
-import { Data, Game } from '../types';
+import { Data, Game, Customization } from '../types';
 import * as BABYLON from "@babylonjs/core";
 import { gameLoop } from '../events';
 
 var scene = null;
 
-async function bongInit(paddles) {
+async function bongInit(paddles, customization: Customization) {
 	const canvas : HTMLCanvasElement = document.querySelector("#bong");
 	const engine = new BABYLON.Engine(canvas, true);
 
-	scene = await createScene(engine, paddles);
+	scene = await createScene(engine, paddles, customization);
 	
 	(window as any).scene = scene;
 
@@ -19,37 +19,106 @@ async function bongInit(paddles) {
 	});
 }
 
-async function createScene(engine, paddles) {
+async function createScene(engine, paddles, customization: Customization) {
 	const scene = new BABYLON.Scene(engine);
-
-	const camera = new BABYLON.ArcRotateCamera(
+	const { map, color, camera } = customization;
+	const cam = new BABYLON.ArcRotateCamera(
 		"Camera",  
 		BABYLON.Tools.ToRadians(0),  
 		BABYLON.Tools.ToRadians(0), 60,  
 		new BABYLON.Vector3(0,0,0), scene);
 
-	const light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-	const light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
+    var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -1, 0), scene);
+    var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1, 5, 3), scene);
+    var light3 = new BABYLON.PointLight("light3", new BABYLON.Vector3(3, 0, -5), scene);
 
-	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
+	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+	sphere.position = new BABYLON.Vector3(0,0,0)
 	
 	pads(scene, paddles);
-
-	sphere.position = new BABYLON.Vector3(0,0,0)
-
 	txt(scene);
 
-	var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 40, height: 70}, scene);
+    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 40, height: 70 }, scene);
+
+	console.log(map, color, camera)
+
+    const diffuseTexture = new BABYLON.Texture(`images/maps/${map}a.png`, scene);
+    const detailTexture = new BABYLON.Texture(`images/maps/${map}b.png`, scene);
+    const bumpTexture = new BABYLON.Texture(`images/maps/${map}c.png`, scene);
+
 	ground.position = new BABYLON.Vector3(-0.5,-0.5,0);
 
-	scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.5, 1);
+    const setDetailTexture = (mat) => {
+        mat.detailMap.isEnabled = true;
+        mat.detailMap.texture = detailTexture;
+        mat.detailMap.texture.uScale = mat.saveUVScale || 10;
+        mat.detailMap.texture.vScale = mat.saveUVScale || 10;
+    };
 
-	const backgroundMaterial = new BABYLON.BackgroundMaterial("backgroundMaterial", scene);
-	
-	backgroundMaterial.useRGBColor = false;
-	backgroundMaterial.primaryColor = BABYLON.Color3.Black()
+    var matStd = new BABYLON.StandardMaterial("mat", scene);
 
-	ground.material = backgroundMaterial;
+    matStd.diffuseTexture = diffuseTexture;
+    matStd.detailMap.isEnabled = true;
+    matStd.detailMap.diffuseBlendLevel = 0.1;
+    matStd.detailMap.bumpLevel = 1;
+    matStd.bumpTexture = bumpTexture;
+    matStd.bumpTexture.level = 1;
+    matStd.detailMap.roughnessBlendLevel = 0.25;
+
+    setDetailTexture(matStd);
+
+    var matPBR = new BABYLON.PBRMaterial("matpbr", scene);
+
+    matPBR.metallic = 1.0;
+    matPBR.roughness = 0.5;
+    matPBR.albedoTexture = diffuseTexture;
+    matPBR.detailMap.diffuseBlendLevel = 0.1;
+    matPBR.detailMap.bumpLevel = 1;
+    matPBR.bumpTexture = bumpTexture;
+    matPBR.bumpTexture.level = 0.34;
+    matPBR.detailMap.roughnessBlendLevel = 0.25;
+
+    setDetailTexture(matPBR);
+
+    var usePBR = false;
+
+    const setMaterial = () => {
+        var matDst = usePBR ? matPBR : matStd;
+        var matSrc = usePBR ? matStd : matPBR;
+
+        matDst.detailMap.texture = matSrc.detailMap.texture;
+        matDst.bumpTexture = matSrc.bumpTexture;
+        matDst.detailMap.normalBlendMethod = matSrc.detailMap.normalBlendMethod;
+        matDst.detailMap.diffuseBlendLevel = matSrc.detailMap.diffuseBlendLevel;
+        matDst.detailMap.bumpLevel = matSrc.detailMap.bumpLevel;
+        matDst.detailMap.isEnabled = matSrc.detailMap.isEnabled;
+        
+        ground.material = matDst;
+
+        light.intensity = usePBR ? 1 : 0.2;
+        light2.intensity = usePBR ? 20 : 0.6;
+        light3.intensity = usePBR ? 20 : 0.6;
+    }
+
+    setMaterial();
+
+	// var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 40, height: 70}, scene);
+
+	// scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.5, 1);
+
+	// const mat = new BABYLON.StandardMaterial("backgroundMaterial", scene);
+	// const bumpTexture = new BABYLON.Texture("images/maps/1.png", scene);
+
+	// // mat.bumpTexture = new BABYLON.Texture("images/maps/1.png", scene);
+	// mat.invertNormalMapX = true;
+	// mat.invertNormalMapY = true;
+
+	// mat.detailMap.isEnabled = true;
+	// mat.detailMap.texture = bumpTexture;
+	// mat.detailMap.texture.uScale = mat.saveUVScale || 10;
+	// mat.detailMap.texture.vScale = mat.saveUVScale || 10;
+
+	// ground.material = mat;
 
 	return scene;
 }
@@ -64,7 +133,6 @@ function pads(scene, paddles) {
 	if (paddles.length > 2) {
 		const LEFT2 = BABYLON.MeshBuilder.CreateTiledBox("left2", { width: paddles[2].h, tileSize: 1, depth: 1 }, scene);
 		const RIGHT2 = BABYLON.MeshBuilder.CreateTiledBox("right2", { width: paddles[3].h, tileSize: 1, depth: 1 }, scene);
-
 
 		const mat1 = new BABYLON.BackgroundMaterial("RIGHT_1_COLOR_MAT", scene);
 		mat1.useRGBColor = false;
@@ -127,7 +195,7 @@ function txt(scene) {
 	LEFT_TEXT.rotate(BABYLON.Axis.Y, -Math.PI/2, BABYLON.Space.WORLD);
 }
 
-export function getLayoutPayloadBong(subtype : string, tournamentId : string, tournament: { id: number, totalPlayers: number }) {
+export function getLayoutPayloadBong(subtype : string, tournamentId : string, tournament: { id: number, totalPlayers: number, organizer: { customization: Customization } }) {
 	const sc = {
 		w: 70,
 		h: 40,
@@ -175,7 +243,9 @@ export function getLayoutPayloadBong(subtype : string, tournamentId : string, to
 		h: 1,
 	};
 
-	bongInit(paddles);
+	console.log(tournament.organizer)
+
+	bongInit(paddles, tournament.organizer.customization);
 	gameLoop();
 	return { type: "bong", subtype, screen: sc, paddles, ball, tournamentId };
 }

@@ -206,7 +206,12 @@ function createTournamentService(prisma) {
 				where: { id },
 				include: {
 					organizer: {
-						select: { id: true, name: true, avatar: true }
+						select: { 
+							id: true, 
+							name: true, 
+							avatar: true,
+							customization: true
+						}
 					},
 					rounds: {
 						include: {
