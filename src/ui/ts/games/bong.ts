@@ -22,11 +22,27 @@ async function bongInit(paddles, customization: Customization) {
 async function createScene(engine, paddles, customization: Customization) {
 	const scene = new BABYLON.Scene(engine);
 	const { map, color, camera } = customization;
-	const cam = new BABYLON.ArcRotateCamera(
-		"Camera",  
-		BABYLON.Tools.ToRadians(0),  
-		BABYLON.Tools.ToRadians(0), 60,  
-		new BABYLON.Vector3(0,0,0), scene);
+
+	if (camera === 1) {
+		new BABYLON.ArcRotateCamera(
+				"Camera",  
+				BABYLON.Tools.ToRadians(0),  
+				BABYLON.Tools.ToRadians(70), 60,  
+				new BABYLON.Vector3(10,0,0), scene);
+	} else if (camera === 2) {
+		new BABYLON.ArcRotateCamera(
+			"Camera",  
+			BABYLON.Tools.ToRadians(-90),  
+			BABYLON.Tools.ToRadians(70), 60,  
+			new BABYLON.Vector3(0,0,-20), scene);
+
+	} else if (camera === 3) {
+		new BABYLON.ArcRotateCamera(
+				"Camera",  
+				BABYLON.Tools.ToRadians(0),  
+				BABYLON.Tools.ToRadians(0), 60,  
+				new BABYLON.Vector3(0,0,0), scene);
+	}
 
     var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -1, 0), scene);
     var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1, 5, 3), scene);
