@@ -44,13 +44,10 @@ async function createScene(engine, paddles) {
 
 	scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.5, 1);
 
-	const backgroundMaterial = new BABYLON.StandardMaterial("backgroundMaterial", scene);
-	backgroundMaterial.bumpTexture = new BABYLON.Texture("PATH TO NORMAL MAP", scene);
-
-
-
-	// backgroundMaterial.useRGBColor = false;
-	// backgroundMaterial.primaryColor = BABYLON.Color3.Black()
+	const backgroundMaterial = new BABYLON.BackgroundMaterial("backgroundMaterial", scene);
+	
+	backgroundMaterial.useRGBColor = false;
+	backgroundMaterial.primaryColor = BABYLON.Color3.Black()
 
 	ground.material = backgroundMaterial;
 
