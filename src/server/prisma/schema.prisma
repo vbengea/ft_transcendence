@@ -122,8 +122,8 @@ model FriendRequest {
 model Customization {
   id        Int    @id @default(autoincrement())
   score_max Int    @default(10)
-  map       Int    @default(3)
-  color     Int    @default(4)
+  map       Int    @default(1)
+  color     Int    @default(7)
   camera    Int    @default(3)
   userId    Int?   @unique
   User      User[]

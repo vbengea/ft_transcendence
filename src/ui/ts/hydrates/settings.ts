@@ -307,8 +307,8 @@ async function doCustom({ user: { customization } }) {
 			method: 'PATCH',
 			body: JSON.stringify({ 
 				score_max: 10,
-				map: 3,
-				color: 4,
+				map: 1,
+				color: 7,
 				camera: 3
 			})
 		});

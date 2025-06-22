@@ -35,12 +35,10 @@ async function createScene(engine, paddles, customization: Customization) {
 	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 	sphere.position = new BABYLON.Vector3(0,0,0)
 	
-	pads(scene, paddles);
+	pads(scene, paddles, color);
 	txt(scene);
 
     var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 40, height: 70 }, scene);
-
-	console.log(map, color, camera)
 
     const diffuseTexture = new BABYLON.Texture(`images/maps/${map}a.png`, scene);
     const detailTexture = new BABYLON.Texture(`images/maps/${map}b.png`, scene);
@@ -105,12 +103,29 @@ async function createScene(engine, paddles, customization: Customization) {
 	return scene;
 }
 
-function pads(scene, paddles) {
+function pads(scene, paddles, color) {
 	const LEFT = BABYLON.MeshBuilder.CreateTiledBox("left", { width: paddles[0].h, tileSize: 1, depth: 1 }, scene);
 	const RIGHT = BABYLON.MeshBuilder.CreateTiledBox("right", { width: paddles[1].h, tileSize: 1, depth: 1 }, scene);
 
 	RIGHT.position = new BABYLON.Vector3(0,0,34)
 	LEFT.position = new BABYLON.Vector3(0,0,-35)
+
+	const mapColor = [
+		[],
+		[211, 119, 9],
+		[45, 92, 242],
+		[49, 144, 180],
+		[0, 153, 102],
+		[183, 21, 214],
+		[76, 58, 237],
+		[212, 36, 34]
+	];
+
+	const mat0 = new BABYLON.BackgroundMaterial("RIGHT_0_COLOR_MAT", scene);
+	mat0.useRGBColor = false;
+	mat0.primaryColor = new BABYLON.Color3(...mapColor[color].map(c => c/255.0));
+	LEFT.material = mat0;
+	RIGHT.material = mat0;
 
 	if (paddles.length > 2) {
 		const LEFT2 = BABYLON.MeshBuilder.CreateTiledBox("left2", { width: paddles[2].h, tileSize: 1, depth: 1 }, scene);
@@ -224,8 +239,6 @@ export function getLayoutPayloadBong(subtype : string, tournamentId : string, to
 		w: 1,
 		h: 1,
 	};
-
-	console.log(tournament.organizer)
 
 	bongInit(paddles, tournament.organizer.customization);
 	gameLoop();
