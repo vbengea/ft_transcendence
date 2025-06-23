@@ -39,7 +39,7 @@
 	"loading_2fa_status": "Chargement du statut 2FA",
 	"current_password": "Mot de passe actuel",
 	"new_password": "Nouveau mot de passe",
-	"confirm_new_passowrd": "Confirmer le nouveau mot de passe",
+	"confirm_new_password": "Confirmer le nouveau mot de passe",
 	"warning": "Avertissement",
 	"warning_delete": "Une fois votre compte supprimé, vous ne pourrez plus revenir en arrière. Soyez-en sûr",
 	"delete_account": "Supprimer le compte",

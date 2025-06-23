@@ -39,7 +39,7 @@
 	"loading_2fa_status": "Loading 2FA Status",
 	"current_password": "Current Password",
 	"new_password": "New Password",
-	"confirm_new_passowrd": "Confirm New Password",
+	"confirm_new_password": "Confirm New Password",
 	"warning": "Warning",
 	"warning_delete": "Once you delete your account, there is no going back. Please be certain",
 	"delete_account": "Delete Account",

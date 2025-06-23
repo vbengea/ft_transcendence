@@ -39,7 +39,7 @@
 	"loading_2fa_status": "Cargando estado de 2FA",
 	"current_password": "Contraseña actual",
 	"new_password": "Nueva contraseña",
-	"confirm_new_passowrd": "Confirmar nueva contraseña",
+	"confirm_new_password": "Confirmar nueva contraseña",
 	"warning": "Advertencia",
 	"warning_delete": "Una vez que elimines tu cuenta, no hay vuelta atrás. Asegúrate",
 	"delete_account": "Eliminar cuenta",

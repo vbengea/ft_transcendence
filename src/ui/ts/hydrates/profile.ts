@@ -19,17 +19,6 @@ export const hydrateProfile = async (userId) => {
 		avatarOverlay.className = 'absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer';
 		avatarOverlay.innerHTML = lang('<span class="text-white text-sm">{{change_avatar}}</span>');
 
-		const fileInput = document.createElement('input');
-		fileInput.type = 'file';
-		fileInput.accept = 'image/*';
-		fileInput.className = 'hidden';
-		fileInput.id = 'avatar-upload';
-
-		avatarContainer.style.position = 'relative';
-
-		avatarContainer.appendChild(avatarOverlay);
-		avatarContainer.appendChild(fileInput);
-
 		await loadFriends(userData.id);
 
 		if (!isCurr) {
@@ -58,6 +47,15 @@ export const hydrateProfile = async (userId) => {
 				showNameEditForm(profileNameElement, userData);
 			});
 
+			const fileInput = document.createElement('input');
+			fileInput.type = 'file';
+			fileInput.accept = 'image/*';
+			fileInput.className = 'hidden';
+			fileInput.id = 'avatar-upload';
+
+			avatarContainer.style.position = 'relative';
+			avatarContainer.appendChild(avatarOverlay);
+			avatarContainer.appendChild(fileInput);
 
 			avatarOverlay.addEventListener('click', () => {
 				fileInput.click();
@@ -151,7 +149,9 @@ export const hydrateProfile = async (userId) => {
 				const userScore = isUser1 ? match.user1Score : match.user2Score;
 				const opponentScore = isUser1 ? match.user2Score : match.user1Score;
 
-				if (match.winScore === 10) {
+				const gameName = match.round.tournament.game.name.toLowerCase();
+
+				if (gameName === 'pong' || gameName === 'bong') {
 					pongGames++;
 					if (userScore > opponentScore) {
 						wins++;
@@ -159,7 +159,7 @@ export const hydrateProfile = async (userId) => {
 					} else if (userScore < opponentScore) {
 						losses++;
 					}
-				} else if (match.winScore === 3) {
+				} else if (gameName === 'tictactoe') {
 					tictactoeGames++;
 					if (userScore > opponentScore) {
 						tictactoeWins++;
