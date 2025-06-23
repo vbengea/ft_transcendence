@@ -201,5 +201,12 @@
 	"password_only_allowed_chars": "Password can only contain letters, numbers and special characters",
 	"privacy_unable_to_load": "Unable to load privacy policy. Please try again later.",
 	"update_password": "Update Password",
-	"score_must_be_between_1_and_100": "Score must be between 1 and 100"
+	"score_must_be_between_1_and_100": "Score must be between 1 and 100",
+	"agree_use_of_cookies": "By using our services, you agree to our use of essential cookies for authentication and security purposes.",
+	"username_too_short": "Username must be at least 3 characters long",
+	"username_too_long": "Username cannot exceed 20 characters",
+	"username_invalid_characters": "Username can only contain letters, numbers, and underscores",
+	"username_reserved": "This username is reserved",
+	"username_available": "✓ Username is available",
+	"username_taken": "Username is already taken"
 }]

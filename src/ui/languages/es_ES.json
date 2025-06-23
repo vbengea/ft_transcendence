@@ -201,5 +201,12 @@
 	"password_only_allowed_chars": "La contraseña solo puede contener letras, números y caracteres especiales",
 	"privacy_unable_to_load": "No se pudo cargar la política de privacidad. Por favor, inténtalo de nuevo más tarde.",
 	"update_password": "Actualizar contraseña",
-	"score_must_be_between_1_and_100": "La puntuación debe estar entre 1 y 100"
+	"score_must_be_between_1_and_100": "La puntuación debe estar entre 1 y 100",
+	"agree_use_of_cookies": "Al continuar, aceptas el uso de cookies esenciales para la autenticación y seguridad.",
+	"username_too_short": "El nombre de usuario debe tener al menos 3 caracteres",
+	"username_too_long": "El nombre de usuario no puede exceder los 20 caracteres",
+	"username_invalid_characters": "El nombre de usuario solo puede contener letras, números y guiones bajos",
+	"username_reserved": "Este nombre de usuario está reservado. Por favor, elige otro",
+	"username_available": "¡Nombre de usuario disponible!",
+	"username_taken": "Este nombre de usuario ya está en uso. Por favor, elige otro"
 }]

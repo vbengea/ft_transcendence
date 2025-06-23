@@ -14,7 +14,6 @@ function authRoutes(fastify, options, done) {
 	const JWT_SECRET = options.jwtSecret;
 	const authUtils = options.authUtils;
 
-	// const verifyToken = authUtils.verifyTokenMiddleware();
 	const verifyToken = fastify.authenticate;
 
 	fastify.post('/register', async (request, reply) => {
@@ -594,6 +593,27 @@ function authRoutes(fastify, options, done) {
 			reply.send(cus);
 		} catch (err) {
 			console.log(err)
+		}
+	});
+
+	fastify.post('/check-username', async (request, reply) => {
+		const { name } = request.body;
+		
+		if (!name) {
+			return reply.code(400).send({ error: 'Username is required' });
+		}
+
+		const nameValidation = authUtils.verifyUsername(name);
+		if (!nameValidation.valid) {
+			return reply.code(400).send({ error: nameValidation.error });
+		}
+
+		try {
+			const exists = await userService.usernameExists(name);
+			reply.send({ available: !exists });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to check username availability' });
 		}
 	});
 

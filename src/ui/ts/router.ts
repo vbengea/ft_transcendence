@@ -192,9 +192,82 @@ template('template-view4', async () => {
 	myDiv.innerHTML = "";
 	const link4 = createDiv('view4', Templates.register) as HTMLElement;
 
+	const nameField = link4.querySelector('#name') as HTMLInputElement;
 	const passwordField = link4.querySelector('#password') as HTMLInputElement;
 	const confirmPasswordField = link4.querySelector('#confirm-password') as HTMLInputElement;
 	const errorElement = link4.querySelector('#error');
+
+	const nameErrorElement = document.createElement('p');
+	nameErrorElement.className = 'text-red-600 text-sm mt-1';
+	nameErrorElement.style.display = 'none';
+	nameField.parentNode.appendChild(nameErrorElement);
+
+	nameField.addEventListener('input', async () => {
+		const name = nameField.value.trim();
+		nameErrorElement.style.display = 'none';
+		nameErrorElement.textContent = '';
+
+		if (name.length === 0) {
+			return;
+		}
+
+		if (name.length < 3) {
+			nameErrorElement.textContent = lang('{{username_too_short}}');
+			nameErrorElement.style.display = 'block';
+			return;
+		}
+
+		if (name.length > 50) {
+			nameErrorElement.textContent = lang('{{username_too_long}}');
+			nameErrorElement.style.display = 'block';
+			return;
+		}
+
+		if (!/^[a-zA-Z0-9_]+$/.test(name)) {
+			nameErrorElement.textContent = lang('{{username_invalid_characters}}');
+			nameErrorElement.style.display = 'block';
+			return;
+		}
+
+		const reservedUsernames = ['admin', 'administrator', 'root', 'system', 'moderator'];
+		if (reservedUsernames.includes(name.toLocaleLowerCase())) {
+			nameErrorElement.textContent = lang('{{username_reserved}}');
+			nameErrorElement.style.display = 'block';
+			return;
+		}
+	});
+
+	nameField.addEventListener('blur', async () => {
+		const name = nameField.value.trim();
+
+		if (name.length >= 3 && name.length <= 50 && /^[a-zA-Z0-9_]+$/.test(name)) {
+			try {
+				const response = await fetch(`${BASE}/check-username`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ name })
+				});
+
+				const result = await response.json();
+
+				if (response.ok) {
+					if (result.available) {
+						nameErrorElement.textContent = lang('{{username_available}}');
+						nameErrorElement.className = 'text-green-600 text-sm mt-1';
+						nameErrorElement.style.display = 'block';
+					} else {
+						nameErrorElement.textContent = lang('{{username_taken}}');
+						nameErrorElement.className = 'text-red-600 text-sm mt-1';
+						nameErrorElement.style.display = 'block';
+					}
+				}
+			} catch (err) {
+				console.log('Username check failed:', err);
+			}
+		}
+	})
 
 	confirmPasswordField.addEventListener('input', () => {
 		if (passwordField.value !== confirmPasswordField.value) {
@@ -213,7 +286,7 @@ template('template-view4', async () => {
 	cookieNotice.className = 'text-xs text-gray-500 mx-auto';
 	cookieNotice.style.maxWidth = '384px';
 	cookieNotice.style.overflowWrap = 'break-word';
-	cookieNotice.innerHTML = lang('By using our services, you agree to our use of essential cookies for authentication and security. <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>');
+	cookieNotice.innerHTML = lang('{{agree_use_of_cookies}} <a href="#/privacy" class="text-indigo-600 hover:underline">Learn more</a>');
 
 	footerContainer.appendChild(cookieNotice);
 
@@ -225,6 +298,26 @@ link4.addEventListener('submit', async (e) => {
 	e.preventDefault();
 	var data = new FormData(document.querySelector('form'));
 	const password = data.get('password');
+	const name = data.get('name');
+
+	const nameStr = typeof name === 'string' ? name : '';
+	if (!nameStr || nameStr.length < 3) {
+		const err = document.querySelector('#error');
+		err.innerHTML = lang('{{username_too_short}}');
+		return;
+	}
+
+	if (nameStr.length > 20) {
+		const err = document.querySelector('#error');
+		err.innerHTML = lang('{{username_too_long}}');
+		return;
+	}
+
+	if (!/^[a-zA-Z0-9_]+$/.test(nameStr)) {
+		const err = document.querySelector('#error');
+		err.innerHTML = lang('{{username_invalid_characters}}');
+		return;
+	}
 
 	const validPass = validatePassword(password);
 	if (!validPass.valid) {

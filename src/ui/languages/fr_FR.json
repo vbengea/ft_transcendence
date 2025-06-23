@@ -201,5 +201,12 @@
 	"password_only_allowed_chars": "Le mot de passe ne peut contenir que des lettres, des chiffres et des caractères spéciaux",
 	"privacy_unable_to_load": "Impossible de charger la politique de confidentialité. Veuillez réessayer plus tard.",
 	"update_password": "Mettre à jour le mot de passe",
-	"score_must_be_between_1_and_100": "Le score doit être compris entre 1 et 100"
+	"score_must_be_between_1_and_100": "Le score doit être compris entre 1 et 100",
+	"agree_use_of_cookies": "En utilisant ce site, vous acceptez notre utilisation de cookies essentiels pour l'authentification et la sécurité.",
+	"username_too_short": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+	"username_too_long": "Le nom d'utilisateur ne peut pas dépasser 20 caractères",
+	"username_invalid_characters": "Le nom d'utilisateur ne peut contenir que des lettres, des chiffres et des tirets bas",
+	"username_reserved": "Ce nom d'utilisateur est réservé et ne peut pas être utilisé",
+	"username_available": "Nom d'utilisateur disponible",
+	"username_taken": "Ce nom d'utilisateur est déjà pris"
 }]
