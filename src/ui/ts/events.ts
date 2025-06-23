@@ -377,14 +377,14 @@ const clickHandler = (e) => {
 			if (target.dataset.friend_option === "block"){
 				WS.send(JSON.stringify({ type: "chat", subtype: "block", receiverId: target.dataset.friend_id }))
 				changeMode("list");
-			} else if(target.dataset.friend_option === "pong" || target.dataset.friend_option === "bong" || target.dataset.friend_option === "tictactoe") {
+			} else if(target.dataset.friend_option === "bong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
 				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: true }
 				const users = [me, you];
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
 				const game = target.dataset.friend_option;
-				const tournament = { name: friend_id === 'anonymous@gmail.com' ? lang('{{guest_play}}') : lang('{{single_player}}'), users, rounds, gameType: game };
+				const tournament = { name: friend_id === 'anonymous@gmail.com' ? '{{guest_play}}' : '{{single_player}}', users, rounds, gameType: game };
 				createTournament(tournament);
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;

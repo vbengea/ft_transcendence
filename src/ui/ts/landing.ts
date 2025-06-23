@@ -141,13 +141,13 @@ let hydrateTemplate = async (url, params) => {
 							}
 							switch (n - i) {
 								case 0:
-									name = isComputer ? lang('{{one_vs_one}}') : lang('{{finals}}');
+									name = isComputer ? '{{one_vs_one}}' : '{{finals}}';
 									break;
 								case 1:
-									name = lang('{{semifinals}}');
+									name = '{{semifinals}}';
 									break;
 								case 2:
-									name = lang('{{quarterfinals}}');
+									name = '{{quarterfinals}}';
 									break;
 								default:
 									name = `Round ${j}`;
@@ -297,11 +297,11 @@ let hydrateTemplate = async (url, params) => {
 					html += `<td class="px-6 py-4 text-center"></td><td class="px-6 py-4 text-center">1</td>`
 				}
 
-				html += `<td class="px-6 py-4 text-center">${m.round.tournament.name}</td>`
+				html += `<td class="px-6 py-4 text-center">${lang(m.round.tournament.name)}</td>`
 
-				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
+				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString(user.lang.replace('_', '-'), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
 
-				if ( m.round.tournament.game.name === 'bong' ) //m.round.tournament.game.name === 'pong' ||
+				if ( m.round.tournament.game.name === 'bong' )
 					mt2.innerHTML += html;
 				else if ( m.round.tournament.game.name === 'tictactoe')
 					mt3.innerHTML += html;
