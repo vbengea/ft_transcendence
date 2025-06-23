@@ -172,11 +172,13 @@ function pads(scene, paddles, color) {
 		mat3.useRGBColor = false;
 		mat3.primaryColor = BABYLON.Color3.Green();
 		LEFT2.material = mat3;
+		LEFT2.id = 'paddle-3';
 
 		const mat4 = new BABYLON.BackgroundMaterial("RIGHT_4_COLOR_MAT", scene);
 		mat4.useRGBColor = false;
 		mat4.primaryColor = BABYLON.Color3.Blue();
 		RIGHT2.material = mat4;
+		RIGHT2.id = 'paddle-4';
 
 		RIGHT2.position = new BABYLON.Vector3(18,0,34)
 		LEFT2.position = new BABYLON.Vector3(18,0,-35)
