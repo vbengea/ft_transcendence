@@ -457,7 +457,8 @@ async function resolveRoute(route) {
 			}
 		}
 	} catch (error) {
-		throw new Error("The route is not defined");
+		location.hash = '#/login';
+		return () => {};
 	}
 }
 
