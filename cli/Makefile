@@ -1,9 +1,5 @@
-build:
-	/\.sdl.sh
-
 install:
-	 pip3 install websocket-client rel
+	 pip3 install rel requests ssl pynput
 
 run:
-	cc -I/usr/local/include/SDL2 -I/opt/homebrew/Cellar/openssl@3/3.5.0/include main.c
-	./a.out
+	PYTHONWARNINGS="ignore:Unverified HTTPS request" python3 pong.py

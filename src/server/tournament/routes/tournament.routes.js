@@ -1,7 +1,7 @@
 
 
 function tournamentRoutes(fastify, options, done) {
-	const { tournamentService } = options;
+	const { tournamentService, play } = options;
 
 	fastify.post('/tournament', { preHandler: fastify.authenticate }, async ( request, reply) => {
 		try {
@@ -92,6 +92,24 @@ function tournamentRoutes(fastify, options, done) {
 		} catch (err) {
 			fastify.log.error(err);
 			reply.code(500).send({ error: 'Failed to fetch matches' });
+		}
+	});
+
+	fastify.post('/play', { preHandler: fastify.authenticate }, async (request, reply) => {
+		try {
+			const playing = await play(request.user.id, { 
+				readyState: true,
+				send: (raw) => {
+
+				},
+				close: (raw) => {
+
+				}
+			}, request.body);
+			reply.send({ playing });
+		} catch (err) {
+			fastify.log.error(err);
+			reply.code(500).send({ error: 'Failed to play' });
 		}
 	});
 

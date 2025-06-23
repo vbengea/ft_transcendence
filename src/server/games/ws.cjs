@@ -109,13 +109,15 @@ async function play(uid, socket, raw) {
 			for (let i = 1; i <= MAX_USERS; i++)
 				setUser(i, socket, raw,  uid, match);
 
-		} else {
+			return true;
+
+		} else if(socket) {
 			socket.send(JSON.stringify({ redirect: '#/landing/nogame'}));
-			return;
+			return false;
 		}
 
 	} else if (raw.subtype === 'play') {
-		const match = socketMap.get(socket);
+		const match = socketMap.get(socket) || matchMap.get(raw.mid);
 		if (user && match){
 			if (match.round.tournament.totalPlayers > 2) {
 				match.game.mplay(user.player, raw.isDown);
@@ -128,7 +130,9 @@ async function play(uid, socket, raw) {
 				const i = (raw.type === 'pong' || raw.type === 'bong') ? (isAnonymous ? raw.side : side) : side;
 				match.game.play(raw.isDown, i);
 			}
+			return true;
 		}
+		return false;
 	} else if (raw.subtype === 'giveup') {
 		const match = socketMap.get(socket);
 		if (user && match){
@@ -140,6 +144,7 @@ async function play(uid, socket, raw) {
 			user.player.setScreen(raw);
 		}
 	}
+	return false;
 }
 
 async function chat(uid, socket, raw) {
@@ -251,5 +256,6 @@ async function fn(fastify) {
   });
 };
 
+exports.play = play;
 exports.connMap = connMap;
 exports.fn = fn;

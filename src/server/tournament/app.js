@@ -3,6 +3,7 @@
 const fp = require('fastify-plugin');
 const tournamentRoutes = require('./routes/tournament.routes');
 const createTournamentService = require('./services/tournament.service');
+const { play } = require('../games/ws.cjs');
 
 async function tournamentPlugin(fastify, options) {
 	const prisma = require('../prisma/prisma.cjs');
@@ -10,7 +11,8 @@ async function tournamentPlugin(fastify, options) {
 
 	await fastify.register(tournamentRoutes, {
 		prefix: 'api',
-		tournamentService
+		tournamentService,
+		play
 	});
 }
 
