@@ -1,28 +1,7 @@
-<div id="tictactoe" class="absolute flex items-center justify-center w-screen h-screen">
-	<button type="button" id="giveup" class="absolute right-1 top-4 z-1000 text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{{give_up}}</button>
-	
-	<div id="score-left" class="absolute flex flex-col self-start left-5/12 top-2"></div>
-	<div id="score-right" class="absolute flex flex-col self-start right-5/12 top-2"></div>
-	
-	<table class="w-1/2 h-1/2">
-		<tr class="h-1/3 border-b-2">
-			<td id="cell_1" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_2" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_3" class="w-1/3 text-center text-7xl"></td>
-		</tr>
-		<tr class="h-1/3 border-b-2">
-			<td id="cell_4" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_5" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_6" class="w-1/3 text-center text-7xl"></td>
-		</tr>
-		<tr class="h-1/3">
-			<td id="cell_7" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_8" class="border-r-2 w-1/3 text-center text-7xl"></td>
-			<td id="cell_9" class="w-1/3 text-center text-7xl"></td>
-		</tr>
-	</table>
+<button type="button" id="giveup" class="absolute right-1 top-4 z-1000 text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{{give_up}}</button>
 
-	<div id="splash" class="bg-black absolute flex-col place-items-center h-screen w-screen top-0">
-		<div id="log" class="text-gray-50 text-center mt-5"></div>
-	</div>
+<canvas id="tictactoe" touch-action="none" class="w-full h-full"></canvas>
+
+<div id="splash" class="bg-black absolute flex-col place-items-center h-screen w-screen top-0">
+	<div id="log" class="text-gray-50 text-center mt-5"></div>
 </div>
