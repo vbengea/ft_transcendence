@@ -97,7 +97,8 @@ class Player {
 			user: {
 				id: this.user.id,
 				name: this.user.name,
-				avatar: this.user.avatar
+				avatar: this.user.avatar,
+				customization: this.user.customization
 			}
 		};
 	}

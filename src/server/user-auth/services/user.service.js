@@ -628,7 +628,14 @@ function createUserService(prisma) {
 				where: { name }
 			});
 			return !!user;
+		},
+
+		async getCustomizationById(id) {
+			return prisma.customization.findUnique({
+				where: { id }
+			});
 		}
+
 	};
 }
 

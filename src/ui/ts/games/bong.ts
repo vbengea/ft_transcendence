@@ -3,10 +3,23 @@ import * as BABYLON from "@babylonjs/core";
 import { gameLoop } from '../events';
 
 var scene = null;
+const mapColor = [
+	[],
+	[211, 119, 9],
+	[45, 92, 242],
+	[49, 144, 180],
+	[0, 153, 102],
+	[183, 21, 214],
+	[76, 58, 237],
+	[212, 36, 34]
+];
 
 async function bongInit(paddles, customization: Customization) {
+	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	const canvas : HTMLCanvasElement = document.querySelector("#bong");
 	const engine = new BABYLON.Engine(canvas, true);
+
+	customization = await (await fetch(`/auth/customization/${userData.customization.id}`)).json();
 
 	scene = await createScene(engine, paddles, customization);
 	
@@ -25,10 +38,10 @@ async function createScene(engine, paddles, customization: Customization) {
 
 	if (camera === 1) {
 		new BABYLON.ArcRotateCamera(
-				"Camera",  
-				BABYLON.Tools.ToRadians(0),  
-				BABYLON.Tools.ToRadians(70), 60,  
-				new BABYLON.Vector3(10,0,0), scene);
+			"Camera",  
+			BABYLON.Tools.ToRadians(0),  
+			BABYLON.Tools.ToRadians(70), 60,  
+			new BABYLON.Vector3(10,0,0), scene);
 	} else if (camera === 2) {
 		new BABYLON.ArcRotateCamera(
 			"Camera",  
@@ -38,10 +51,10 @@ async function createScene(engine, paddles, customization: Customization) {
 
 	} else if (camera === 3) {
 		new BABYLON.ArcRotateCamera(
-				"Camera",  
-				BABYLON.Tools.ToRadians(0),  
-				BABYLON.Tools.ToRadians(0), 60,  
-				new BABYLON.Vector3(0,0,0), scene);
+			"Camera",  
+			BABYLON.Tools.ToRadians(0),  
+			BABYLON.Tools.ToRadians(0), 60,  
+			new BABYLON.Vector3(0,0,0), scene);
 	}
 
     var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -1, 0), scene);
@@ -125,17 +138,6 @@ function pads(scene, paddles, color) {
 
 	RIGHT.position = new BABYLON.Vector3(0,0,34)
 	LEFT.position = new BABYLON.Vector3(0,0,-35)
-
-	const mapColor = [
-		[],
-		[211, 119, 9],
-		[45, 92, 242],
-		[49, 144, 180],
-		[0, 153, 102],
-		[183, 21, 214],
-		[76, 58, 237],
-		[212, 36, 34]
-	];
 
 	const mat0 = new BABYLON.BackgroundMaterial("RIGHT_0_COLOR_MAT", scene);
 	mat0.useRGBColor = false;
@@ -268,6 +270,8 @@ export function displayBong(data: Data) {
 	let n = 0;
 	for (let player of game.players) {
 		if (player) {
+			scene.getMeshByID(n == 1 ? 'left' : 'right').material.primaryColor = new BABYLON.Color3(...mapColor[player.user.customization.color].map(c => c/255.0));
+
 			if (side == n) {
 				const boxY = 40;
 				const boxX = 70;

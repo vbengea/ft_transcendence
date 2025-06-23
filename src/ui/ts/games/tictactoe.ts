@@ -17,9 +17,11 @@ const mapColor = [
 ];
 
 async function bongInit1(customization: Customization) {
+	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 	const canvas : HTMLCanvasElement = document.querySelector("#tictactoe");
 	const engine = new BABYLON.Engine(canvas, true);
 
+	customization = await (await fetch(`/auth/customization/${userData.customization.id}`)).json();
 	tscene = await createScene1(engine, customization);
 	
 	(window as any).tscene = tscene;
@@ -169,7 +171,7 @@ function pads(scene, color) {
 
 	const mat0 = new BABYLON.BackgroundMaterial("RIGHT_0_COLOR_MAT", scene);
 	mat0.useRGBColor = false;
-	mat0.primaryColor = new BABYLON.Color3(...mapColor[color].map(c => c/255.0));
+	mat0.primaryColor = BABYLON.Color3.White();
 	LEFT.material = mat0;
 	RIGHT.material = mat0;
 	LEFT1.material = mat0;
@@ -240,7 +242,7 @@ export function getLayoutPayloadTicTacToe(subtype : string, tournamentId : strin
 	return { type: "tictactoe", subtype, screen: sc, tournamentId };
 }
 
-function tic(n, ch) {
+function tic(n, ch, cl) {
 	const mat2 = new BABYLON.BackgroundMaterial("RIGHT_2_COLOR_MAT", tscene);
 
 	mat2.useRGBColor = false;
@@ -303,8 +305,10 @@ export function displayTicTacToe(data: Data) {
 			if (m) {
 				m.dispose();
 			}
-			if (game.matrix[i][j] !== '0'){
-				tic(n + 1, game.matrix[i][j]);
+			let p = game.matrix[i][j];
+			if (p !== '0'){
+				let color = game.players[p === 'x' ? 0 : 1].user.customization.color;
+				tic(n + 1, p, color);
 			}
 			n++;
 		}

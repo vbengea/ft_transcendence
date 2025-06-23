@@ -588,6 +588,15 @@ function authRoutes(fastify, options, done) {
 		}
 	});
 
+	fastify.get('/customization/:id', { preHandler: verifyToken }, async (request, reply) => {
+		try {
+			const cus = await userService.getCustomizationById(parseInt(request.params.id));
+			reply.send(cus);
+		} catch (err) {
+			console.log(err)
+		}
+	});
+
 	done();
 }
 
