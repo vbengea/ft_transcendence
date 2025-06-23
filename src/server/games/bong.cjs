@@ -120,7 +120,8 @@ class Screen {
 		this.ball = new Ball(0, 0, raw.ball.w, raw.ball.h);
 		this.paddles = [];
 		for (let p of raw.paddles)
-			this.paddles.push(new Paddle(p));
+			if (p)
+				this.paddles.push(new Paddle(p));
 	}
 	
 	getBall() {
@@ -607,7 +608,7 @@ class Bong {
 				}
 			}
 			for(let p of this.players)
-				if (!p.getUser().human)
+				if (p && !p.getUser().human)
 					this.computer(p, b);
 			this.send();																						// Refresh UI .....................................
 			setTimeout(this.moveBall.bind(this), 25);		
