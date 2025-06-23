@@ -251,6 +251,7 @@ let hydrateTemplate = async (url, params) => {
 			const mt1 : HTMLInputElement = document.querySelector('#matches1');
 			const mt2 : HTMLInputElement = document.querySelector('#matches2');
 			const mt3 : HTMLInputElement = document.querySelector('#matches3');
+			const locale = user.lang.replace('_', '-');
 
 			it.addEventListener('click', () => {
 				location.hash = '/';
@@ -299,7 +300,7 @@ let hydrateTemplate = async (url, params) => {
 
 				html += `<td class="px-6 py-4 text-center">${lang(m.round.tournament.name)}</td>`
 
-				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString(user.lang.replace('_', '-'), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
+				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
 
 				if ( m.round.tournament.game.name === 'bong' )
 					mt2.innerHTML += html;
@@ -307,11 +308,11 @@ let hydrateTemplate = async (url, params) => {
 					mt3.innerHTML += html;
 
 				let mavg = u.wins * 100 / u.count;
-				u.avg = mavg.toFixed(1);
+				u.avg = parseFloat(mavg.toFixed(1)).toLocaleString(locale);
 			}
 
 			avg = count ? (wins * 100 / count) : 0;
-			let avgs = avg.toFixed(1);
+			let avgs = parseFloat(avg.toFixed(1)).toLocaleString(locale);
 
 			document.querySelector('#countto1').innerHTML = lang(count + '');
 			document.querySelector('#countto2').innerHTML = lang(wins + '');
