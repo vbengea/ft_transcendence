@@ -200,5 +200,6 @@
 	"password_need_special": "Le mot de passe doit contenir au moins un caractère spécial",
 	"password_only_allowed_chars": "Le mot de passe ne peut contenir que des lettres, des chiffres et des caractères spéciaux",
 	"privacy_unable_to_load": "Impossible de charger la politique de confidentialité. Veuillez réessayer plus tard.",
-	"update_password": "Mettre à jour le mot de passe"
+	"update_password": "Mettre à jour le mot de passe",
+	"score_must_be_between_1_and_100": "Le score doit être compris entre 1 et 100"
 }]

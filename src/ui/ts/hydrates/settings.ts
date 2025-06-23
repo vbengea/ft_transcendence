@@ -302,9 +302,33 @@ async function doCustom({ user: { customization } }) {
 	color.checked = true;
 	camera.checked = true;
 
+	score.addEventListener('input', (e) => {
+		const input = e.target as HTMLInputElement;
+		let value = parseInt(input.value);
+
+		if (isNaN(value) || value < 1) {
+			input.value = '1';
+		} else if (value > 100) {
+			input.value = '100';
+		}
+	});
+
+	score.addEventListener('blur', (e) => {
+		const input = e.target as HTMLInputElement;
+		const value = parseInt(input.value);
+
+		if (isNaN(value) || value < 1 || value > 100) {
+			alert(lang('{{score_max_must_between_1_and_100}}'));
+			input.value = '10';
+		}
+	});
+
 	def.addEventListener('click', async (_e) => {
 		await fetch(`/auth/customization/${customization.id}`, { 
 			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify({ 
 				score_max: 10,
 				map: 1,
@@ -320,6 +344,9 @@ async function doCustom({ user: { customization } }) {
 		const el = (e.target as HTMLInputElement);
 		await fetch(`/auth/customization/${customization.id}`, { 
 			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify({ [`${el.dataset.name}`]: parseInt(el.dataset.value || el.value) })
 		});
 	});

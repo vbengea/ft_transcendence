@@ -200,5 +200,6 @@
 	"password_need_special": "La contraseña debe contener al menos un carácter especial",
 	"password_only_allowed_chars": "La contraseña solo puede contener letras, números y caracteres especiales",
 	"privacy_unable_to_load": "No se pudo cargar la política de privacidad. Por favor, inténtalo de nuevo más tarde.",
-	"update_password": "Actualizar contraseña"
+	"update_password": "Actualizar contraseña",
+	"score_must_be_between_1_and_100": "La puntuación debe estar entre 1 y 100"
 }]

@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { connMap } = require('../../games/ws.cjs');
 const prisma = require('../../prisma/prisma.cjs');
+const { json } = require('stream/consumers');
 
 function authRoutes(fastify, options, done) {
 	const userService = options.userService;
@@ -534,10 +535,52 @@ function authRoutes(fastify, options, done) {
 
 	fastify.patch('/customization/:id', { preHandler: verifyToken }, async (request, reply) => {
 		try {
-			await userService.userCustomizationUpdate(parseInt(request.params.id), JSON.parse(request.body));
+			const customizationData = request.body;
+
+			if (customizationData.hasOwnProperty('score_max')) {
+				const scoreMax = parseInt(customizationData.score_max);
+
+				if (isNaN(scoreMax) || scoreMax < 1 || scoreMax > 100) {
+					return reply.code(400).send({ error: 'Score must be between 1 and 100' });
+				}
+
+				customizationData.score_max = scoreMax;
+			}
+
+			if (customizationData.hasOwnProperty('map')) {
+				const map = parseInt(customizationData.map);
+				if (isNaN(map) || map < 1) {
+					return reply.code(400).send({ error: 'Invalid map selection' });
+				}
+				customizationData.map = map;
+			}
+
+			if (customizationData.hasOwnProperty('color')) {
+				const color = parseInt(customizationData.color);
+
+				if (isNaN(color) || color < 1) {
+					return reply.code(400).send({ error: 'Invalid color selection' });
+				}
+				customizationData.color = color;
+			}
+
+			if (customizationData.hasOwnProperty('camera')) {
+				const camera = parseInt(customizationData.camera);
+
+				if (isNaN(camera) || camera < 1) {
+					return reply.code(400).send({ error: 'Invalid camera selection' });
+				}
+				customizationData.camera = camera;
+			}
+
+			await userService.userCustomizationUpdate(parseInt(request.params.id), customizationData);
 			reply.send({ message: 'Customizations updated successfully' });
 		} catch (err) {
 			fastify.log.error(err);
+			if (err instanceof SyntaxError) {
+				return reply.code(400).send({ error: 'Invalid JSON data' });
+			}
+
 			reply.code(500).send({ error: 'Failed to update Customization' });
 		}
 	});

@@ -200,5 +200,6 @@
 	"password_need_special": "Password must contain at least one special character",
 	"password_only_allowed_chars": "Password can only contain letters, numbers and special characters",
 	"privacy_unable_to_load": "Unable to load privacy policy. Please try again later.",
-	"update_password": "Update Password"
+	"update_password": "Update Password",
+	"score_must_be_between_1_and_100": "Score must be between 1 and 100"
 }]
