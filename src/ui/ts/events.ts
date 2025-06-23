@@ -140,8 +140,8 @@ const processChatUserList = () => {
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">{{block}}</li>
-								<li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Pong?</li>
-								<li data-friend_option="bong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Bong?</li>
+								<!-- li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Pong?</li -->
+								<li data-friend_option="bong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Pong?</li>
 								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} 
 								{{tictactoe}}?</li>
 								<li data-friend_option="profile" data-friend_id="${u.id}" class="px-4 py-2">{{view_profile}}</li>

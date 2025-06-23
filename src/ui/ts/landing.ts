@@ -301,9 +301,9 @@ let hydrateTemplate = async (url, params) => {
 
 				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
 
-				if (m.round.tournament.game.name === 'pong' || m.round.tournament.game.name === 'bong')
+				if ( m.round.tournament.game.name === 'bong' ) //m.round.tournament.game.name === 'pong' ||
 					mt2.innerHTML += html;
-				else
+				else if ( m.round.tournament.game.name === 'tictactoe')
 					mt3.innerHTML += html;
 
 				let mavg = u.wins * 100 / u.count;
