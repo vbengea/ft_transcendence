@@ -239,6 +239,8 @@ class Player {
 			wins: this.wins,
 			score: this.score,
 			screen: this.screen,
+			side: this.side,
+			paddleIndex: this.paddleIndex,
 			user: {
 				id: this.user.id,
 				name: this.user.name,

@@ -45,6 +45,8 @@ export type Payload = {
 export type Player = {
 	"wins": boolean,
 	"score": number,
+	"side": number,
+	"paddleIndex": number,
 	"user": { 
 		id: string, 
 		avatar: string, 

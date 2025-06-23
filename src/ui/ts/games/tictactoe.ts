@@ -189,7 +189,6 @@ function pads(scene, color) {
 			new BABYLON.ExecuteCodeAction(
 				BABYLON.ActionManager.OnPickTrigger,
 				function(evt) {
-					console.log(evt.source.id)
 					send(JSON.stringify({ 
 						type: "tictactoe", 
 						subtype: "play", 

@@ -138,12 +138,19 @@ function pads(scene, paddles, color) {
 
 	RIGHT.position = new BABYLON.Vector3(0,0,34)
 	LEFT.position = new BABYLON.Vector3(0,0,-35)
+	LEFT.id = 'paddle-0';
+	RIGHT.id = 'paddle-1';
 
 	const mat0 = new BABYLON.BackgroundMaterial("RIGHT_0_COLOR_MAT", scene);
 	mat0.useRGBColor = false;
 	mat0.primaryColor = new BABYLON.Color3(...mapColor[color].map(c => c/255.0));
+
+	const mat00 = new BABYLON.BackgroundMaterial("RIGHT_00_COLOR_MAT", scene);
+	mat00.useRGBColor = false;
+	mat00.primaryColor = new BABYLON.Color3(...mapColor[color].map(c => c/255.0));
+
 	LEFT.material = mat0;
-	RIGHT.material = mat0;
+	RIGHT.material = mat00;
 
 	if (paddles.length > 2) {
 		const LEFT2 = BABYLON.MeshBuilder.CreateTiledBox("left2", { width: paddles[2].h, tileSize: 1, depth: 1 }, scene);
@@ -170,7 +177,6 @@ function pads(scene, paddles, color) {
 		mat4.useRGBColor = false;
 		mat4.primaryColor = BABYLON.Color3.Blue();
 		RIGHT2.material = mat4;
-
 
 		RIGHT2.position = new BABYLON.Vector3(18,0,34)
 		LEFT2.position = new BABYLON.Vector3(18,0,-35)
@@ -269,8 +275,11 @@ export function displayBong(data: Data) {
 
 	let n = 0;
 	for (let player of game.players) {
+		const mesh = scene.getMeshById('paddle-' + player.paddleIndex);
+		if (mesh){
+			mesh.material.primaryColor = new BABYLON.Color3(...mapColor[player.user.customization.color].map(c => c/255.0));
+		}
 		if (player) {
-			scene.getMeshByID(n == 1 ? 'left' : 'right').material.primaryColor = new BABYLON.Color3(...mapColor[player.user.customization.color].map(c => c/255.0));
 
 			if (side == n) {
 				const boxY = 40;
@@ -293,8 +302,6 @@ export function displayBong(data: Data) {
 
 				scene.getMeshByName("sphere").position.x = x;
 				scene.getMeshByName("sphere").position.z = z;
-
-				scene.render();
 			}
 
 			if (n % 2 == 0) {
@@ -305,4 +312,5 @@ export function displayBong(data: Data) {
 		}
 		n++;
 	}
+	scene.render();
 }
