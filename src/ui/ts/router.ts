@@ -148,6 +148,10 @@ template('template-view3', async () => {
 					localStorage.setItem('tempToken', json.tempToken);
 					location.hash = '/2fa/verify';
 				} else {
+					sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify({
+						authenticated: true,
+						user: json.user,
+					}));
 					location.hash = '/';
 				}
 			} else {
