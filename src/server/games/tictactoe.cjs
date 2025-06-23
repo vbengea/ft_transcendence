@@ -209,21 +209,23 @@ class TicTacToe {
 	async manageResults(winnerSide) {
 		await tournamentSrv.endMatch(this.mid, this.scores[0], this.scores[1]);
 		for(let p of this.players) {
-			if (p.getSide() === winnerSide) {
-				await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
-				this.broadcast(this.match.round.tournament.id, p.getUser().id);
-				p.wins = true;
-				const s1 = p.getSocket();
-				if (s1)
-					s1.send(JSON.stringify({ redirect: `${TXT.win}/${this.match.round.tournament.id}` }));
-			} else {
-				p.wins = false;
-				const s2 = p.getSocket();
-				if (s2)
-					s2.send(JSON.stringify({ redirect: `${TXT.loose}/${this.match.round.tournament.id}` }));
+			if (p) {
+				if (p.getSide() === winnerSide) {
+					await tournamentSrv.advanceToNextMatch(this.match, p.getUser());
+					this.broadcast(this.match.round.tournament.id, p.getUser().id);
+					p.wins = true;
+					const s1 = p.getSocket();
+					if (s1)
+						s1.send(JSON.stringify({ redirect: `${TXT.win}/${this.match.round.tournament.id}` }));
+				} else {
+					p.wins = false;
+					const s2 = p.getSocket();
+					if (s2)
+						s2.send(JSON.stringify({ redirect: `${TXT.loose}/${this.match.round.tournament.id}` }));
+				}
+				this.maps.socketMap.delete(p.getSocket());
+				this.maps.userMap.delete(p.getUser().id);
 			}
-			this.maps.socketMap.delete(p.getSocket());
-			this.maps.userMap.delete(p.getUser().id);
 		}
 		this.maps.matchMap.delete(this.match.id);
 	}
