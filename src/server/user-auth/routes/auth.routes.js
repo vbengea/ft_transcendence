@@ -215,7 +215,10 @@ function authRoutes(fastify, options, done) {
 				const localAvatar = await userService.downloadAndSaveAvatar(email, avatar);
 				user = await prisma.user.update({
 					where: { id: user.id },
-					data: { avatar: localAvatar }
+					data: { avatar: localAvatar },
+					include: {
+						customization: true
+					}
 				});
 			}
 
