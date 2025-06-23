@@ -264,7 +264,24 @@ route('/profile', () => {
 	return () => {};
 });
 
-route('/', 'template1');
+route('/', async () => {
+	const transcenderUser = sessionStorage.getItem('TRANSCENDER_USER');
+	if (transcenderUser) {
+		try {
+			const userData = JSON.parse(transcenderUser);
+			if (userData && userData.authenticated) {
+				location.hash = '#/landing/welcome';
+				return () => {};
+			}
+		} catch (err) {
+			sessionStorage.removeItem('TRANSCENDER_USER');
+		}
+	}
+
+	location.hash = '#/login';
+	return () => {};
+});
+
 route('/login', 'template-view3');
 route('/register', 'template-view4');
 route('/2fa/verify', 'template-2fa-verify');
@@ -334,21 +351,16 @@ async function resolveRoute(route) {
 			location.hash = '#/login';
 			closeWS();
 			return () => {};
-		} else if (route == '/login' || route == '/register' || route == '/2fa/verify' || route == '/privacy') {
+		} else if (route == '/login' || route == '/register' || route == '/2fa/verify' || route == '/privacy' || route == '/') {
 			return routes[route];
 		} else if (route == '/2fa/setup') {
-			if (authorized()) {
+			if (await authorized()) {
 				location.hash = '#/landing/settings';
 				return () => {};
 			}
 		} else {
 			if (await authorized()) {
-				if (route == '/') {
-					location.href = '#/landing/welcome';
-					return () => {};
-				} else {
-					return routes[route];
-				}
+				return routes[route];
 			}
 		}
 	} catch (error) {
