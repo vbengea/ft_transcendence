@@ -278,17 +278,19 @@ let hydrateTemplate = async (url, params) => {
 					jj = 1;
 				}
 
-				u = umap.get(m[`user${jj}`].name) || { name: m[`user${jj}`].name, count: 0, wins: 0, loses: 0, avg: '' };
+				const um = m[`user${jj}`] || { name: '--' };
+
+				u = umap.get(um.name) || { name: um.name, count: 0, wins: 0, loses: 0, avg: '' };
 				u.count++;
 
 				let html = `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 						<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-							${m[`user${jj}`].name}
+							${um.name}
 						</th>`;
 
 				if (m[`user${ii}Score`] > m[`user${jj}Score`]) {
 					u.wins++;
-					umap.set(m[`user${jj}`].name, u);
+					umap.set(um.name, u);
 					wins++;
 					html += `<td class="px-6 py-4 text-center">1</td><td class="px-6 py-4 text-center"></td>`
 
@@ -318,23 +320,6 @@ let hydrateTemplate = async (url, params) => {
 			document.querySelector('#countto2').innerHTML = lang(wins + '');
 			document.querySelector('#countto3').innerHTML = lang(loses + '');
 			document.querySelector('#countto4').innerHTML = lang(avgs + '');
-
-			// umap.forEach(m => {
-			// 	mt1.innerHTML += `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-			// 		<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-			// 			${m.name}
-			// 		</th>
-			// 		<td class="px-6 py-4 text-center">
-			// 			${m.wins}
-			// 		</td>
-			// 		<td class="px-6 py-4 text-center">
-			// 			${m.loses}
-			// 		</td>
-			// 		<td class="px-6 py-4 text-center">
-			// 			${m.avg}%
-			// 		</td>
-			// 	</tr>`;
-			// });
 
 			break;
 

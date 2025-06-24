@@ -179,16 +179,16 @@ function createTournamentService(prisma) {
 				},
 				include: {
 					user1: {
-						select: { id: true, name: true, avatar: true, human: true }
+						include: true
 					},
 					user2: {
-						select: { id: true, name: true, avatar: true, human: true }
+						include: true
 					},
 					user3: {
-						select: { id: true, name: true, avatar: true, human: true }
+						include: true
 					},
 					user4: {
-						select: { id: true, name: true, avatar: true, human: true }
+						include: true
 					},
 					round: {
 						include: {
