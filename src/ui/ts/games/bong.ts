@@ -13,6 +13,8 @@ const mapColor = [
 	[76, 58, 237],
 	[212, 36, 34]
 ];
+const width = 40;
+const height = 90;
 
 async function bongInit(paddles, customization: Customization) {
 	const userData = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
@@ -42,6 +44,7 @@ async function createScene(engine, paddles, customization: Customization) {
 			BABYLON.Tools.ToRadians(0),  
 			BABYLON.Tools.ToRadians(70), 60,  
 			new BABYLON.Vector3(10,0,0), scene);
+
 	} else if (camera === 2) {
 		new BABYLON.ArcRotateCamera(
 			"Camera",  
@@ -61,13 +64,13 @@ async function createScene(engine, paddles, customization: Customization) {
     var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1, 5, 3), scene);
     var light3 = new BABYLON.PointLight("light3", new BABYLON.Vector3(3, 0, -5), scene);
 
-	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+	const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.75 }, scene);
 	sphere.position = new BABYLON.Vector3(0,0,0)
 	
 	pads(scene, paddles, color);
 	txt(scene);
 
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 40, height: 70 }, scene);
+    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width, height }, scene);
 
     const diffuseTexture = new BABYLON.Texture(`images/maps/${map}a.png`, scene);
     const detailTexture = new BABYLON.Texture(`images/maps/${map}b.png`, scene);
@@ -136,8 +139,8 @@ function pads(scene, paddles, color) {
 	const LEFT = BABYLON.MeshBuilder.CreateTiledBox("left", { width: paddles[0].h, tileSize: 1, depth: 1 }, scene);
 	const RIGHT = BABYLON.MeshBuilder.CreateTiledBox("right", { width: paddles[1].h, tileSize: 1, depth: 1 }, scene);
 
-	RIGHT.position = new BABYLON.Vector3(0,0,34)
-	LEFT.position = new BABYLON.Vector3(0,0,-35)
+	RIGHT.position = new BABYLON.Vector3(0,0,height/2.0)
+	LEFT.position = new BABYLON.Vector3(0,0,-height/2.0)
 	LEFT.id = 'paddle-0';
 	RIGHT.id = 'paddle-1';
 
@@ -180,11 +183,11 @@ function pads(scene, paddles, color) {
 		RIGHT2.material = mat4;
 		RIGHT2.id = 'paddle-4';
 
-		RIGHT2.position = new BABYLON.Vector3(18,0,34)
-		LEFT2.position = new BABYLON.Vector3(18,0,-35)
+		RIGHT2.position = new BABYLON.Vector3(18,0,height/2.0)
+		LEFT2.position = new BABYLON.Vector3(18,0,-height/2.0)
 
-		RIGHT.position = new BABYLON.Vector3(-18,0,34)
-		LEFT.position = new BABYLON.Vector3(-18,0,-35)
+		RIGHT.position = new BABYLON.Vector3(-18,0,height/2.0)
+		LEFT.position = new BABYLON.Vector3(-18,0,-height/2.0)
 	}
 }
 
@@ -220,44 +223,47 @@ function txt(scene) {
 
 export function getLayoutPayloadBong(subtype : string, tournamentId : string, tournament: { id: number, totalPlayers: number, organizer: { customization: Customization } }) {
 	const sc = {
-		w: 70,
-		h: 40,
+		w: height,
+		h: width,
 		lineHeight: 1
 	};
 
+	const padH = 8;
+
 	let paddles = [{
 		x: 1,
-		y: 8,
+		y: padH,
 		w: 1,
-		h: 8,
+		h: padH,
 	},{
-		x: 68,
-		y: 8,
+		x: height,
+		y: padH,
 		w: 1,
-		h: 8,
+		h: padH,
 	}]
 
 	if (tournament.totalPlayers > 2) {
+		const padH = 6;
 		paddles = [{
 			x: 1,
 			y: 1,
 			w: 1,
-			h: 6,
+			h: padH,
 		},{
-			x: 68,
+			x: height,
 			y: 1,
 			w: 1,
 			h: 6,
 		},{
 			x: 1,
-			y: 32,
+			y: width/2.0 - padH,
 			w: 1,
-			h: 6,
+			h: padH,
 		},{
-			x: 68,
-			y: 32,
+			x: height,
+			y: width/2.0 - padH,
 			w: 1,
-			h: 6,
+			h: padH,
 		}]
 	}
 
@@ -284,8 +290,8 @@ export function displayBong(data: Data) {
 		if (player) {
 
 			if (side == n) {
-				const boxY = 40;
-				const boxX = 70;
+				const boxY = width;
+				const boxX = height;
 				
 				let LEFT = player.screen.paddles[0].y - boxY/2.0 + 3;
 				let RIGHT = player.screen.paddles[1].y - boxY/2.0 + 3;

@@ -227,20 +227,20 @@ let hydrateTemplate = async (url, params) => {
 							setTimeout(() => {
 								location.hash = '#/landing/matches';
 								localStorage.tournament = '';
-							}, 3000);
+							}, 1000);
 						} else {
 							location.hash = '#/landing/matches';
 						}
 					}
-				}, 3000);
+				}, 1000);
 
 			} else {
-				setTimeout(() => location.hash = '#/landing/matches', 3000);
+				setTimeout(() => location.hash = '#/landing/matches', 1000);
 			}
 			break;
 
 		case 'nogame':
-			setTimeout(() => location.hash = '#/', 3000);
+			setTimeout(() => location.hash = '#/', 1000);
 			break;
 
 		case 'matches':
