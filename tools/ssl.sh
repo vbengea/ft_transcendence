@@ -8,14 +8,13 @@ openssl \
 	-out $TCRT \
 	-subj "/C=ES/ST=Madrid/L=Madrid/CN=$DOMAIN_NAME"
 
-# ngrok config add-authtoken $NGROK_AUTHTOKEN
+ngrok config add-authtoken $NGROK_AUTHTOKEN
 
-node --run start 
-#&
-# NODE_PID=$!
+node --run start &
+NODE_PID=$!
 
-# sleep 3
+sleep 3
 
-# ngrok http --domain=$NGROK_DOMAIN https://localhost:$PORT
+ngrok http --domain=$NGROK_DOMAIN https://localhost:$PORT
 
-# kill $NODE_PID
+kill $NODE_PID
