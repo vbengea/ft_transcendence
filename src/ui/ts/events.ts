@@ -392,7 +392,6 @@ const clickHandler = (e) => {
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
 				const game = target.dataset.friend_option;
 				let alias = '';
-				console.log(friend_id)
 				const tournament = { 
 					name: isAnonymous ? '{{guest_play}}' : '{{single_player}}', 
 					users, 
