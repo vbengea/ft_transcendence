@@ -43,7 +43,6 @@ export function initWebSocket() {
 	
 	WS.onerror = (event) => {
 		console.log(event)
-		removeEvents();
 	}
 
 	WS.onmessage = async (event) => {
@@ -420,12 +419,6 @@ addEventListener('keydown', handleKeyDown);
 addEventListener("keyup", keyHandler);
 addEventListener("mouseup", tapHandler);
 addEventListener("click", clickHandler);
-addEventListener('online', initWebSocket);
-
-const removeEvents = () => {
-	removeEventListener("keydown", paddleHandler);
-	removeEventListener("mouseup", tapHandler);
-}
 
 let keys = {};
 export function gameLoop() {
