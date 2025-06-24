@@ -172,7 +172,7 @@ const processUserMessages = () => {
 			<div id="scroller" class="flex flex-col flex-1 p-5 overflow-y-auto scroll-auto" data-chat="1">`;
 
 		if (chatUserMessages.length) {
-			html += chatUserMessages.map(u => {
+			html += chatUserMessages.filter(u => u.sender.id === user.id || u.sender.id === receiverId).map(u => {
 				const me = user.id === u.sender.id;
 
 				const img = `<img class="w-8 h-8 rounded-full" src="${u.sender.avatar}" alt="${u.sender.name} image" data-chat="1">`;
