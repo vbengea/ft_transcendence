@@ -438,24 +438,28 @@ class Bong {
 		const index = p.getPaddleIndex();
 		const paddle = s.getPaddles()[index];
 		const isMulti = s.getPaddles().length > 2;
-		
+		const h = s.getHeight();
+		const w = s.getWidth();
+		const ph = paddle.getHeight();
+		const hhalf = h / 2.0;
+
 		if (isMulti) {
 			if (index > 1) {
-				if (y < 20)
-					y = 20;
-				else if (y > 32)
-					y = 32;
+				if (y < hhalf)
+					y = hhalf;
+				else if (y > h - ph)
+					y = h - ph;
 			} else {
-				if (y < 1)
-					y = 1;
-				else if (y > 12)
-					y = 12;
+				if (y < 0)
+					y = 0;
+				else if (y > hhalf - ph)
+					y = hhalf - ph;
 			}
 		} else {
 			if (y < 1)
 				y = 1;
-			else if (y > 32)
-				y = 32;
+			else if (y > h - ph)
+				y = h - ph;
 		}
 
 		paddle.setY(y);
