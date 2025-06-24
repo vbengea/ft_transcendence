@@ -109,7 +109,7 @@ async function play(uid, socket, raw) {
 			for (let i = 1; i <= MAX_USERS; i++)
 				setUser(i, socket, raw,  uid, match);
 
-			return true;
+			return match.id;
 
 		} else if(socket) {
 			socket.send(JSON.stringify({ redirect: '#/landing/nogame'}));
