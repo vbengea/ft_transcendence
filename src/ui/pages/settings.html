@@ -114,10 +114,10 @@
 		<div class="flex bg-white rounded-lg shadow-md overflow-hidden ml-10 mb-20">
 			<div class="w-64 bg-gray-50 border-r border-gray-200">
 			<nav class="flex flex-col py-4">
-				<button id="tab-lang" class="tab-button px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
+				<button id="tab-lang" class="tab-button px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none text-indigo-600 bg-indigo-50 border-l-4 border-indigo-600 pl-3">
 				{{languages}}
 				</button>
-				<button id="tab-2fa" class="tab-button active px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
+				<button id="tab-2fa" class="tab-button px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
 				{{two_factor_authentication}}
 				</button>
 				<button id="tab-password" class="tab-button px-4 py-3 text-left text-sm font-medium hover:bg-gray-100 focus:outline-none">
@@ -130,7 +130,7 @@
 			</div>
 			
 			<div class="flex-1 p-6">
-				<div id="content-lang" class="tab-content hidden">
+				<div id="content-lang" class="tab-content">
 					<h2 class="text-lg font-semibold mb-4">{{languages}}</h2>
 					<form class="max-w-sm mx-auto">
 						</br>
@@ -142,7 +142,7 @@
 					</form>
 				</div>
 
-				<div id="content-2fa" class="tab-content">
+				<div id="content-2fa" class="tab-content hidden">
 					<h2 class="text-lg font-semibold mb-4">{{two_factor_authentication}}</h2>
 					<div id="2fa-status-container" class="mt-4">
 					<div class="flex items-center mb-3">
@@ -194,12 +194,3 @@
 		</div>
 
 	</div>
-
-	<style>
-	.tab-button.active {
-		color: #4f46e5;
-		background-color: #f5f7ff;
-		border-left: 3px solid #4f46e5;
-		padding-left: 13px;
-	}
-	</style>
