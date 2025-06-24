@@ -13,6 +13,11 @@ export const hydrateProfile = async (userId) => {
 		document.getElementById('profile-name').textContent = userData.name;
 		document.getElementById('profile-email').textContent = userData.email;
 
+		const stats : HTMLLinkElement = document.querySelector('#matches_link');
+		if (stats) {
+			stats.href = `#/landing/matches/${userId}`;
+		}
+
 		const avatarContainer = avatarElement.parentElement;
 
 		const avatarOverlay = document.createElement('div');

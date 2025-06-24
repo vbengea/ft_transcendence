@@ -245,7 +245,7 @@ let hydrateTemplate = async (url, params) => {
 		case 'matches':
 			const it = document.querySelector("#submit");
 			const user = userData;
-			const matchesRaw = await fetch(`/api/matches/${user.id}`);
+			const matchesRaw = await fetch(`/api/matches/${params[0] || user.id}`);
 			const matches = await matchesRaw.json();
 			const mt1 : HTMLInputElement = document.querySelector('#matches1');
 			const mt2 : HTMLInputElement = document.querySelector('#matches2');
