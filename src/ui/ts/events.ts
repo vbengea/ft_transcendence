@@ -1,6 +1,5 @@
 import { Message } from './types';
 import { handleGame } from './games/main';
-import { getLayoutPayloadPong } from './games/pong';
 import { getLayoutPayloadTicTacToe } from './games/tictactoe';
 
 export let WS = null;
@@ -146,7 +145,6 @@ const processChatUserList = () => {
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">{{block}}</li>
-								<!-- li data-friend_option="pong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Pong?</li -->
 								<li data-friend_option="bong" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} Pong?</li>
 								<li data-friend_option="tictactoe" data-friend_id="${u.id}" data-friend_name="${u.name}" data-friend_avatar="${u.avatar}" class="px-4 py-2">{{play}} 
 								{{tictactoe}}?</li>
@@ -305,17 +303,6 @@ const tapHandler = (e) => {
 	}
 };
 
-const resizeScreen = async (e) => {
-	const [_, _landing, game, tournamentId] = location.hash.slice(1).split('/');
-	if (tournamentId) {
-		const t = await (await fetch(`/api/tournament/${tournamentId}`)).json();
-		if (game === 'pong')
-			send(JSON.stringify(getLayoutPayloadPong("layout", tournamentId, t)));
-		else if (game === 'tictactoe')
-			send(JSON.stringify(getLayoutPayloadTicTacToe("layout", tournamentId, t)));
-	}
-};
-
 const handleWheel = (e) => {
 	if (e.ctrlKey || e.metaKey) {
 		e.preventDefault();
@@ -430,7 +417,6 @@ addEventListener('keydown', handleKeyDown);
 addEventListener("keydown", paddleHandler);
 addEventListener("keyup", paddleUpHandler);
 addEventListener("mouseup", tapHandler);
-addEventListener("resize", resizeScreen);
 addEventListener("click", clickHandler);
 addEventListener("keyup", keyHandler);
 addEventListener('online', initWebSocket);
@@ -438,12 +424,11 @@ addEventListener('online', initWebSocket);
 const removeEvents = () => {
 	removeEventListener("keydown", paddleHandler);
 	removeEventListener("mouseup", tapHandler);
-	removeEventListener("resize", resizeScreen);
 }
 
 let keys = {};
 export function gameLoop() {
-	if (location.hash.includes('#/landing/pong') || location.hash.includes('#/landing/bong')) {
+	if (location.hash.includes('#/landing/bong')) {
 		const type = location.hash.split('/')[2];
 		if (keys['KeyZ'])
 			send(JSON.stringify({ type,  subtype: "play",  isDown: true, side: 0, key: 'z' }));

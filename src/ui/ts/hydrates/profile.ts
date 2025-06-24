@@ -151,7 +151,7 @@ export const hydrateProfile = async (userId) => {
 
 				const gameName = match.round.tournament.game.name.toLowerCase();
 
-				if (gameName === 'pong' || gameName === 'bong') {
+				if (gameName === 'bong') {
 					pongGames++;
 					if (userScore > opponentScore) {
 						wins++;

@@ -4,7 +4,6 @@ const utils = require('../user-auth/services/user.service')(prisma)
 const DEFAULT_PASSWORD = "1234";
 
 async function fill() {
-    await prisma.game.create({ data: { description: "Pong", name: "pong" } });
 	await prisma.game.create({ data: { description: "Bong", name: "bong" } });
     await prisma.game.create({ data: { description: "Tic tac toe", name: "tictactoe" } });
 
