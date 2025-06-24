@@ -287,14 +287,6 @@ const sendMessage = () => {
 	}
 }
 
-const paddleHandler = (e) => {
-	keys[e.code] = true;
-};
-
-const paddleUpHandler = (e) => {
-	delete keys[e.code];
-};
-
 const tapHandler = (e) => {
 	const target = e.target as HTMLTextAreaElement;
 	if(target.tagName == 'TD') {
@@ -313,6 +305,7 @@ const handleWheel = (e) => {
 };
 
 const handleKeyDown = (e) => {
+	keys[e.code] = true;
 	if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-'|| e.key==='=')) {
 		e.preventDefault();
 	}
@@ -320,6 +313,7 @@ const handleKeyDown = (e) => {
 
 const keyHandler = (e) => {
 	e.preventDefault();
+	delete keys[e.code];
 	if (e.code == 'Enter' && e.target.id === 'text') {
 		sendMessage();
 	}
@@ -423,11 +417,9 @@ const clickHandler = (e) => {
 
 addEventListener('wheel', handleWheel);
 addEventListener('keydown', handleKeyDown);
-addEventListener("keydown", paddleHandler);
-addEventListener("keyup", paddleUpHandler);
+addEventListener("keyup", keyHandler);
 addEventListener("mouseup", tapHandler);
 addEventListener("click", clickHandler);
-addEventListener("keyup", keyHandler);
 addEventListener('online', initWebSocket);
 
 const removeEvents = () => {
