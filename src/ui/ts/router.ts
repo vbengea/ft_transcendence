@@ -470,24 +470,6 @@ async function resolveRoute(route) {
 	}
 }
 
-function testUsers() {
-	const username : HTMLInputElement = document.querySelector('#email');
-	const password : HTMLInputElement = document.querySelector('#password');
-
-	if (username && password) {
-		password.value = '1234';
-		if (navigator.userAgent.includes('OPR')){
-			username.value = 'unamuno@gmail.com';
-		} else if (navigator.userAgent.includes('Firefox')) {
-			username.value = 'tolstoi@gmail.com';
-		} else if (navigator.userAgent.includes('Chrome')) {
-			username.value = 'juaflore@gmail.com';
-		} else if (navigator.userAgent.includes('Safari')) {
-			username.value = 'edgar@gmail.com';
-		}
-	}
-}
-
 async function router(evt) {
 	if (!sessionStorage.lang)
 		await loadLang("en_EN");

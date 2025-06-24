@@ -372,7 +372,7 @@ const clickHandler = (e) => {
 				changeMode("list");
 			} else if(target.dataset.friend_option === "bong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
-				const isAnonymous = friend_id === 'anonymous@gmail.com';
+				const isAnonymous = friend_id === ANONYMOUS;
 				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: true }
 				const users = [me, you];
