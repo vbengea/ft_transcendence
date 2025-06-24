@@ -209,6 +209,8 @@ async function chatSendReceiver(sender, receiverId, text, isRead = false) {
 			receiver.socket.send(JSON.stringify({ type: 'chat',  sender, text: text }));
 			chatSrv.createMessage(sender.id, receiverId, text, true);
 		}
+	} else {
+		chatSrv.createMessage(sender.id, receiverId, text, false);
 	}
 }
 
