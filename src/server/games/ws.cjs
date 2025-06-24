@@ -183,16 +183,18 @@ const broadcast = async (tid, uid) => {
 	const tour = await tournamentSrv.getTournamentById(tid);
 	const matches = await tournamentSrv.getCurrentTournamentMatchByUserId(uid, tid);
 	const match = matches[0];
-	if (match && match.user1 && match.user2){
-		const tournamentId = tour.id;
-		const organizerId = tour.organizerId;
-		const game = tour.game.name;
-		const tname = tour.name;
-		const organizer = await userSrv.getUserById(organizerId);
-		const start = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Start</button>`;
-		const link = `Your next game of the ${tname} tournament is ready to ${start}`;
-		chatSendReceiver(organizer, match.user1Id, link);
-		chatSendReceiver(organizer, match.user2Id, link);
+	if (match){
+		if (match.user1 && match.user2){
+			const tournamentId = tour.id;
+			const organizerId = tour.organizerId;
+			const game = tour.game.name;
+			const tname = tour.name;
+			const organizer = await userSrv.getUserById(organizerId);
+			const start = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Start</button>`;
+			const link = `Your next game of the ${tname} tournament is ready to ${start}`;
+			chatSendReceiver(organizer, match.user1Id, link);
+			chatSendReceiver(organizer, match.user2Id, link);
+		}
 	}
 }
 

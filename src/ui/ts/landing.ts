@@ -212,7 +212,7 @@ let hydrateTemplate = async (url, params) => {
 				const match = await (await fetch('/api/tournaments/current_match')).json();
 				
 				setTimeout(async () => {
-					if (match) {					
+					if (match) {
 						const t = await (await fetch(`/api/tournament/${params[0]}`)).json();
 						localStorage.tournament = JSON.stringify(t);
 						location.hash = '#/landing/stats';

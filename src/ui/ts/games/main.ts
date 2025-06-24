@@ -18,6 +18,7 @@ export async function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : 
 
 export async function handleGame(data: Data){
 	const SPLASH = document.querySelector(`#splash`);
+	document.querySelector('#giveup').classList.add('hidden');
 	if (data.redirect) {
 		location.hash = data.redirect;
 	} else if (data.message){
@@ -39,6 +40,8 @@ export async function handleGame(data: Data){
 			}
 		}
 	} else if (data.game) {																// Display game screen .........................................................
+		document.querySelector('#giveup').classList.remove('hidden');
+		
 		display(data);
 		if (SPLASH)
 			SPLASH.classList.add('invisible');
