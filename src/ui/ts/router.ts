@@ -47,6 +47,10 @@ template('template-2fa-verify', async ()  => {
 		const json = await response.json();
 		if (response.ok) {
 			localStorage.removeItem('tempToken');
+			sessionStorage.setItem('TRANSCENDER_USER', JSON.stringify({
+				authenticated: true,
+				user: json.user,
+			}));
 			location.hash = '/';
 		} else {
 			const err = document.querySelector("#error");
