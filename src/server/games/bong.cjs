@@ -442,6 +442,7 @@ class Bong {
 		const w = s.getWidth();
 		const ph = paddle.getHeight();
 		const hhalf = h / 2.0;
+
 		if (isMulti) {
 			if (index > 1) {
 				if (y < hhalf)
@@ -449,8 +450,8 @@ class Bong {
 				else if (y > h - ph)
 					y = h - ph;
 			} else {
-				if (y < 1)
-					y = 1;
+				if (y < 0)
+					y = 0;
 				else if (y > hhalf - ph)
 					y = hhalf - ph;
 			}
