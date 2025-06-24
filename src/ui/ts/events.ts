@@ -35,7 +35,7 @@ export function closeWS() {
 
 export function initWebSocket() {
 
-	WS = new WebSocket(`https://${window.location.host}/ws`);
+	WS = new WebSocket(`wss://${window.location.host}/ws`);
 	
 	WS.onerror = (event) => {
 		console.log(event)

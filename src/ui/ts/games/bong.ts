@@ -221,7 +221,7 @@ function txt(scene) {
 	LEFT_TEXT.rotate(BABYLON.Axis.Y, -Math.PI/2, BABYLON.Space.WORLD);
 }
 
-export function getLayoutPayloadBong(subtype : string, tournamentId : string, tournament: { id: number, totalPlayers: number, organizer: { customization: Customization } }) {
+export function getLayoutPayloadBong(subtype : string, tournamentId : string, tournament: { id: number, totalPlayers: number, totalRounds: number, organizer: { customization: Customization } }) {
 	const sc = {
 		w: height,
 		h: width,
@@ -242,7 +242,7 @@ export function getLayoutPayloadBong(subtype : string, tournamentId : string, to
 		h: padH,
 	}]
 
-	if (tournament.totalPlayers > 2) {
+	if (tournament.totalPlayers > 2 && tournament.totalRounds === 1) {
 		const padH = 6;
 		paddles = [{
 			x: 1,
