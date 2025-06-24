@@ -33,7 +33,6 @@ export async function handleGame(data: Data){
 				const txt : HTMLImageElement = document.querySelector(`#user-${i}-name`);
 				if (data.match.counter >= i){
 					const u = data.match[`user${i}`];
-					console.log(u)
 					img.src = u.avatar;
 					txt.innerHTML = lang(u.alias || u.name);
 				} else {
