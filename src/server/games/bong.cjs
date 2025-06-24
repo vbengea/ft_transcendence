@@ -736,4 +736,3 @@ class Bong {
 
 exports.Bong = Bong;
 exports.BongPlayer = Player;
-exports.BongTXT = TXT;

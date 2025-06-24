@@ -1,6 +1,5 @@
 import { Message } from './types';
 import { handleGame } from './games/main';
-import { getLayoutPayloadTicTacToe } from './games/tictactoe';
 
 export let WS = null;
 

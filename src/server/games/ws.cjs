@@ -1,5 +1,5 @@
-const { Bong, BongPlayer, BongTXT } = require('./bong.cjs')
-const { TicTacToe, TicTacToePlayer, TicTacToeTXT } = require('./tictactoe.cjs')
+const { Bong, BongPlayer } = require('./bong.cjs')
+const { TicTacToe, TicTacToePlayer } = require('./tictactoe.cjs')
 
 const prisma = require('../prisma/prisma.cjs');
 const tournamentSrv = require('../tournament/services/tournament.service')(prisma);

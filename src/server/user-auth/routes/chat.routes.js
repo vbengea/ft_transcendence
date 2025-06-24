@@ -1,7 +1,7 @@
 
 
 function chatRoutes(fastify, options, done) {
-	const { chatService, userService } = options;
+	const { chatService } = options;
 	const verifyToken = fastify.authenticate;
 
 	fastify.get('/new_message_count', { preHandler: verifyToken }, async (request, reply) => {

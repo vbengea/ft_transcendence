@@ -1,13 +1,9 @@
-
-const { errorCodes } = require('fastify');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const qrcode = require('qrcode');
 const fs = require('fs');
-const path = require('path');
 const { connMap } = require('../../games/ws.cjs');
 const prisma = require('../../prisma/prisma.cjs');
-const { json } = require('stream/consumers');
 
 function authRoutes(fastify, options, done) {
 	const userService = options.userService;

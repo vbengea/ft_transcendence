@@ -100,12 +100,8 @@ function tournamentRoutes(fastify, options, done) {
 		try {
 			const playing = await play(request.user.id, { 
 				readyState: true,
-				send: (raw) => {
-
-				},
-				close: (raw) => {
-
-				}
+				send: (_raw) => {},
+				close: (_raw) => {}
 			}, request.body);
 			reply.send({ playing });
 		} catch (err) {

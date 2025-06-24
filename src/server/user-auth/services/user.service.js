@@ -5,7 +5,6 @@ const speakeasy = require('speakeasy');
 const jdenticon = require("jdenticon");
 const fetch = require('node-fetch');
 const fs = require("fs");
-const { connect } = require('http2');
 
 function createUserService(prisma) {
 	return {

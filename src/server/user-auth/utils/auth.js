@@ -1,7 +1,4 @@
 
-
-// const jwt = require('jsonwebtoken');
-
 function createAuthUtils() {
 	return {
 
@@ -14,7 +11,6 @@ function createAuthUtils() {
 				try {
 					await request.jwtVerify();
 				} catch (err) {
-					// reply.code(401);.send({ error: err.message || 'Invalid or expired token' });
 					reply.code(401);
 					reply.sendFile('index.html');
 				}

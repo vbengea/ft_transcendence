@@ -352,4 +352,3 @@ class TicTacToe {
 
 exports.TicTacToe = TicTacToe;
 exports.TicTacToePlayer = Player;
-exports.TicTacToeTXT = TXT;
