@@ -208,8 +208,8 @@ let hydrateTemplate = async (url, params) => {
 
 		case 'win': case 'loose':
 			if (url === 'win'){
-				const match = await (await fetch('/api/tournaments/current_match')).json();
-				
+				console.log(params[0])
+				const match = await (await fetch(`/api/tournaments/current_match/${params[0]}`)).json();
 				setTimeout(async () => {
 					if (match) {
 						const t = await (await fetch(`/api/tournament/${params[0]}`)).json();

@@ -53,9 +53,11 @@ export function initWebSocket() {
 		else if (data.type === 'chat') {
 			if (data.count){
 				const el = document.querySelector('#message_count');
-				let n = lang(parseInt(el.innerHTML) || 0);
-				n++;
-				el.innerHTML = lang(n + '');
+				if (el) {
+					let n = lang(parseInt(el.innerHTML) || 0);
+					n++;
+					el.innerHTML = lang(n + '');
+				}
 			}
 			if (data.sender) {
 				let u: Message = chatUserList.filter(c => c.id === data.sender.id)[0];
@@ -276,10 +278,12 @@ export const changeMode = async (mode, friendId?) => {
 
 const sendMessage = () => {
 	const el : HTMLInputElement = document.querySelector('#text');
-	const text = el.value.slice(0, CHAR_LIMIT);
-	if (text.length) {
-		el.value = '';
-		send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text, isLink: false }));
+	if (el) {
+		const text = el.value.slice(0, CHAR_LIMIT);
+		if (text.length) {
+			el.value = '';
+			send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text, isLink: false }));
+		}
 	}
 }
 

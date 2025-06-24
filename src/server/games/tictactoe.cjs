@@ -259,7 +259,7 @@ class TicTacToe {
 				this.matrix[row][col] = current;
 				this.last = this.matrix[row][col];
 
-				// SCORES																			// Determine the winner .............................
+				// SCORES																				// Determine the winner .............................
 				let p = '';
 				for (let i = 0; i < DIM; i++) {
 					p = this.verifyVertical(i);
@@ -299,7 +299,7 @@ class TicTacToe {
 					else
 						this.send();
 
-					if (player === p1 && !p2.getUser().human) {										// Computer play ....................................
+					if (player === p1 && !p2.getUser().human) {											// Computer play ....................................
 						setTimeout(() => {
 							while (this.matrix[row][col] === 'x' || this.matrix[row][col] === 'o') {
 								down = Math.floor(Math.random() * 9) + 1

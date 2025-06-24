@@ -40,10 +40,11 @@ function tournamentRoutes(fastify, options, done) {
 		}
 	});
 
-	fastify.get('/tournaments/current_match', { preHandler: fastify.authenticate }, async (request, reply) => {
+	fastify.get('/tournaments/current_match/:tournamentId', { preHandler: fastify.authenticate }, async (request, reply) => {
 		try {
 			const uid = request.user.id;
-			const match = matches = await tournamentService.getCurrentTournamentMatchByUserId(uid);
+			const tid = request.params.tournamentId;
+			const match = matches = await tournamentService.getCurrentTournamentMatchByUserId(uid, tid);
 			const currentMatch = match.length ? match[0] : null;
 			reply.send(currentMatch);
 		} catch (err) {
