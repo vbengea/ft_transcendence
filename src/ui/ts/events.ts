@@ -119,7 +119,7 @@ const processChatUserList = () => {
 			chatUserList.sort((a, b) => {
 				return b.count - a.count;
 			});
-			el.innerHTML = lang(chatUserList.filter(r => r.id !== user.id && r.email !== ANONYMOUS).map(u => `
+			el.innerHTML = lang(chatUserList.filter(r => r.email !== ANONYMOUS).map(u => `
 				<li class="cursor-pointer pt-3 p-5 sm:pt-4 ${u.blocked ? 'bg-red-300' : ''}" data-friend_element="${u.id}">
 					<div class="flex items-center space-x-4" data-friend_element="${u.id}">
 						<div class="flex-shrink-0" data-friend_element="${u.id}">
