@@ -178,7 +178,7 @@ const chatSend = async (uid, raw) => {
 		}
 	}
 
-	chatSendReceiver(sender.user, raw.receiverId, raw.text, true);
+	chatSendReceiver(sender.user, raw.receiverId, raw.text, raw.isLink);
 }
 
 const broadcast = async (tid, uid) => {
@@ -194,27 +194,27 @@ const broadcast = async (tid, uid) => {
 			const organizer = await userSrv.getUserById(organizerId);
 			const start = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Start</button>`;
 			const link = `Your next game of the ${tname} tournament is ready to ${start}`;
-			chatSendReceiver(organizer, match.user1Id, link);
-			chatSendReceiver(organizer, match.user2Id, link);
+			chatSendReceiver(organizer, match.user1Id, link, true);
+			chatSendReceiver(organizer, match.user2Id, link, true);
 		}
 	}
 }
 
-async function chatSendReceiver(sender, receiverId, text, isRead = false) {
+async function chatSendReceiver(sender, receiverId, text, isLink = false) {
 	const receiver = chatMap.get(receiverId);
 	if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
 		if (receiver.mode === 'count'){
 			receiver.socket.send(JSON.stringify({ type: 'chat', count: 1 }));
-			chatSrv.createMessage(sender.id, receiverId, text, false);
+			chatSrv.createMessage(sender.id, receiverId, text, false, isLink);
 		} else if (receiver.mode === 'list'){
 			receiver.socket.send(JSON.stringify({ type: 'chat', sender, count: 1 }));
-			chatSrv.createMessage(sender.id, receiverId, text, false);
+			chatSrv.createMessage(sender.id, receiverId, text, false, isLink);
 		} else if (receiver.mode === 'friend') {
 			receiver.socket.send(JSON.stringify({ type: 'chat',  sender, text: text }));
-			chatSrv.createMessage(sender.id, receiverId, text, true);
+			chatSrv.createMessage(sender.id, receiverId, text, true, isLink);
 		}
 	} else {
-		chatSrv.createMessage(sender.id, receiverId, text, false);
+		chatSrv.createMessage(sender.id, receiverId, text, false, isLink);
 	}
 }
 

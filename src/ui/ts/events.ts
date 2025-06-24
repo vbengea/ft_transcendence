@@ -111,7 +111,7 @@ const tournamentChat = (game, receiverId, tournamentId, tname?) => {
 	} else {
 		text = `<button type="button" data-link="#/landing/${game}/${tournamentId}" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Play ${game}?</button>`;
 	}
-	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game }));
+	WS.send(JSON.stringify({ type: "chat", subtype: "send", text, receiverId, game, isLink: true }));
 }
 
 const processChatUserList = () => {
@@ -186,7 +186,7 @@ const processUserMessages = () => {
 						<span class="text-sm font-semibold text-gray-900" data-chat="1">${escapeHtml(u.sender.name)}</span>
 					</div>
 					<div class="flex flex-col leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-${me ? "gray-700" : "blue-600"}" data-chat="1">
-						<p class="text-xs font-normal text-gray-900 dark:text-white" data-chat="1">${escapeHtml(u.text)}</p>
+						<p class="text-xs font-normal text-gray-900 dark:text-white" data-chat="1">${u.isLink ? u.text : escapeHtml(u.text)}</p>
 					</div>
 				</div>`;
 
@@ -279,7 +279,7 @@ const sendMessage = () => {
 	const text = el.value.slice(0, CHAR_LIMIT);
 	if (text.length) {
 		el.value = '';
-		send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text }));
+		send(JSON.stringify({ type: "chat", subtype: "send", receiverId, text, isLink: false }));
 	}
 }
 

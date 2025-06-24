@@ -89,13 +89,14 @@ function createChatService(prisma) {
 			return messages;
 		},
 
-		async createMessage(senderId, receiverId, text, isRead) {
+		async createMessage(senderId, receiverId, text, isRead, isLink = false) {
 			return prisma.message.create({
 				data: {
 					senderId,
 					receiverId,
 					text,
-					isRead
+					isRead,
+					isLink
 				}
 			});
 		},

@@ -7,6 +7,7 @@ export type Message = {
 	count: number, 
 	text?: string,
 	blocked?: boolean,
+	isLink?: boolean,
 	sender?: { id: string, avatar: string, name: string } 
 };
 
