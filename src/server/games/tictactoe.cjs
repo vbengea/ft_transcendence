@@ -198,10 +198,10 @@ class TicTacToe {
 
 	giveup(side) {
 		if (side === 0) {
-			this.scores[1] = 10;
+			this.scores[1] = this.score_max;
 			this.manageResults(1);
 		} else if (side === 1) {
-			this.scores[0] = 10;
+			this.scores[0] = this.score_max;
 			this.manageResults(0);
 		}
 	}
