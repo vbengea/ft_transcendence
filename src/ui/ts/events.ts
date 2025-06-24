@@ -386,8 +386,14 @@ const clickHandler = (e) => {
 					gameType: game,
 					alias
 				};
-				if (isAnonymous)
-					tournament.alias = prompt("Please enter your name", "");
+				if (isAnonymous) {
+					const rawAlias = prompt("Please enter your name", "");
+					if (rawAlias && rawAlias.trim()) {
+						tournament.alias = escapeHtml(rawAlias.trim().slice(0, 50));
+					} else {
+						tournament.alias = 'Anonymous';
+					}
+				}
 				createTournament(tournament);
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;
