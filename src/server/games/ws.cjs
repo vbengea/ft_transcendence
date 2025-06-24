@@ -29,17 +29,17 @@ function newGame(type, mid, limit, match, { score_max }) {
 	return type === 'pong' ? new Pong(mid, limit, match, maps, broadcast, score_max) : new TicTacToe(mid, 2, match, maps, broadcast, score_max);
 }
 
-function newPlayer(type, user) {
+function newPlayer(type, user, alias) {
 	if (type === 'bong')
-		return new BongPlayer(user);
-	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user);
+		return new BongPlayer(user, alias);
+	return type === 'pong' ? new PongPlayer(user) : new TicTacToePlayer(user, alias);
 }
 
 function setUser(i, socket, raw, uid, match) {
 	if (match[`user${i}`] && !match[`user${i}`].player && match[`user${i}Id`] === uid && match[`user${i}`].human) {
 		match[`user${i}`].socket = socket;
 		match[`user${i}`].raw = raw;
-		const player = newPlayer(raw.type, match[`user${i}`]);
+		const player = newPlayer(raw.type, match[`user${i}`], '');
 		match[`user${i}`].player = player;
 		match.game.addPlayer(i - 1, player);
 		match[`user${i}`].matchId = match.id;
@@ -50,9 +50,10 @@ function setUser(i, socket, raw, uid, match) {
 			const r = Object.assign(raw, { });
 			p.raw = r;
 			p.initialized = true;
-			const anonymous = newPlayer(raw.type, p);
+			const anonymous = newPlayer(raw.type, p, match.round.tournament.alias);
 			p.player = anonymous;
 			match.game.addPlayer(1, anonymous);
+
 		} else {
 			/* If the rest of the users are bots ......................................... */
 			for (let j = 1; j <= MAX_USERS; j++){
@@ -61,7 +62,7 @@ function setUser(i, socket, raw, uid, match) {
 					const r = Object.assign(raw, { });
 					p.raw = r;
 					p.initialized = true;
-					const computer = newPlayer(raw.type, p);
+					const computer = newPlayer(raw.type, p, '');
 					p.player = computer;
 					match.game.addPlayer(j - 1, computer);
 				}

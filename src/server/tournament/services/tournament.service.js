@@ -1,6 +1,6 @@
 function createTournamentService(prisma) {
 	return {
-		async createTournament(organizerId, name, users, rounds, gameName) {
+		async createTournament(organizerId, name, users, rounds, gameName, alias = 'anonymous') {
 			const organizer = await prisma.user.findUnique({ where: { id: organizerId }, include: { customization: true }});
 			const winScore = organizer.customization.score_max;
 			const game = await prisma.game.findFirst({
@@ -18,7 +18,8 @@ function createTournamentService(prisma) {
 					totalPlayers: users.length,
 					customization: JSON.stringify({}),
 					gameId: game.id,
-					organizerId
+					organizerId,
+					alias
 				}
 			});
 

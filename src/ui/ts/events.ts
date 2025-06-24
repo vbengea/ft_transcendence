@@ -379,12 +379,23 @@ const clickHandler = (e) => {
 				changeMode("list");
 			} else if(target.dataset.friend_option === "bong" || target.dataset.friend_option === "tictactoe") {
 				const { friend_id, friend_name, friend_avatar } = target.dataset;
+				const isAnonymous = friend_id === 'anonymous@gmail.com';
 				const me = JSON.parse(sessionStorage.TRANSCENDER_USER).user;
 				const you = { id: friend_id, name: friend_name, avatar: friend_avatar, human: true }
 				const users = [me, you];
 				const rounds = [{ name: 'Finals', matches: [{ users }] }];
 				const game = target.dataset.friend_option;
-				const tournament = { name: friend_id === 'anonymous@gmail.com' ? '{{guest_play}}' : '{{single_player}}', users, rounds, gameType: game };
+				let alias = '';
+				console.log(friend_id)
+				const tournament = { 
+					name: isAnonymous ? '{{guest_play}}' : '{{single_player}}', 
+					users, 
+					rounds, 
+					gameType: game,
+					alias
+				};
+				if (isAnonymous)
+					tournament.alias = prompt("Please enter your name", "");
 				createTournament(tournament);
 			} else if(target.dataset.friend_option === "profile") {
 				location.hash = `#/landing/profile/${target.dataset.friend_id}`;

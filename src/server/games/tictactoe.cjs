@@ -40,13 +40,14 @@ class Screen {
 
 class Player {
 
-	constructor (user) {
+	constructor (user, alias) {
 		this.wins = false;
 		this.screen = new Screen(user.raw);
 		this.score = 0;
 		this.ai = !user.human;
 		this.user = user;
 		this.side = 0;
+		this.alias = alias;
 	}
 
 	getUser() {
@@ -98,7 +99,8 @@ class Player {
 				id: this.user.id,
 				name: this.user.name,
 				avatar: this.user.avatar,
-				customization: this.user.customization
+				customization: this.user.customization,
+				alias: this.alias
 			}
 		};
 	}

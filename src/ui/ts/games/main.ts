@@ -32,8 +32,10 @@ export async function handleGame(data: Data){
 				const img : HTMLImageElement = document.querySelector(`#user-${i}-img`);
 				const txt : HTMLImageElement = document.querySelector(`#user-${i}-name`);
 				if (data.match.counter >= i){
-					img.src = data.match[`user${i}`].avatar;
-					txt.innerHTML = lang(data.match[`user${i}`].name);
+					const u = data.match[`user${i}`];
+					console.log(u)
+					img.src = u.avatar;
+					txt.innerHTML = lang(u.alias || u.name);
 				} else {
 					img.parentElement.classList.add('hidden');
 				}

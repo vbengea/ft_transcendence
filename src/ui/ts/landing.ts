@@ -264,6 +264,9 @@ let hydrateTemplate = async (url, params) => {
 
 			for(let m of matches) {
 
+				if (m[`user2`] && m[`user2`].id === 'anonymous@gmail.com')
+					m[`user2`].name = m.round.tournament.alias;
+
 				if (m.user1Id == user.id) {
 					ii = 1;
 					jj = 2;

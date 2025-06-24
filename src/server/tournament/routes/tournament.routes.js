@@ -14,6 +14,7 @@ function tournamentRoutes(fastify, options, done) {
 				tournamentData.users,
 				tournamentData.rounds,
 				tournamentData.gameName,
+				tournamentData.alias
 			);
 
 			reply.code(201).send({

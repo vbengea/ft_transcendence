@@ -165,7 +165,7 @@ class Screen {
 
 class Player {
 
-	constructor (user) {
+	constructor (user, alias) {
 		this.wins = false;
 		this.screen = new Screen(user.raw);
 		this.score = 0;
@@ -174,6 +174,7 @@ class Player {
 		this.side = 0;
 		this.segment = 0;
 		this.paddleIndex = 0;
+		this.alias = alias;
 	}
 
 	getPaddleIndex() {
@@ -236,6 +237,10 @@ class Player {
 		return this.ai;
 	}
 
+	getAlias() {
+		return this.alias;
+	}
+
 	toJSON() {
 		return {
 			wins: this.wins,
@@ -247,7 +252,8 @@ class Player {
 				id: this.user.id,
 				name: this.user.name,
 				avatar: this.user.avatar,
-				customization: this.user.customization
+				customization: this.user.customization,
+				alias: this.alias
 			}
 		};
 	}
@@ -369,7 +375,7 @@ class Bong {
 		const u1 = this.match.user1;
 		const u2 = this.match.user2;
 		match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
-		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png' };
+		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png', alias: this.match.round.tournament.alias };
 		if (this.match.user3) {
 			match.user3 = { name: this.match.user3.name, avatar: this.match.user3.avatar };
 			match.counter++;
