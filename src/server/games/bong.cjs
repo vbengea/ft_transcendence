@@ -11,6 +11,7 @@ const TXT = {
 };
 
 class Ball {
+
 	constructor (x, y, w, h) {
 		this.width = w;
 		this.height = h;
@@ -476,6 +477,7 @@ class Bong {
 		}
 
 		let y = 0;
+
 		if (p.getSide() == 0) {
 			y = this.computerLeft(b, d, ball_speed, center, screen_center);
 		} else {
@@ -524,38 +526,31 @@ class Bong {
 
 	computerRight(b, d, ball_speed, center, screen_center) {
 		let y = 0;
-		if (b.getDx() > 0) {											
-			if (b.getDy() > 0) {																	
-				if (b.getY() > center) { 
-					y = d.getY() + ball_speed;
-				} else {
-					y = d.getY() - ball_speed;
-				}
-			}
-			
-			if (b.getDy() < 0) {																				// ball moving up..................................
-				if (b.getY() < center) {
-					y = d.getY() - ball_speed;
-				} else {
-					y = d.getY() + ball_speed;
-				}
-			}
-
-			if (b.getDy() == 0) {																				// ball moving stright across......................
-				if (b.getY() < center) {
-					y = d.getY() - 1;
-				} else {
-					y = d.getY() + 1;
-				}
-			}
-
-		} else {																								// ball moving left................................
-			if (center < screen_center) {																		// return to center position.......................
+									
+		if (b.getDy() > 0) {																	
+			if (b.getY() > center) { 
 				y = d.getY() + ball_speed;
 			} else {
 				y = d.getY() - ball_speed;
 			}
 		}
+		
+		if (b.getDy() < 0) {																				// ball moving up..................................
+			if (b.getY() < center) {
+				y = d.getY() - ball_speed;
+			} else {
+				y = d.getY() + ball_speed;
+			}
+		}
+
+		if (b.getDy() == 0) {																				// ball moving stright across......................
+			if (b.getY() < center) {
+				y = d.getY() - 1;
+			} else {
+				y = d.getY() + 1;
+			}
+		}
+
 		return y;
 	}
 
