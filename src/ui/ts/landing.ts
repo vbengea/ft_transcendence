@@ -257,11 +257,12 @@ let hydrateTemplate = async (url, params) => {
 			});
 
 			let count = matches.length, wins = 0, loses = 0, avg = 0;
-			let ii = 0, jj = 0;
+			let ii = 0, jj = 0, jjj = 0, side = 0;
 			const umap = new Map();
 			let u = null;
 
 			for(let m of matches) {
+				const t = m.round.tournament;
 
 				if (m[`user2`] && m[`user2`].id === 'anonymous@gmail.com')
 					m[`user2`].name = m.round.tournament.alias;
@@ -270,12 +271,14 @@ let hydrateTemplate = async (url, params) => {
 					ii = 1;
 					jj = 2;
 				} else if (m.user2Id === user.id) {
+					side = 1;
 					ii = 2;
 					jj = 1;
 				} else if (m.user3Id === user.id) {
 					ii = 3;
 					jj = 2;
 				} else if (m.user4Id === user.id) {
+					side = 1;
 					ii = 4;
 					jj = 1;
 				}
@@ -284,10 +287,19 @@ let hydrateTemplate = async (url, params) => {
 
 				u = umap.get(um.name) || { name: um.name, count: 0, wins: 0, loses: 0, avg: '' };
 				u.count++;
+				let nameLabel = `${um.name}`;
+
+				if (um.name !== '--' && t.totalRounds === 1 && t.totalPlayers > 2) {
+					if (side === 0) {
+						nameLabel = `${um.name} / ${m[`user4`].name}`;
+					} else {
+						nameLabel = `${um.name} / ${m[`user3`].name}`;
+					}
+				}
 
 				let html = `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 						<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-							${um.name}
+							${nameLabel}
 						</th>`;
 
 				if (m[`user${ii}Score`] > m[`user${jj}Score`]) {
@@ -302,13 +314,13 @@ let hydrateTemplate = async (url, params) => {
 					html += `<td class="px-6 py-4 text-center"></td><td class="px-6 py-4 text-center">1</td>`
 				}
 
-				html += `<td class="px-6 py-4 text-center">${lang(m.round.tournament.name)}</td>`
+				html += `<td class="px-6 py-4 text-center">${lang(t.name)}</td>`
 
 				html +=  `<td class="px-6 py-4 text-center">${ (new Date(m.startTime)).toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }</td></tr>`;
 
-				if ( m.round.tournament.game.name === 'bong' )
+				if ( t.game.name === 'bong' )
 					mt2.innerHTML += html;
-				else if ( m.round.tournament.game.name === 'tictactoe')
+				else if ( t.game.name === 'tictactoe')
 					mt3.innerHTML += html;
 
 				let mavg = u.wins * 100 / u.count;
