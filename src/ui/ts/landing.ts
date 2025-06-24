@@ -319,22 +319,22 @@ let hydrateTemplate = async (url, params) => {
 			document.querySelector('#countto3').innerHTML = lang(loses + '');
 			document.querySelector('#countto4').innerHTML = lang(avgs + '');
 
-			umap.forEach(m => {
-				mt1.innerHTML += `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-					<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-						${m.name}
-					</th>
-					<td class="px-6 py-4 text-center">
-						${m.wins}
-					</td>
-					<td class="px-6 py-4 text-center">
-						${m.loses}
-					</td>
-					<td class="px-6 py-4 text-center">
-						${m.avg}%
-					</td>
-				</tr>`;
-			});
+			// umap.forEach(m => {
+			// 	mt1.innerHTML += `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+			// 		<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+			// 			${m.name}
+			// 		</th>
+			// 		<td class="px-6 py-4 text-center">
+			// 			${m.wins}
+			// 		</td>
+			// 		<td class="px-6 py-4 text-center">
+			// 			${m.loses}
+			// 		</td>
+			// 		<td class="px-6 py-4 text-center">
+			// 			${m.avg}%
+			// 		</td>
+			// 	</tr>`;
+			// });
 
 			break;
 
