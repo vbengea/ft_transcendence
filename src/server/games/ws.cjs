@@ -119,7 +119,7 @@ async function play(uid, socket, raw) {
 	} else if (raw.subtype === 'play') {
 		const match = socketMap.get(socket) || matchMap.get(raw.mid);
 		if (user && match){
-			if (match.round.tournament.totalPlayers > 2) {
+			if (match.round.tournament.totalPlayers > 2 && match.round.tournament.totalRounds === 1) {
 				match.game.mplay(user.player, raw.isDown);
 			} else {
 				const isAnonymous = match.user2Id === ANONYMOUS;
@@ -176,7 +176,7 @@ const chatSend = async (uid, raw) => {
 		}
 	}
 
-	chatSendReceiver(sender.user, raw.receiverId, raw.text);
+	chatSendReceiver(sender.user, raw.receiverId, raw.text, true);
 }
 
 const broadcast = async (tid, uid) => {
@@ -196,18 +196,20 @@ const broadcast = async (tid, uid) => {
 	}
 }
 
-async function chatSendReceiver(sender, receiverId, text) {
+async function chatSendReceiver(sender, receiverId, text, isRead = false) {
 	const receiver = chatMap.get(receiverId);
 	if (receiver && receiver.mode !== 'off' && receiver.socket && receiver.socket.readyState !== WebSocket.CLOSED) {
 		if (receiver.mode === 'count'){
 			receiver.socket.send(JSON.stringify({ type: 'chat', count: 1 }));
+			chatSrv.createMessage(sender.id, receiverId, text, false);
 		} else if (receiver.mode === 'list'){
 			receiver.socket.send(JSON.stringify({ type: 'chat', sender, count: 1 }));
+			chatSrv.createMessage(sender.id, receiverId, text, false);
 		} else if (receiver.mode === 'friend') {
 			receiver.socket.send(JSON.stringify({ type: 'chat',  sender, text: text }));
+			chatSrv.createMessage(sender.id, receiverId, text, true);
 		}
 	}
-	chatSrv.createMessage(sender.id, receiverId, text);
 }
 
 async function fn(fastify) {
