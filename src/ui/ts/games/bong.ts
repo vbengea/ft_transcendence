@@ -231,7 +231,7 @@ export function getLayoutPayloadBong(subtype : string, tournamentId : string, to
 	const padH = 8;
 
 	let paddles = [{
-		x: 1,
+		x: 0,
 		y: padH,
 		w: 1,
 		h: padH,
