@@ -12,6 +12,12 @@ let receiverId : String;
 const CHAR_LIMIT = 255;
 const ANONYMOUS = "anonymous@gmail.com"
 
+const escapeHtml = (text: string): string => {
+	const div = document.createElement('div');
+	div.textContent = text;
+	return div.innerHTML;
+}
+
 export const lang = (html) => {
 	if (sessionStorage.langRaw) {
 		const translate = JSON.parse(sessionStorage.langRaw)[0];
@@ -175,15 +181,15 @@ const processUserMessages = () => {
 			html += chatUserMessages.filter(u => u.sender.id === user.id || u.sender.id === receiverId).map(u => {
 				const me = user.id === u.sender.id;
 
-				const img = `<img class="w-8 h-8 rounded-full" src="${u.sender.avatar}" alt="${u.sender.name} image" data-chat="1">`;
+				const img = `<img class="w-8 h-8 rounded-full" src="${escapeHtml(u.sender.avatar)}" alt="${escapeHtml(u.sender.name)} image" data-chat="1">`;
 
 				const bubble = `
 				<div class="flex flex-col gap-1 w-full max-w-[320px] mb-5" data-chat="1">
 					<div class="flex items-center space-x-2 rtl:space-x-reverse" data-chat="1">
-						<span class="text-sm font-semibold text-gray-900" data-chat="1">${u.sender.name}</span>
+						<span class="text-sm font-semibold text-gray-900" data-chat="1">${escapeHtml(u.sender.name)}</span>
 					</div>
 					<div class="flex flex-col leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-${me ? "gray-700" : "blue-600"}" data-chat="1">
-						<p class="text-xs font-normal text-gray-900 dark:text-white" data-chat="1">${u.text}</p>
+						<p class="text-xs font-normal text-gray-900 dark:text-white" data-chat="1">${escapeHtml(u.text)}</p>
 					</div>
 				</div>`;
 
