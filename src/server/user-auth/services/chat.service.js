@@ -68,7 +68,6 @@ function createChatService(prisma) {
 				include: {
 					sender: true
 				},
-				take: 10,
 				orderBy: [{
 					creationTime: 'asc'
 				}]
