@@ -18,7 +18,9 @@ export async function play(payloadfn : PayloadFn, displayfn : DisplayFn, game : 
 
 export async function handleGame(data: Data){
 	const SPLASH = document.querySelector(`#splash`);
-	document.querySelector('#giveup').classList.add('hidden');
+	const giveup = document.querySelector('#giveup');
+	if (giveup)
+		giveup.classList.add('hidden');
 	if (data.redirect) {
 		location.hash = data.redirect;
 	} else if (data.message){
@@ -35,13 +37,14 @@ export async function handleGame(data: Data){
 					const u = data.match[`user${i}`];
 					img.src = u.avatar;
 					txt.innerHTML = lang(u.alias || u.name);
-				} else {
+				} else if (img.parentElement) {
 					img.parentElement.classList.add('hidden');
 				}
 			}
 		}
-	} else if (data.game) {																// Display game screen .........................................................
-		document.querySelector('#giveup').classList.remove('hidden');
+	} else if (data.game) {	
+		if (giveup)															// Display game screen .........................................................
+			giveup.classList.remove('hidden');
 		
 		display(data);
 		if (SPLASH)

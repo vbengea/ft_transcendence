@@ -55,7 +55,7 @@ model Tournament {
   totalRounds   Int
   totalPlayers  Int
   customization String
-  alias         String? @default("Anonymous")
+  alias         String? @default("")
   game          Game    @relation(fields: [gameId], references: [id])
   gameId        String
   organizer     User    @relation(fields: [organizerId], references: [id])

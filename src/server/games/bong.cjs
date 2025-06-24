@@ -374,8 +374,10 @@ class Bong {
 		const match = { counter: 2 };
 		const u1 = this.match.user1;
 		const u2 = this.match.user2;
+		const t = this.match.round.tournament;
+		const alias = t.alias;
 		match.user1 = { name: u1 ? u1.name : 'Unknown', avatar: u1 ? u1.avatar : './images/user.png' };
-		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png', alias: this.match.round.tournament.alias };
+		match.user2 = { name: u2 ? u2.name : 'Unknown', avatar: u2 ? u2.avatar : './images/user.png', alias };
 		if (this.match.user3) {
 			match.user3 = { name: this.match.user3.name, avatar: this.match.user3.avatar };
 			match.counter++;
