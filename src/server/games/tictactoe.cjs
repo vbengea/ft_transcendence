@@ -112,7 +112,7 @@ class TicTacToe {
 		this.players = [];
 		this.scores = [0, 0];
 		this.matrix = [[0,0,0],[0,0,0],[0,0,0]];
-		this.last = '';
+		this.last = 'o';
 		this.mid = mid;
 		this.match = match;
 		this.limit = limit;
@@ -136,7 +136,6 @@ class TicTacToe {
 
 	reset() {
 		this.matrix = [[0,0,0],[0,0,0],[0,0,0]];
-		this.last = '';
 		this.send();
 	}
 
@@ -243,13 +242,20 @@ class TicTacToe {
 			this.status = 1;
 
 			if (this.matrix[row][col] === 0) {
-				if (socket === p1.getSocket() && this.last !== 'x') {
-					this.matrix[row][col] = 'x';
-				} else if (socket === p2.getSocket() && this.last !== 'o'){
-					this.matrix[row][col] = 'o';
+				let current = '';
+
+				if (this.last === 'o') {
+					if (socket !== p1.getSocket())
+						return;
+					current = 'x';
 				} else {
-					return ;																		// Player intending to play again ...................
+					if (socket !== p2.getSocket())
+						return;
+					current = 'o';
 				}
+
+				this.matrix[row][col] = current;
+				this.last = this.matrix[row][col];
 
 				// SCORES																			// Determine the winner .............................
 				let p = '';
@@ -290,8 +296,6 @@ class TicTacToe {
 						this.reset();
 					else
 						this.send();
-
-					this.last = this.matrix[row][col];
 
 					if (player === p1 && !p2.getUser().human) {										// Computer play ....................................
 						setTimeout(() => {
