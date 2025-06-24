@@ -11,10 +11,15 @@ export const hydrateSettings = async () => {
 
 			tabButtons.forEach(button => {
 				button.addEventListener('click', () => {
-					tabButtons.forEach(btn => btn.classList.remove('active'));
+					tabButtons.forEach(btn => {
+						btn.classList.remove('text-indigo-600', 'bg-indigo-50', 'border-l-4', 'border-indigo-600', 'pl-3');
+						btn.classList.add('px-4');
+					});
 					tabContents.forEach(content => content.classList.add('hidden'));
 
-					button.classList.add('active');
+					button.classList.add('text-indigo-600', 'bg-indigo-50', 'border-l-4', 'border-indigo-600', 'pl-3');
+					button.classList.remove('px-4');
+					
 					const tabId = button.id.replace('tab-', 'content-');
 					document.getElementById(tabId).classList.remove('hidden');
 				});
