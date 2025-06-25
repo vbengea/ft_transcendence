@@ -287,7 +287,7 @@ export function displayTicTacToe(data: Data) {
 
 	let n = 0;
 	for (let player of game.players) {
-		if (player) {
+		if (player && tscene) {
 			if (n % 2 == 0) {
 				tscene.getTextureByName("texture_left").drawText(player.score.toString(), null, 122, "bold 160px verdana", "white", "#08775f");
 			} else {
@@ -300,6 +300,8 @@ export function displayTicTacToe(data: Data) {
 	n = 0;
 	for (let i = 0; i < game.matrix.length; i++) {
 		for (let j = 0; j < game.matrix[i].length; j++) {
+			if (!tscene) 
+				break;
 			const m = tscene.getMeshByID('mesh-' + (n + 1));
 			if (m) {
 				m.dispose();
@@ -312,6 +314,6 @@ export function displayTicTacToe(data: Data) {
 			n++;
 		}
 	}
-
-	tscene.render();
+	if (tscene)
+		tscene.render();
 }
