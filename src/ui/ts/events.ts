@@ -137,11 +137,13 @@ const processChatUserList = () => {
 
 						<span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-white ${u.count ? 'bg-red-400' : ''} rounded-full" data-friend_element="${u.id}">${u.count || ''}</span>
 
-						<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="cursor-pointer inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-transparent" type="button">
-							<svg data-friend_menu="${u.id}" class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
-								<path data-friend_menu="${u.id}" d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
-							</svg>
-						</button>
+						${u.id == user.id ? `` : `
+							<button data-friend_menu="${u.id}" data-dropdown-toggle="dropdownDots" data-dropdown-placement="bottom-start" class="cursor-pointer inline-flex self-center items-center m-0 p-0 text-sm font-medium text-center text-gray-900 bg-transparent" type="button">
+								<svg data-friend_menu="${u.id}" class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
+									<path data-friend_menu="${u.id}" d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
+								</svg>
+							</button>`}
+
 						<div id="${u.id}" data-friend_option="0" class="absolute ml-20 mt-20 z-10 hidden bg-white divide-y divide-gray-300 rounded-lg shadow-lg w-40">
 							<ul data-friend_option="999" class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownMenuIconButton">
 								<li data-friend_option="block" data-friend_id="${u.id}" class="px-4 py-2">{{block}}</li>
