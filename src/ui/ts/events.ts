@@ -421,7 +421,7 @@ addEventListener('keydown', handleKeyDown);
 addEventListener("keyup", keyHandler);
 addEventListener("mouseup", tapHandler);
 addEventListener("click", clickHandler);
-addEventListener("online", () => location.reload() );
+addEventListener("online", () => location.href = '' );
 
 let keys = {};
 export function gameLoop() {
