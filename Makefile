@@ -36,17 +36,18 @@ run: setup build
 	fi
 	@docker stop $(CONTAINER) 2>/dev/null || true
 	@docker rm $(CONTAINER) 2>/dev/null || true
+	@PORT=$$(grep '^PORT=' $(ENV_FILE) | cut -d '=' -f2); \
 	docker run -d \
 		--name $(CONTAINER) \
 		--restart unless-stopped \
 		--env-file $(ENV_FILE) \
-		-p 3001:3001 \
+		-p $$PORT:$$PORT \
 		-v $(PWD)/db:/app/db \
 		$(IMAGE)
 	@echo ""
 	@echo "✅ Application started successfully!"
 	@echo "Container name: $(CONTAINER)"
-	@echo "Port: 3001"
+	@echo "Port: $$(grep '^PORT=' $(ENV_FILE) | cut -d '=' -f2)"
 	@echo "Logs: make logs"
 
 ## stop: Stop the running container

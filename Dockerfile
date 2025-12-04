@@ -62,8 +62,8 @@ RUN mkdir -p /app/db && \
 # Switch to non-root user
 USER nodejs
 
-# Expose port
-EXPOSE 3001
+# Expose port (will be set via environment variable)
+EXPOSE ${PORT:-3002}
 
 # Start application
 CMD ["node", "src/server/index.cjs"]
