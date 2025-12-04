@@ -1,5 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+// In Prisma 7, application code needs datasource config even when using prisma.config.ts
+const prisma = new PrismaClient({
+	datasources: {
+		db: {
+			url: process.env.DATABASE_URL
+		}
+	}
+});
 const utils = require('../user-auth/services/user.service')(prisma)
 const DEFAULT_PASSWORD = "1234";
 

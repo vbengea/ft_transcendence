@@ -72,4 +72,5 @@ USER nodejs
 EXPOSE ${PORT:-3002}
 
 # Run migrations and start application
-CMD sh -c "npx prisma migrate deploy --schema=./src/server/prisma/schema.prisma && node src/server/index.cjs"
+# Create db directory at runtime to ensure proper permissions with volume mounts
+CMD sh -c "mkdir -p /app/db && npx prisma migrate deploy --schema=./src/server/prisma/schema.prisma && node src/server/index.cjs"
