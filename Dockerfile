@@ -55,7 +55,7 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 # Copy application source
 COPY --chown=nodejs:nodejs src ./src
 
-# Create directory for database
+# Create directory for database with proper permissions
 RUN mkdir -p /app/db && \
     chown -R nodejs:nodejs /app
 
@@ -65,5 +65,5 @@ USER nodejs
 # Expose port (will be set via environment variable)
 EXPOSE ${PORT:-3002}
 
-# Start application
-CMD ["node", "src/server/index.cjs"]
+# Run migrations and start application
+CMD sh -c "npx prisma migrate deploy --schema=./src/server/prisma/schema.prisma && node src/server/index.cjs"
