@@ -1,6 +1,5 @@
 datasource db {
   provider = "sqlite"
-  url      = "file:../db/data.db?connection_limit=1&connect_timeout=10"
 }
 
 generator client {

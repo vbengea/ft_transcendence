@@ -5,7 +5,7 @@ const DEFAULT_PASSWORD = "1234";
 
 async function fill() {
 	await prisma.game.create({ data: { description: "Bong", name: "bong" } });
-    await prisma.game.create({ data: { description: "Tic tac toe", name: "tictactoe" } });
+	await prisma.game.create({ data: { description: "Tic tac toe", name: "tictactoe" } });
 
 	// Anonymous ........................................................................
 
@@ -37,10 +37,10 @@ async function fill() {
 
 	const connect = [{ id: edgar.id }, { id: leon.id }, { id: miguel.id }];
 
-	await prisma.user.update({ 
-		where: { id: juan.id }, 
-		data: { 
-			friends: { 
+	await prisma.user.update({
+		where: { id: juan.id },
+		data: {
+			friends: {
 				connect
 			}
 		}
