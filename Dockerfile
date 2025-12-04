@@ -55,9 +55,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy Prisma configuration (required for Prisma 7 CLI commands)
-COPY --chown=nodejs:nodejs prisma.config.js ./
-
 # Copy application source
 COPY --chown=nodejs:nodejs src ./src
 

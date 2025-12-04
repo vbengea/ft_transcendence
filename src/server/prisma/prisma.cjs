@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-// In Prisma 7, configuration is loaded from prisma.config.ts automatically
 const prisma = new PrismaClient();
 const utils = require('../user-auth/services/user.service')(prisma)
 const DEFAULT_PASSWORD = "1234";
