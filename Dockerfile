@@ -24,6 +24,9 @@ RUN mkdir -p public && \
 # Build CSS and JS
 RUN npm run css && npm run js
 
+# Set dummy DATABASE_URL for Prisma client generation (actual URL comes from .env at runtime)
+ENV DATABASE_URL="file:/app/db/data.db"
+
 # Generate Prisma client
 RUN npx prisma generate --schema=./src/server/prisma/schema.prisma
 
@@ -51,6 +54,9 @@ RUN npm ci --omit=dev --ignore-scripts
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy Prisma configuration (required for Prisma 7 CLI commands)
+COPY --chown=nodejs:nodejs prisma.config.ts ./
 
 # Copy application source
 COPY --chown=nodejs:nodejs src ./src
