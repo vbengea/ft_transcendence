@@ -1,21 +1,13 @@
 'use strict'
 
-const { ADDRESS, PORT, TKEY, TCRT, JWT_SECRET, COOKIE_SECRET_KEY, NODE_ENV } = process.env;
+const { ADDRESS, PORT, JWT_SECRET, COOKIE_SECRET_KEY, NODE_ENV } = process.env;
 
-const fs = require('fs')
 const path = require('path')
 const multipart = require('@fastify/multipart');
 
-// In production, nginx handles HTTPS, so we use HTTP
-// In development, we use HTTPS directly
-const fastifyOptions = (NODE_ENV === 'production' || !TKEY || !TCRT) ? {} : {
-    https: {
-      key: fs.readFileSync(TKEY),
-      cert: fs.readFileSync(TCRT)
-    }
-};
-
-const fastify = require('fastify')(fastifyOptions)
+// Production runs HTTP behind Cloudflare/nginx reverse proxy
+// Cloudflare handles SSL termination
+const fastify = require('fastify')({})
 
 fastify.register(multipart, {
   limits: {
