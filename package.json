@@ -26,6 +26,7 @@
     "@fastify/static": "^8.2.0",
     "@fastify/websocket": "^11.0.2",
     "@prisma/client": "^7.1.0",
+    "prisma": "^7.1.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
     "fastify": "^5.3.3",
@@ -38,9 +39,7 @@
   "devDependencies": {
     "@babylonjs/core": "^8.12.1",
     "@babylonjs/inspector": "^8.12.1",
-    "@prisma/client": "^7.1.0",
     "@tailwindcss/cli": "^4.1.7",
-    "prisma": "^7.1.0",
     "tailwindcss": "^4.1.7",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
