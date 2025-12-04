@@ -1,35 +1,69 @@
-FROM node:22.12.0
-
-RUN apt-get update && \
-	apt install -y iputils-ping && \
-    apt-get install -y nginx openssl sqlite3 python3 pip python3.11-venv
-
-RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-	| tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-	&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-	| tee /etc/apt/sources.list.d/ngrok.list \
-	&& apt update \
-	&& apt install ngrok
+# Multi-stage build for minimal production image
+FROM node:22.12.0-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json .
+# Copy package files
+COPY package.json package-lock.json* ./
 
-RUN npm install
+# Install all dependencies (including devDependencies for build)
+RUN npm ci --ignore-scripts
 
+# Copy source code
 COPY . .
 
-RUN mkdir public
+# Create public directory and copy static assets
+RUN mkdir -p public && \
+    cp -r ./src/ui/images public/ && \
+    cp -r ./src/ui/pages public/ && \
+    cp -r ./src/ui/languages public/ && \
+    cp ./src/ui/pages/index.html public/ && \
+    cp ./src/ui/images/favicon.ico public/ && \
+    cp ./src/ui/styles/main.css public/
 
-RUN cp ./src/ui/images -r public/
-RUN cp ./src/ui/pages -r public/
-RUN cp ./src/ui/languages -r public/
-RUN cp ./src/ui/pages/index.html public/
-RUN cp ./src/ui/images/favicon.ico public/
-RUN cp ./src/ui/styles/main.css public/
+# Build CSS and JS
+RUN npm run css && npm run js
 
-RUN node --run css && node --run js && node --run migrate
+# Generate Prisma client
+RUN npx prisma generate --schema=./src/server/prisma/schema.prisma
 
-COPY --chmod=0777 ./tools/ssl.sh /
+# Production stage
+FROM node:22.12.0-alpine
 
-CMD ["/ssl.sh"]
+# Install only runtime dependencies
+RUN apk add --no-cache \
+    openssl \
+    sqlite
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install only production dependencies
+RUN npm ci --omit=dev --ignore-scripts
+
+# Copy built assets from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy application source
+COPY --chown=nodejs:nodejs src ./src
+
+# Create directory for database
+RUN mkdir -p /app/db && \
+    chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Expose port
+EXPOSE 3001
+
+# Start application
+CMD ["node", "src/server/index.cjs"]

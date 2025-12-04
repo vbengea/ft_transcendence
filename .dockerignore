@@ -1,0 +1,83 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node modules (will be installed during build)
+node_modules
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+.jest
+coverage
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+__tests__
+
+# Build artifacts (will be generated)
+dist
+build
+public
+
+# Database (will be created at runtime)
+*.db
+*.db-journal
+db/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+LICENSE
+*.md
+docs/
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Tools and scripts not needed in production
+tools/automations.sh
+
+# CLI tools
+cli/
+
+# Certificates (generated at runtime)
+*.pem
+*.key
+*.crt
+*.csr
+certs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Package manager lock files (keep package-lock.json but ignore others)
+yarn.lock
+pnpm-lock.yaml

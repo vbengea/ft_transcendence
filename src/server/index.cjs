@@ -1,17 +1,21 @@
 'use strict'
 
-const { ADDRESS, PORT, TKEY, TCRT, JWT_SECRET, COOKIE_SECRET_KEY } = process.env;
+const { ADDRESS, PORT, TKEY, TCRT, JWT_SECRET, COOKIE_SECRET_KEY, NODE_ENV } = process.env;
 
 const fs = require('fs')
 const path = require('path')
 const multipart = require('@fastify/multipart');
 
-const fastify = require('fastify')({
+// In production, nginx handles HTTPS, so we use HTTP
+// In development, we use HTTPS directly
+const fastifyOptions = (NODE_ENV === 'production' || !TKEY || !TCRT) ? {} : {
     https: {
       key: fs.readFileSync(TKEY),
       cert: fs.readFileSync(TCRT)
     }
-})
+};
+
+const fastify = require('fastify')(fastifyOptions)
 
 fastify.register(multipart, {
   limits: {
@@ -21,7 +25,9 @@ fastify.register(multipart, {
 
 const cors = require('@fastify/cors');
 fastify.register(cors, {
-  origin: true,
+  origin: NODE_ENV === 'production' 
+    ? ['https://pong.valentinbengea.com']
+    : true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 })
@@ -58,6 +64,11 @@ fastify.register(require('./user-auth/app.js'), {
 // ....................................................................................
 
 fastify.register(require('./tournament/app.js'));
+
+// Health check endpoint for monitoring
+fastify.get('/api/health', async (req, reply) => {
+  return { status: 'ok', timestamp: new Date().toISOString() }
+})
 
 fastify.register(require('@fastify/static'), {
   root: path.join(__dirname, '../../public'),

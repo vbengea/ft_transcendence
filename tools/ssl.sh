@@ -1,20 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 
-openssl \
-	req -x509 \
-	-nodes -days 365 \
-	-newkey rsa:2048 \
-	-keyout $TKEY \
-	-out $TCRT \
-	-subj "/C=ES/ST=Madrid/L=Madrid/CN=$DOMAIN_NAME"
+# Generate self-signed SSL certificate if not exists
+# In production with nginx reverse proxy, nginx handles SSL termination
+# This certificate is only used for internal container communication
 
-ngrok config add-authtoken $NGROK_AUTHTOKEN
+if [ ! -f "$TKEY" ] || [ ! -f "$TCRT" ]; then
+    echo "Generating self-signed SSL certificate..."
+    openssl req -x509 \
+        -nodes -days 365 \
+        -newkey rsa:2048 \
+        -keyout "$TKEY" \
+        -out "$TCRT" \
+        -subj "/C=US/ST=State/L=City/O=Organization/CN=$DOMAIN_NAME"
+    echo "SSL certificate generated successfully"
+else
+    echo "SSL certificate already exists"
+fi
 
-node --run start &
-NODE_PID=$!
+# Run database migrations
+echo "Running database migrations..."
+cd /app
+npx prisma migrate deploy --schema=./src/server/prisma/schema.prisma
 
-sleep 3
+# Start the Node.js application
+echo "Starting application on port $PORT..."
+exec node --run start
 
-ngrok http --domain=$NGROK_DOMAIN https://localhost:$PORT
-
-kill $NODE_PID
